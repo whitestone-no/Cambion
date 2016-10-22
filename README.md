@@ -1,2 +1,2 @@
-# cambion
-A Succubus offspring providing a set of convenience functions for NetMQ
+# Cambion
+A Succubus (https://github.com/COCPORN/succubus) offspring providing a set of convenience functions for NetMQ
