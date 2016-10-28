@@ -80,5 +80,13 @@ namespace Whitestone.CambionTester
                 MessageBox.Show(PrintException(ex), "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void btnReinitialize_Click(object sender, RoutedEventArgs e)
+        {
+            _messageHandler.ReInitialize(init =>
+            {
+                init.UseNetMq("tcp://localhost:9990", "tcp://localhost:9991");
+            });
+        }
     }
 }

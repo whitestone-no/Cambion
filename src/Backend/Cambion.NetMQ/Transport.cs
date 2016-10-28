@@ -10,7 +10,7 @@ using Whitestone.Cambion.Interfaces;
 
 namespace Whitestone.Cambion.Backend.NetMQ
 {
-    public class Transport : IBackendTransport, INetMqConfigurator, IDisposable
+    public class Transport : IBackendTransport, INetMqConfigurator
     {
         public string PublishAddress { get; set; }
         public string SubscribeAddress { get; set; }
@@ -56,7 +56,11 @@ namespace Whitestone.Cambion.Backend.NetMQ
 
         public void Dispose()
         {
+            _publishSocket?.Disconnect(PublishAddress);
+            _subscribeSocket?.Disconnect(SubscribeAddress);
 
+            _publishSocket?.Dispose();
+            _subscribeSocket?.Dispose();
         }
     }
 }

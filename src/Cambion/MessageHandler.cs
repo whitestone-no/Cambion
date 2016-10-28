@@ -17,6 +17,21 @@ namespace Whitestone.Cambion
             Transport.MessageReceived += Transport_MessageReceived;
         }
 
+        private void Validate()
+        {
+            if (Transport == null) throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing transport"));
+        }
+
+        public void Reinitialize(Action<IMessageHandlerInitializer> initializer)
+        {
+            Transport.MessageReceived -= Transport_MessageReceived;
+            Transport.Dispose();
+
+            initializer(this);
+            Validate();
+            Transport.MessageReceived += Transport_MessageReceived;
+        }
+
         public void Publish(object data)
         {
             MessageWrapper wrapper = new MessageWrapper
@@ -29,10 +44,6 @@ namespace Whitestone.Cambion
             Transport.Publish(wrapper);
         }
 
-        private void Validate()
-        {
-            if (Transport == null) throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing transport"));
-        }
 
         private void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
         {

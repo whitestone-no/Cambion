@@ -3,7 +3,7 @@ using Whitestone.Cambion.Events;
 
 namespace Whitestone.Cambion.Interfaces
 {
-    public interface IBackendTransport
+    public interface IBackendTransport : IDisposable
     {
         void Publish(MessageWrapper data);
 
