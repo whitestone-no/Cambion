@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
-using Newtonsoft.Json;
 using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
 
@@ -39,19 +36,15 @@ namespace Whitestone.Cambion.Backend.NetMQ
                 {
                     byte[] messageBytes = _subscribeSocket.ReceiveFrameBytes();
 
-                    MessageWrapper message = JsonConvert.DeserializeObject<MessageWrapper>(Encoding.Unicode.GetString(messageBytes));
-
-                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(message));
+                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageBytes));
                 }
                 // ReSharper disable once FunctionNeverReturns because this is designed to run forever
             });
         }
 
-        public void Publish(MessageWrapper data)
+        public void Publish(byte[] data)
         {
-            // Use publish endpoint to publish requested data
-            string serialized = JsonConvert.SerializeObject(data);
-            _publishSocket.SendFrame(Encoding.Unicode.GetBytes(serialized));
+            _publishSocket.SendFrame(data);
         }
 
         public void Dispose()

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using Newtonsoft.Json;
 using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
 
@@ -37,16 +39,21 @@ namespace Whitestone.Cambion
             MessageWrapper wrapper = new MessageWrapper
             {
                 Message = data,
-                SomeMeta = data.GetType().ToString(),
+                MessageType = data.GetType(),
                 SomeOtherMeta = 47
             };
 
-            Transport.Publish(wrapper);
+            string json = JsonConvert.SerializeObject(wrapper, Formatting.None);
+            byte[] rawBytes = Encoding.ASCII.GetBytes(json);
+            Transport.Publish(rawBytes);
         }
 
 
         private void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
         {
+            string json = Encoding.ASCII.GetString(e.Data);
+            MessageWrapper wrapper = JsonConvert.DeserializeObject<MessageWrapper>(json);
+
             ;
         }
     }

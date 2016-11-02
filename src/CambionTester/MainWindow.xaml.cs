@@ -83,7 +83,7 @@ namespace Whitestone.CambionTester
 
         private void btnReinitialize_Click(object sender, RoutedEventArgs e)
         {
-            _messageHandler.ReInitialize(init =>
+            _messageHandler.Reinitialize(init =>
             {
                 init.UseNetMq("tcp://localhost:9990", "tcp://localhost:9991");
             });

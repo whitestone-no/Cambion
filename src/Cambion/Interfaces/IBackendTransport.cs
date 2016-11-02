@@ -5,7 +5,7 @@ namespace Whitestone.Cambion.Interfaces
 {
     public interface IBackendTransport : IDisposable
     {
-        void Publish(MessageWrapper data);
+        void Publish(byte[] data);
 
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
     }
