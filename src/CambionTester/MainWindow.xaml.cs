@@ -2,14 +2,16 @@
 using System.Text;
 using System.Windows;
 using Whitestone.Cambion;
+using Whitestone.Cambion.Backend.Loopback;
 using Whitestone.Cambion.Backend.NetMQ;
+using Whitestone.Cambion.Interfaces;
 
 namespace Whitestone.CambionTester
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IEventHandler<TestMessageSimple>
     {
         private MessageHandler _messageHandler;
 
@@ -22,7 +24,8 @@ namespace Whitestone.CambionTester
         {
             try
             {
-                _messageHandler = new MessageHandler(init =>
+                _messageHandler = new MessageHandler();
+                _messageHandler.Initialize(init =>
                 {
                     init.UseNetMq(
                         "tcp://localhost:9990",
@@ -63,14 +66,15 @@ namespace Whitestone.CambionTester
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)
         {
-            _messageHandler.Publish(DateTime.Now);
+            _messageHandler.Publish(new TestMessageSimple { CurrentDateTime = DateTime.Now});
         }
 
         private void btnConnectMessageHost_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                _messageHandler = new MessageHandler(init =>
+                _messageHandler = new MessageHandler();
+                _messageHandler.Initialize(init =>
                 {
                     init.UseNetMq("tcp://localhost:9990", "tcp://localhost:9991");
                 });
@@ -87,6 +91,25 @@ namespace Whitestone.CambionTester
             {
                 init.UseNetMq("tcp://localhost:9990", "tcp://localhost:9991");
             });
+        }
+
+        private void btnInitLoopback_Click(object sender, RoutedEventArgs e)
+        {
+            _messageHandler = new MessageHandler();
+            _messageHandler.Initialize(init =>
+            {
+                init.UseLoopback();
+            });
+        }
+
+        public void Handle(TestMessageSimple input)
+        {
+            ;
+        }
+
+        private void btnRegister_Click(object sender, RoutedEventArgs e)
+        {
+            _messageHandler.Register(this);
         }
     }
 }

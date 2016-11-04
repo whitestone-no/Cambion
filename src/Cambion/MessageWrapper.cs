@@ -4,8 +4,15 @@ namespace Whitestone.Cambion
 {
     public class MessageWrapper
     {
-        public object Message { get; set; }
-        public Type MessageType { get; set; }
-        public int SomeOtherMeta { get; set; }
+        public object Data { get; set; }
+        public Type DataType { get; set; }
+        public MessageType MessageType { get; set; }
+    }
+
+    public enum MessageType
+    {
+        Event,
+        Synchronized,
+        TargetableSynchronized
     }
 }

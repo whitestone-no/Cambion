@@ -63,6 +63,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="TestMessages.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -105,6 +106,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Backend\Cambion.Loopback\Cambion.Loopback.csproj">
+      <Project>{04b6896a-6d68-424a-b23b-777eec343b3b}</Project>
+      <Name>Cambion.Loopback</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Backend\Cambion.NetMQ\Cambion.NetMQ.csproj">
       <Project>{472cce29-5a00-4660-967a-df031cf0fdd7}</Project>
       <Name>Cambion.NetMQ</Name>
