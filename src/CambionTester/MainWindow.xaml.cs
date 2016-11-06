@@ -115,7 +115,7 @@ namespace Whitestone.CambionTester
 
         private void btnCreateTempObject_Click(object sender, RoutedEventArgs e)
         {
-            _tempObject = new TempObject();
+            _tempObject = new TempObject(_messageHandler);
             _messageHandler.Register(_tempObject);
         }
 
@@ -127,6 +127,16 @@ namespace Whitestone.CambionTester
 
         private class TempObject : IEventHandler<TestMessageSimple>
         {
+            private int _one = 1;
+            public TempObject(ICambion messageHandler)
+            {
+                messageHandler.AddEventHandler<TestMessageSimple>(ev =>
+                {
+                    _one = 2;
+                    ;
+                });
+            }
+
             public void Handle(TestMessageSimple input)
             {
                 ;

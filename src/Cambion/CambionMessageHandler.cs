@@ -7,6 +7,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
+using EventHandler = Whitestone.Cambion.Handlers.EventHandler;
 
 namespace Whitestone.Cambion
 {
@@ -15,7 +16,7 @@ namespace Whitestone.Cambion
     {
         public IBackendTransport Transport { get; set; }
 
-        private Dictionary<Type, List<Action<object>>> _eventHandlers = new Dictionary<Type, List<Action<object>>>();
+        private readonly Dictionary<Type, List<EventHandler>> _newEventHandlers = new Dictionary<Type, List<EventHandler>>();
 
         public void Initialize(Action<IMessageHandlerInitializer> initializer)
         {
@@ -49,7 +50,7 @@ namespace Whitestone.Cambion
             IEnumerable<Type> interfaces = handler.GetType().GetInterfaces()
                 .Where(x => typeof(IEventHandler).IsAssignableFrom(x) && x.IsGenericType);
 
-            lock (_eventHandlers)
+            lock (_newEventHandlers)
             {
 
                 foreach (var @interface in interfaces)
@@ -60,16 +61,17 @@ namespace Whitestone.Cambion
                     if (method != null)
                     {
                         Delegate @delegate = Delegate.CreateDelegate(typeof(Action<>).MakeGenericType(type), handler, method);
-                        Action<object> methodAction = request => @delegate.DynamicInvoke(request);
 
-                        if (!_eventHandlers.ContainsKey(type))
+                        EventHandler eventHandler = new EventHandler(@delegate);
+
+                        if (!_newEventHandlers.ContainsKey(type))
                         {
-                            _eventHandlers[type] = new List<Action<object>>();
+                            _newEventHandlers[type] = new List<EventHandler>();
                         }
 
-                        if (!_eventHandlers[type].Contains(methodAction))
+                        if (!_newEventHandlers[type].Contains(eventHandler))
                         {
-                            _eventHandlers[type].Add(methodAction);
+                            _newEventHandlers[type].Add(eventHandler);
                         }
                     }
                 }
@@ -85,18 +87,18 @@ namespace Whitestone.Cambion
 
             Type type = typeof(TEvent);
 
-            lock (_eventHandlers)
+            EventHandler eventHandler = new EventHandler(callback);
+
+            lock (_newEventHandlers)
             {
-                if (!_eventHandlers.ContainsKey(type))
+                if (!_newEventHandlers.ContainsKey(type))
                 {
-                    _eventHandlers[type] = new List<Action<object>>();
+                    _newEventHandlers[type] = new List<EventHandler>();
                 }
 
-                Action<object> handler = request => callback((TEvent)request);
-
-                if (!_eventHandlers[type].Contains(handler))
+                if (!_newEventHandlers[type].Contains(eventHandler))
                 {
-                    _eventHandlers[type].Add(handler);
+                    _newEventHandlers[type].Add(eventHandler);
                 }
             }
         }
@@ -124,19 +126,14 @@ namespace Whitestone.Cambion
 
             if (wrapper.MessageType == MessageType.Event)
             {
-                lock (_eventHandlers)
+                lock (_newEventHandlers)
                 {
-                    Action<object>[] actions = _eventHandlers.Where(h => h.Key == wrapper.DataType).SelectMany(h => h.Value).ToArray();
-                    foreach (Action<object> action in actions)
+                    EventHandler[] handlers = _newEventHandlers.Where(h => h.Key == wrapper.DataType).SelectMany(h => h.Value).ToArray();
+                    foreach (EventHandler handler in handlers)
                     {
-                        // TODO: This way of checking if the action still exists is not a good way to do it as NULLing the object (and running GC (like in CambionTester)) does not actually remove the object. Need to add some WeakReference objects both to Register and AddEventHandler.
-                        try
+                        if (!handler.Invoke(wrapper.Data))
                         {
-                            action(wrapper.Data);
-                        }
-                        catch
-                        {
-                            _eventHandlers[wrapper.DataType].Remove(action);
+                            _newEventHandlers[wrapper.DataType].Remove(handler);
                         }
                     }
                 }
