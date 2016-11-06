@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Windows;
 using Whitestone.Cambion;
@@ -15,7 +12,7 @@ namespace Whitestone.CambionTester
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IEventHandler<TestMessageSimple>
+    public partial class MainWindow : IEventHandler<TestMessageSimple>
     {
         private ICambion _messageHandler;
 
@@ -28,7 +25,7 @@ namespace Whitestone.CambionTester
         {
             try
             {
-                _messageHandler = new MessageHandler();
+                _messageHandler = new CambionMessageHandler();
                 _messageHandler.Initialize(init =>
                 {
                     init.UseNetMq(
@@ -79,7 +76,7 @@ namespace Whitestone.CambionTester
         {
             try
             {
-                _messageHandler = new MessageHandler();
+                _messageHandler = new CambionMessageHandler();
                 _messageHandler.Initialize(init => { init.UseNetMq("tcp://localhost:9990", "tcp://localhost:9991"); });
             }
             catch (Exception ex)
@@ -95,7 +92,7 @@ namespace Whitestone.CambionTester
 
         private void btnInitLoopback_Click(object sender, RoutedEventArgs e)
         {
-            _messageHandler = new MessageHandler();
+            _messageHandler = new CambionMessageHandler();
             _messageHandler.Initialize(init => { init.UseLoopback(); });
         }
 

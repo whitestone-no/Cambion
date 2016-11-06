@@ -50,7 +50,7 @@
     <Compile Include="Interfaces\IEventHandler.cs" />
     <Compile Include="Interfaces\IMessageHandlerInitializer.cs" />
     <Compile Include="Interfaces\ISynchronizedHandler.cs" />
-    <Compile Include="MessageHandler.cs" />
+    <Compile Include="CambionMessageHandler.cs" />
     <Compile Include="Events\MessageReceivedEventArgs.cs" />
     <Compile Include="MessageWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

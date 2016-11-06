@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MessageHandler Backend for NetMQ")]
-[assembly: AssemblyDescription("MessageHandler Backend for NetMQ")]
+[assembly: AssemblyTitle("Cambion Backend for NetMQ")]
+[assembly: AssemblyDescription("Cambion Backend for NetMQ")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Whitestone")]
-[assembly: AssemblyProduct("Whitestone MessageHandler")]
+[assembly: AssemblyProduct("Whitestone Cambion")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -11,7 +11,7 @@ using Whitestone.Cambion.Interfaces;
 namespace Whitestone.Cambion
 {
     [Export(typeof(ICambion))]
-    public class MessageHandler : IMessageHandlerInitializer, ICambion
+    public class CambionMessageHandler : IMessageHandlerInitializer, ICambion
     {
         public IBackendTransport Transport { get; set; }
 

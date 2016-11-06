@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Whitestone MessageHandler")]
+[assembly: AssemblyTitle("Whitestone Cambion")]
 [assembly: AssemblyDescription("A set of convenience functions for NetMQ")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Whitestone")]
-[assembly: AssemblyProduct("Whitestone MessageHandler")]
+[assembly: AssemblyProduct("Whitestone Cambion")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
