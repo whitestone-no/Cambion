@@ -11,5 +11,7 @@ namespace Whitestone.Cambion.Interfaces
         void Initialize(Action<IMessageHandlerInitializer> initializer);
         void Reinitialize(Action<IMessageHandlerInitializer> initializer);
         void Register(object handler);
+        void AddEventHandler<TEvent>(Action<TEvent> callback);
+        void PublishEvent<TEvent>(TEvent data);
     }
 }

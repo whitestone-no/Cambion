@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Text;
 using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
 using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
@@ -14,7 +15,7 @@ namespace Whitestone.Cambion
     {
         public IBackendTransport Transport { get; set; }
 
-        readonly List<EventHandler> _eventHandlers = new List<EventHandler>();
+        private Dictionary<Type, List<Action<object>>> _eventHandlers = new Dictionary<Type, List<Action<object>>>();
 
         public void Initialize(Action<IMessageHandlerInitializer> initializer)
         {
@@ -33,8 +34,10 @@ namespace Whitestone.Cambion
 
         private void Validate()
         {
-            if (Transport == null) throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing transport"));
+            if (Transport == null)
+                throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing transport"));
         }
+
 
         public void Register(object handler)
         {
@@ -43,18 +46,62 @@ namespace Whitestone.Cambion
                 throw new ArgumentNullException(nameof(handler));
             }
 
+            IEnumerable<Type> interfaces = handler.GetType().GetInterfaces()
+                .Where(x => typeof(IEventHandler).IsAssignableFrom(x) && x.IsGenericType);
+
             lock (_eventHandlers)
             {
-                if (_eventHandlers.Any(x => x.Matches(handler)))
-                {
-                    return;
-                }
 
-                _eventHandlers.Add(new EventHandler(handler));
+                foreach (var @interface in interfaces)
+                {
+                    Type type = @interface.GetGenericArguments()[0];
+                    MethodInfo method = @interface.GetMethod("Handle", new Type[] { type });
+
+                    if (method != null)
+                    {
+                        Delegate @delegate = Delegate.CreateDelegate(typeof(Action<>).MakeGenericType(type), handler, method);
+                        Action<object> methodAction = request => @delegate.DynamicInvoke(request);
+
+                        if (!_eventHandlers.ContainsKey(type))
+                        {
+                            _eventHandlers[type] = new List<Action<object>>();
+                        }
+
+                        if (!_eventHandlers[type].Contains(methodAction))
+                        {
+                            _eventHandlers[type].Add(methodAction);
+                        }
+                    }
+                }
             }
         }
 
-        public void Publish(object data)
+        public void AddEventHandler<TEvent>(Action<TEvent> callback)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            Type type = typeof(TEvent);
+
+            lock (_eventHandlers)
+            {
+                if (!_eventHandlers.ContainsKey(type))
+                {
+                    _eventHandlers[type] = new List<Action<object>>();
+                }
+
+                Action<object> handler = request => callback((TEvent)request);
+
+                if (!_eventHandlers[type].Contains(handler))
+                {
+                    _eventHandlers[type].Add(handler);
+                }
+            }
+        }
+
+        public void PublishEvent<TEvent>(TEvent data)
         {
             MessageWrapper wrapper = new MessageWrapper
             {
@@ -63,7 +110,8 @@ namespace Whitestone.Cambion
                 MessageType = MessageType.Event
             };
 
-            string json = JsonConvert.SerializeObject(wrapper, Formatting.None, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+            string json = JsonConvert.SerializeObject(wrapper, Formatting.None,
+                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
             byte[] rawBytes = Encoding.ASCII.GetBytes(json);
             Transport.Publish(rawBytes);
         }
@@ -76,23 +124,20 @@ namespace Whitestone.Cambion
 
             if (wrapper.MessageType == MessageType.Event)
             {
-                EventHandler[] toNotify;
                 lock (_eventHandlers)
                 {
-                    toNotify = _eventHandlers.ToArray();
-                }
-
-                List<EventHandler> dead = toNotify
-                    .Where(handler => !handler.Handle(wrapper.DataType, wrapper.Data))
-                    .ToList();
-
-                if (!dead.Any()) return;
-
-                lock (_eventHandlers)
-                {
-                    foreach (EventHandler handler in dead)
+                    Action<object>[] actions = _eventHandlers.Where(h => h.Key == wrapper.DataType).SelectMany(h => h.Value).ToArray();
+                    foreach (Action<object> action in actions)
                     {
-                        _eventHandlers.Remove(handler);
+                        // TODO: This way of checking if the action still exists is not a good way to do it as NULLing the object (and running GC (like in CambionTester)) does not actually remove the object. Need to add some WeakReference objects both to Register and AddEventHandler.
+                        try
+                        {
+                            action(wrapper.Data);
+                        }
+                        catch
+                        {
+                            _eventHandlers[wrapper.DataType].Remove(action);
+                        }
                     }
                 }
             }

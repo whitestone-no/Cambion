@@ -13,6 +13,8 @@
         <Button x:Name="btnReinitialize" Content="Reinitialize" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="122" Click="btnReinitialize_Click"/>
         <Button x:Name="btnInitLoopback" Content="Initialize Loopback" HorizontalAlignment="Left" Margin="399,10,0,0" VerticalAlignment="Top" Width="108" Click="btnInitLoopback_Click"/>
         <Button x:Name="btnRegister" Content="Register" HorizontalAlignment="Left" Margin="10,112,0,0" VerticalAlignment="Top" Width="75" Click="btnRegister_Click"/>
+        <Button x:Name="btnCreateTempObject" Content="Create Temp object" HorizontalAlignment="Left" Margin="399,189,0,0" VerticalAlignment="Top" Width="108" Click="btnCreateTempObject_Click"/>
+        <Button x:Name="btnNullTempObject" Content="Null temp object" HorizontalAlignment="Left" Margin="399,214,0,0" VerticalAlignment="Top" Width="108" Click="btnNullTempObject_Click"/>
 
     </Grid>
 </Window>

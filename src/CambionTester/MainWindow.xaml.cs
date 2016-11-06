@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using Whitestone.Cambion;
@@ -13,7 +17,7 @@ namespace Whitestone.CambionTester
     /// </summary>
     public partial class MainWindow : Window, IEventHandler<TestMessageSimple>
     {
-        private MessageHandler _messageHandler;
+        private ICambion _messageHandler;
 
         public MainWindow()
         {
@@ -30,10 +34,7 @@ namespace Whitestone.CambionTester
                     init.UseNetMq(
                         "tcp://localhost:9990",
                         "tcp://localhost:9991",
-                        netmq =>
-                        {
-                            netmq.StartMessageHost();
-                        });
+                        netmq => { netmq.StartMessageHost(); });
                 });
             }
             catch (Exception ex)
@@ -66,7 +67,12 @@ namespace Whitestone.CambionTester
 
         private void btnPublish_Click(object sender, RoutedEventArgs e)
         {
-            _messageHandler.Publish(new TestMessageSimple { CurrentDateTime = DateTime.Now});
+            TestMessageSimple msg = new TestMessageSimple
+            {
+                CurrentDateTime = DateTime.ParseExact("1977-03-18", "yyyy-MM-dd", CultureInfo.InvariantCulture)
+            };
+
+            _messageHandler.PublishEvent(msg);
         }
 
         private void btnConnectMessageHost_Click(object sender, RoutedEventArgs e)
@@ -74,10 +80,7 @@ namespace Whitestone.CambionTester
             try
             {
                 _messageHandler = new MessageHandler();
-                _messageHandler.Initialize(init =>
-                {
-                    init.UseNetMq("tcp://localhost:9990", "tcp://localhost:9991");
-                });
+                _messageHandler.Initialize(init => { init.UseNetMq("tcp://localhost:9990", "tcp://localhost:9991"); });
             }
             catch (Exception ex)
             {
@@ -87,19 +90,13 @@ namespace Whitestone.CambionTester
 
         private void btnReinitialize_Click(object sender, RoutedEventArgs e)
         {
-            _messageHandler.Reinitialize(init =>
-            {
-                init.UseNetMq("tcp://localhost:9990", "tcp://localhost:9991");
-            });
+            _messageHandler.Reinitialize(init => { init.UseNetMq("tcp://localhost:9990", "tcp://localhost:9991"); });
         }
 
         private void btnInitLoopback_Click(object sender, RoutedEventArgs e)
         {
             _messageHandler = new MessageHandler();
-            _messageHandler.Initialize(init =>
-            {
-                init.UseLoopback();
-            });
+            _messageHandler.Initialize(init => { init.UseLoopback(); });
         }
 
         public void Handle(TestMessageSimple input)
@@ -110,6 +107,33 @@ namespace Whitestone.CambionTester
         private void btnRegister_Click(object sender, RoutedEventArgs e)
         {
             _messageHandler.Register(this);
+
+            _messageHandler.AddEventHandler<TestMessageSimple>(ev =>
+            {
+                ;
+            });
+        }
+
+        private TempObject _tempObject;
+
+        private void btnCreateTempObject_Click(object sender, RoutedEventArgs e)
+        {
+            _tempObject = new TempObject();
+            _messageHandler.Register(_tempObject);
+        }
+
+        private void btnNullTempObject_Click(object sender, RoutedEventArgs e)
+        {
+            _tempObject = null;
+            GC.Collect();
+        }
+
+        private class TempObject : IEventHandler<TestMessageSimple>
+        {
+            public void Handle(TestMessageSimple input)
+            {
+                ;
+            }
         }
     }
 }
