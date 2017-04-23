@@ -49,7 +49,7 @@ Then you can have MEF import it automatically based on convention:
 
 ```csharp
 [Import]
-private IMessageBus _cambion;
+private ICambion _cambion;
 ```
 
 Or you can use the MEF container to get an instance:
