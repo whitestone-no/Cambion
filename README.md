@@ -15,9 +15,9 @@ Install-Package Whitestone.Cambion
 ## Usage
 
 - [The Basics](#the-basics)
-  - [Instantiation](#Instantiation)
+  - [Instantiation](#instantiation)
   - [Initialization](#initialization)
-- [MEF Compatibility](mef-compatibility)
+- [MEF Compatibility](#mef-compatibility)
 
 ### The Basics
 
