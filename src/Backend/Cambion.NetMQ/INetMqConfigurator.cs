@@ -4,5 +4,6 @@
     {
         string PublishAddress { get; set; }
         string SubscribeAddress { get; set; }
+        void Start();
     }
 }

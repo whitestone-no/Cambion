@@ -14,6 +14,8 @@ namespace Whitestone.Cambion.Backend.NetMQ
 
             initializationHandler?.Invoke(transport);
 
+            transport.Start();
+
             initializer.Transport = transport;
         }
 

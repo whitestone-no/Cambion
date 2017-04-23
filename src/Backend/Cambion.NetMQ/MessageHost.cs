@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
+using System.Threading;
 
 namespace Whitestone.Cambion.Backend.NetMQ
 {
@@ -22,6 +23,8 @@ namespace Whitestone.Cambion.Backend.NetMQ
 
         public void Start()
         {
+            ManualResetEvent mre = new ManualResetEvent(false);
+
             // NetMQ.Bind to Publish and Subscribe addresses
             Task.Factory.StartNew(() =>
             {
@@ -32,9 +35,15 @@ namespace Whitestone.Cambion.Backend.NetMQ
                     _fromSocket.Bind(_fromAddress);
 
                     _proxy = new Proxy(_fromSocket, _toSocket);
+
+                    mre.Set();
+
                     _proxy.Start();
                 }
             });
+
+            // Wait until the message host is actually started before returning
+            mre.WaitOne(-1);
         }
 
         public void Stop()
