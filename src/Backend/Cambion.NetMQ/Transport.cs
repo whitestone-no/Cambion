@@ -9,7 +9,7 @@ using System.Net.NetworkInformation;
 
 namespace Whitestone.Cambion.Backend.NetMQ
 {
-    public class Transport : IBackendTransport, INetMqConfigurator
+    internal class Transport : IBackendTransport, INetMqConfigurator
     {
         public string PublishAddress { get; set; }
         public string SubscribeAddress { get; set; }

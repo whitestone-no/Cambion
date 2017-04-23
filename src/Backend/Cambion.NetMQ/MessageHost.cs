@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Whitestone.Cambion.Backend.NetMQ
 {
-    public class MessageHost
+    internal class MessageHost
     {
         private XPublisherSocket _toSocket;
         private XSubscriberSocket _fromSocket;

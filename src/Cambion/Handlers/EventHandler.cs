@@ -2,7 +2,7 @@
 
 namespace Whitestone.Cambion.Handlers
 {
-    public class EventHandler
+    internal class EventHandler
     {
         private readonly WeakReference _reference;
         private readonly Delegate _method;
@@ -18,7 +18,6 @@ namespace Whitestone.Cambion.Handlers
         }
 
         public bool IsAlive => _reference != null && _reference.IsAlive;
-
 
         public bool Invoke(object data)
         {

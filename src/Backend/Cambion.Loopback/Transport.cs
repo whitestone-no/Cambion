@@ -4,7 +4,7 @@ using Whitestone.Cambion.Interfaces;
 
 namespace Whitestone.Cambion.Backend.Loopback
 {
-    public class Transport : IBackendTransport
+    internal class Transport : IBackendTransport
     {
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
