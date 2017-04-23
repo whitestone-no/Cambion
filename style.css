@@ -76,6 +76,7 @@ section h1 {
 	font-size: 36px;
 	font-weight: 700;
 	margin: 25px 0 10px 0;
+	border-bottom: dotted 1px #cecece;
 }
 section h2 {
 	font-size: 32px;
@@ -107,4 +108,11 @@ footer {
 footer a {
 	color: #fff;
 	text-decoration: underline;
+}
+
+
+
+#ReadMe pre {
+	padding: 16px;
+	background-color: #e5e5e5;
 }
