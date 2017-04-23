@@ -33,15 +33,6 @@ Install-Package Whitestone.Cambion
 
 ## The Basics
 
-### Terminology
-
-- Backend
-  - A transport layer to transfer messages. Default backend is `Loopback` which does not require any configuration. Another backend use `NetMQ` to transfer data between instances.
-- Event
-  - A one-way fire-and-forget message that is intended for multiple recipients.
-- Synchronized
-  - A two-way message that is intended for one recipient, but can be called from multiple sources.
-
 ### Instantiation
 
 ```csharp
@@ -60,7 +51,7 @@ messageHandler.Initialize(init => { init.UseLoopback(); });
 
 ### Subscribing
 
-There are two ways to say you want to subscribe to an event or synchronizer
+There are two ways to say you want to subscribe to an event or synchronizer. The difference between these is that an event is a one-way fire-and-forget message that is intended for multiple recipients, and a synchronized is a two-way message that is intended for one recipient, but can be called from multiple sources.
 
 #### Direct subscription
 
@@ -141,6 +132,13 @@ TResponse response = cambion.CallSynchronizedHandler<TRequest, TResponse>(new TR
 All the examples regarding synchronized described above use the `TRequest` and `TResponse` types during subscription, so this call to `CallSynchronizedHandler` will cause the callbacks for all those subscriptions to be called.
 
 > Note that you are here required to specify the types as generics for the method signature.
+
+
+#### A note about synchronized messages
+
+Because the distributed backends will use multiple instances of Cambion, a synchronized handler can be set up for the same message signature in multiple instances. Because Cambion sends the synchronized message out to all handlers, there is no way of telling which one will reply, and the reply will be handled by the first instance that is able to send a reply.
+
+Therefore, make sure that no synchronized handler signatures are shared between all your instances.
 
 ## Backends
 
