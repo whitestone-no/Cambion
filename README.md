@@ -1,5 +1,5 @@
 # Cambion
-A [Succubus](https://github.com/COCPORN/succubus) offspring providing a set of convenience functions for event handling. This not only covers regular asynchronous events, but can also call methods on a subscriber synchronously and get data back.
+Cambion is a [Succubus](https://github.com/COCPORN/succubus) offspring providing a set of convenience functions for event handling. This not only covers regular asynchronous events, but can also call methods on a subscriber synchronously and get data back.
 
 Uses a local loopback backend by default, but a [NetMQ](https://github.com/zeromq/netmq) backend is also available. Easily extendible to add support for other backends.
 
