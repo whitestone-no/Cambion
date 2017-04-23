@@ -6,13 +6,15 @@ namespace Whitestone.Cambion
     {
         public object Data { get; set; }
         public Type DataType { get; set; }
+        public Type ResponseType { get; set; }
         public MessageType MessageType { get; set; }
+        public Guid CorrelationId { get; set; }
     }
 
     public enum MessageType
     {
         Event,
-        Synchronized,
-        TargetableSynchronized
+        SynchronizedRequest,
+        SynchronizedResponse
     }
 }

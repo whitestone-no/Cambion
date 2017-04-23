@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Handlers\EventHandler.cs" />
+    <Compile Include="Handlers\SynchronizedHandler.cs" />
     <Compile Include="Interfaces\IBackendTransport.cs" />
     <Compile Include="Interfaces\ICambion.cs" />
     <Compile Include="Interfaces\IEventHandler.cs" />

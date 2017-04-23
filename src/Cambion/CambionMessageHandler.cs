@@ -10,6 +10,7 @@ using Whitestone.Cambion.Interfaces;
 using EventHandler = Whitestone.Cambion.Handlers.EventHandler;
 using System.IO;
 using System.Threading;
+using Whitestone.Cambion.Handlers;
 
 namespace Whitestone.Cambion
 {
@@ -19,6 +20,8 @@ namespace Whitestone.Cambion
         public IBackendTransport Transport { get; set; }
 
         private readonly Dictionary<Type, List<EventHandler>> _eventHandlers = new Dictionary<Type, List<EventHandler>>();
+        private readonly Dictionary<SynchronizedHandlerKey, SynchronizedHandler> _synchronizedHandlers = new Dictionary<SynchronizedHandlerKey, SynchronizedHandler>();
+        private readonly Dictionary<Guid, SynchronizedDataPackage> _synchronizationPackages = new Dictionary<Guid, SynchronizedDataPackage>();
 
         public event EventHandler<ErrorEventArgs> UnhandledException;
 
@@ -122,6 +125,79 @@ namespace Whitestone.Cambion
             BusPublish(wrapper);
         }
 
+        public void AddSynchronizedHandler<TRequest, TResponse>(Func<TRequest, TResponse> callback)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            if (callback.Target == null)
+            {
+                throw new ArgumentException("Can't use static methods in callbacks.", nameof(callback));
+            }
+
+            SynchronizedHandlerKey key = new SynchronizedHandlerKey(typeof(TRequest), typeof(TResponse));
+
+            SynchronizedHandler synchronizedHandler = new SynchronizedHandler(callback);
+
+
+            lock (_synchronizedHandlers)
+            {
+                if (_synchronizedHandlers.ContainsKey(key))
+                {
+                    throw new ArgumentException($"A SynchronizedHandler already exists for request type {typeof(TRequest)} and response type {typeof(TResponse)}", nameof(callback));
+                }
+
+                _synchronizedHandlers[key] = synchronizedHandler;
+            }
+        }
+
+        public TResponse CallSynchronizedHandler<TRequest, TResponse>(TRequest request, int timeout = 10000)
+        {
+            Guid correlationId = Guid.NewGuid();
+
+            ManualResetEvent mre = new ManualResetEvent(false);
+            SynchronizedDataPackage pkg = new SynchronizedDataPackage(mre);
+
+            lock (_synchronizationPackages)
+            {
+                while (_synchronizationPackages.ContainsKey(correlationId))
+                {
+                    correlationId = Guid.NewGuid();
+                }
+
+                _synchronizationPackages[correlationId] = pkg;
+            }
+
+            MessageWrapper wrapper = new MessageWrapper
+            {
+                MessageType = MessageType.SynchronizedRequest,
+                Data = request,
+                DataType = typeof(TRequest),
+                ResponseType = typeof(TResponse),
+                CorrelationId = correlationId
+            };
+
+            BusPublish(wrapper);
+
+            if (mre.WaitOne(timeout))
+            {
+                lock (_synchronizationPackages)
+                {
+                    TResponse result = (TResponse)_synchronizationPackages[correlationId].Data;
+
+                    _synchronizationPackages.Remove(correlationId);
+
+                    return result;
+                }
+            }
+
+            _synchronizationPackages.Remove(correlationId);
+
+            throw new TimeoutException("Timeout waiting for synchronous call");
+        }
+
         private void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
         {
             try
@@ -157,6 +233,64 @@ namespace Whitestone.Cambion
                             {
                                 PublishUnhandledException(ex);
                             }
+                        }
+                    }
+                }
+                else if (wrapper.MessageType == MessageType.SynchronizedRequest)
+                {
+                    SynchronizedHandler handler = null;
+
+                    lock (_synchronizedHandlers)
+                    {
+                        SynchronizedHandlerKey key = new SynchronizedHandlerKey(wrapper.DataType, wrapper.ResponseType);
+
+                        if (_synchronizedHandlers.ContainsKey(key))
+                        {
+                            handler = _synchronizedHandlers[key];
+
+                            if (!handler.IsAlive)
+                            {
+                                _synchronizedHandlers.Remove(key);
+                            }
+                        }
+                    }
+
+                    if (handler != null && handler.IsAlive)
+                    {
+                        new Thread(() =>
+                        {
+                            try
+                            {
+                                object result = handler.Invoke(wrapper.Data);
+
+                                MessageWrapper replyWrapper = new MessageWrapper
+                                {
+                                    MessageType = MessageType.SynchronizedResponse,
+                                    Data = result,
+                                    DataType = wrapper.DataType,
+                                    ResponseType = wrapper.ResponseType,
+                                    CorrelationId = wrapper.CorrelationId
+                                };
+
+                                BusPublish(replyWrapper);
+                            }
+                            catch (Exception ex)
+                            {
+                                PublishUnhandledException(ex);
+                            }
+                        }).Start();
+                    }
+                }
+                else if (wrapper.MessageType == MessageType.SynchronizedResponse)
+                {
+                    lock (_synchronizationPackages)
+                    {
+                        if (_synchronizationPackages.ContainsKey(wrapper.CorrelationId))
+                        {
+                            SynchronizedDataPackage pkg = _synchronizationPackages[wrapper.CorrelationId];
+
+                            pkg.Data = wrapper.Data;
+                            pkg.ResetEvent.Set();
                         }
                     }
                 }

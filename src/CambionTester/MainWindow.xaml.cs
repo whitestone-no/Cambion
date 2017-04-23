@@ -72,6 +72,22 @@ namespace Whitestone.CambionTester
             _messageHandler.PublishEvent(msg);
         }
 
+        private void btnCall_Click(object sender, RoutedEventArgs e)
+        {
+            TestMessageSimple msg = new TestMessageSimple
+            {
+                CurrentDateTime = DateTime.ParseExact("1977-03-18", "yyyy-MM-dd", CultureInfo.InvariantCulture)
+            };
+
+            try
+            {
+                TestMessageSimple response = _messageHandler.CallSynchronizedHandler<TestMessageSimple, TestMessageSimple>(msg, 1000);
+            }
+            catch (Exception)
+            {
+            }            
+        }
+
         private void btnConnectMessageHost_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -108,6 +124,10 @@ namespace Whitestone.CambionTester
             _messageHandler.AddEventHandler<TestMessageSimple>(ev =>
             {
                 ;
+            });
+
+            _messageHandler.AddSynchronizedHandler<TestMessageSimple, TestMessageSimple>(sync => {
+                return new TestMessageSimple { CurrentDateTime = DateTime.Now.AddDays(7) };
             });
         }
 
