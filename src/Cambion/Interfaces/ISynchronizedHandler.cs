@@ -6,6 +6,6 @@
 
     public interface ISynchronizedHandler<in TInput, out TOutput> : ISynchronizedHandler
     {
-        TOutput Handle(TInput input);
+        TOutput HandleSynchronized(TInput input);
     }
 }

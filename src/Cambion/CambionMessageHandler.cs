@@ -54,15 +54,16 @@ namespace Whitestone.Cambion
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            IEnumerable<Type> interfaces = handler.GetType().GetInterfaces()
+            // Look for, and save, any IEventHandler implementations
+            IEnumerable<Type> eventInterfaces = handler.GetType().GetInterfaces()
                 .Where(x => typeof(IEventHandler).IsAssignableFrom(x) && x.IsGenericType);
 
             lock (_eventHandlers)
             {
-                foreach (var @interface in interfaces)
+                foreach (var @interface in eventInterfaces)
                 {
                     Type type = @interface.GetGenericArguments()[0];
-                    MethodInfo method = @interface.GetMethod("Handle", new Type[] { type });
+                    MethodInfo method = @interface.GetMethod("HandleEvent", new Type[] { type });
 
                     if (method != null)
                     {
@@ -78,6 +79,40 @@ namespace Whitestone.Cambion
                         if (!_eventHandlers[type].Contains(eventHandler))
                         {
                             _eventHandlers[type].Add(eventHandler);
+                        }
+                    }
+                }
+            }
+
+            // Look for, and save, any ISynchronizedHandler implementations
+            IEnumerable<Type> synchronizedInterfaces = handler.GetType().GetInterfaces()
+                .Where(x => typeof(ISynchronizedHandler).IsAssignableFrom(x) && x.IsGenericType);
+
+            lock(_synchronizedHandlers)
+            {
+                foreach (var @interface in synchronizedInterfaces)
+                {
+                    Type requestType = @interface.GetGenericArguments()[0];
+                    Type responseType = @interface.GetGenericArguments()[1];
+
+                    MethodInfo method = @interface.GetMethod("HandleSynchronized", new Type[] { requestType });
+
+                    if (method != null && method.ReturnType.IsAssignableFrom(responseType))
+                    {
+                        Delegate @delegate = Delegate.CreateDelegate(typeof(Func<,>).MakeGenericType(requestType, responseType), handler, method);
+
+                        SynchronizedHandlerKey key = new SynchronizedHandlerKey(requestType, responseType);
+
+                        SynchronizedHandler synchronizedHandler = new SynchronizedHandler(@delegate);
+
+                        lock (_synchronizedHandlers)
+                        {
+                            if (_synchronizedHandlers.ContainsKey(key))
+                            {
+                                throw new ArgumentException($"A SynchronizedHandler already exists for request type {requestType} and response type {responseType}", nameof(@delegate));
+                            }
+
+                            _synchronizedHandlers[key] = synchronizedHandler;
                         }
                     }
                 }

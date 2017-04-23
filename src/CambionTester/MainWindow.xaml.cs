@@ -12,7 +12,7 @@ namespace Whitestone.CambionTester
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : IEventHandler<TestMessageSimple>
+    public partial class MainWindow : IEventHandler<TestMessageSimple>, ISynchronizedHandler<TestMessageRequest, TestMessageResponse>
     {
         private ICambion _messageHandler;
 
@@ -74,14 +74,9 @@ namespace Whitestone.CambionTester
 
         private void btnCall_Click(object sender, RoutedEventArgs e)
         {
-            TestMessageSimple msg = new TestMessageSimple
-            {
-                CurrentDateTime = DateTime.ParseExact("1977-03-18", "yyyy-MM-dd", CultureInfo.InvariantCulture)
-            };
-
             try
             {
-                TestMessageSimple response = _messageHandler.CallSynchronizedHandler<TestMessageSimple, TestMessageSimple>(msg, 1000);
+                TestMessageResponse response = _messageHandler.CallSynchronizedHandler<TestMessageRequest, TestMessageResponse>(new TestMessageRequest { Id = 47}, 1000);
             }
             catch (Exception)
             {
@@ -112,7 +107,7 @@ namespace Whitestone.CambionTester
             _messageHandler.Initialize(init => { init.UseLoopback(); });
         }
 
-        public void Handle(TestMessageSimple input)
+        public void HandleEvent(TestMessageSimple input)
         {
             ;
         }
@@ -145,6 +140,11 @@ namespace Whitestone.CambionTester
             GC.Collect();
         }
 
+        public TestMessageResponse HandleSynchronized(TestMessageRequest input)
+        {
+            return new TestMessageResponse { Value = "Yay, response!! :D" };
+        }
+
         private class TempObject : IEventHandler<TestMessageSimple>
         {
             private int _one = 1;
@@ -157,7 +157,7 @@ namespace Whitestone.CambionTester
                 });
             }
 
-            public void Handle(TestMessageSimple input)
+            public void HandleEvent(TestMessageSimple input)
             {
                 ;
             }

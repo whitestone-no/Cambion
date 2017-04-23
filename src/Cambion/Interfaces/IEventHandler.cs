@@ -6,6 +6,6 @@
 
     public interface IEventHandler<in TInput> : IEventHandler
     {
-        void Handle(TInput input);
+        void HandleEvent(TInput input);
     }
 }
