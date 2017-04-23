@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
 using EventHandler = Whitestone.Cambion.Handlers.EventHandler;
+using System.IO;
+using System.Threading;
 
 namespace Whitestone.Cambion
 {
@@ -16,7 +18,9 @@ namespace Whitestone.Cambion
     {
         public IBackendTransport Transport { get; set; }
 
-        private readonly Dictionary<Type, List<EventHandler>> _newEventHandlers = new Dictionary<Type, List<EventHandler>>();
+        private readonly Dictionary<Type, List<EventHandler>> _eventHandlers = new Dictionary<Type, List<EventHandler>>();
+
+        public event EventHandler<ErrorEventArgs> UnhandledException;
 
         public void Initialize(Action<IMessageHandlerInitializer> initializer)
         {
@@ -50,9 +54,8 @@ namespace Whitestone.Cambion
             IEnumerable<Type> interfaces = handler.GetType().GetInterfaces()
                 .Where(x => typeof(IEventHandler).IsAssignableFrom(x) && x.IsGenericType);
 
-            lock (_newEventHandlers)
+            lock (_eventHandlers)
             {
-
                 foreach (var @interface in interfaces)
                 {
                     Type type = @interface.GetGenericArguments()[0];
@@ -64,14 +67,14 @@ namespace Whitestone.Cambion
 
                         EventHandler eventHandler = new EventHandler(@delegate);
 
-                        if (!_newEventHandlers.ContainsKey(type))
+                        if (!_eventHandlers.ContainsKey(type))
                         {
-                            _newEventHandlers[type] = new List<EventHandler>();
+                            _eventHandlers[type] = new List<EventHandler>();
                         }
 
-                        if (!_newEventHandlers[type].Contains(eventHandler))
+                        if (!_eventHandlers[type].Contains(eventHandler))
                         {
-                            _newEventHandlers[type].Add(eventHandler);
+                            _eventHandlers[type].Add(eventHandler);
                         }
                     }
                 }
@@ -85,20 +88,25 @@ namespace Whitestone.Cambion
                 throw new ArgumentNullException(nameof(callback));
             }
 
+            if (callback.Target == null)
+            {
+                throw new ArgumentException("Can't use static methods in callbacks.", nameof(callback));
+            }
+
             Type type = typeof(TEvent);
 
             EventHandler eventHandler = new EventHandler(callback);
 
-            lock (_newEventHandlers)
+            lock (_eventHandlers)
             {
-                if (!_newEventHandlers.ContainsKey(type))
+                if (!_eventHandlers.ContainsKey(type))
                 {
-                    _newEventHandlers[type] = new List<EventHandler>();
+                    _eventHandlers[type] = new List<EventHandler>();
                 }
 
-                if (!_newEventHandlers[type].Contains(eventHandler))
+                if (!_eventHandlers[type].Contains(eventHandler))
                 {
-                    _newEventHandlers[type].Add(eventHandler);
+                    _eventHandlers[type].Add(eventHandler);
                 }
             }
         }
@@ -111,33 +119,67 @@ namespace Whitestone.Cambion
                 DataType = data.GetType(),
                 MessageType = MessageType.Event
             };
-
-            string json = JsonConvert.SerializeObject(wrapper, Formatting.None,
-                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-            byte[] rawBytes = Encoding.ASCII.GetBytes(json);
-            Transport.Publish(rawBytes);
+            BusPublish(wrapper);
         }
-
 
         private void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            string json = Encoding.ASCII.GetString(e.Data);
-            MessageWrapper wrapper = JsonConvert.DeserializeObject<MessageWrapper>(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-
-            if (wrapper.MessageType == MessageType.Event)
+            try
             {
-                lock (_newEventHandlers)
+                string json = Encoding.ASCII.GetString(e.Data);
+                MessageWrapper wrapper = JsonConvert.DeserializeObject<MessageWrapper>(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+
+                if (wrapper.MessageType == MessageType.Event)
                 {
-                    EventHandler[] handlers = _newEventHandlers.Where(h => h.Key == wrapper.DataType).SelectMany(h => h.Value).ToArray();
-                    foreach (EventHandler handler in handlers)
+                    lock (_eventHandlers)
                     {
-                        if (!handler.Invoke(wrapper.Data))
+                        EventHandler[] handlers = _eventHandlers.Where(h => h.Key.IsAssignableFrom(wrapper.DataType)).SelectMany(h => h.Value).ToArray();
+                        foreach (EventHandler handler in handlers)
                         {
-                            _newEventHandlers[wrapper.DataType].Remove(handler);
+                            try
+                            {
+                                new Thread(() =>
+                                {
+                                    try
+                                    {
+                                        if (!handler.Invoke(wrapper.Data))
+                                        {
+                                            _eventHandlers[wrapper.DataType].Remove(handler);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        PublishUnhandledException(ex);
+                                    }
+                                }).Start();
+                            }
+                            catch (Exception ex)
+                            {
+                                PublishUnhandledException(ex);
+                            }
                         }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                PublishUnhandledException(ex);
+            }
+
+        }
+
+        private void PublishUnhandledException(Exception ex)
+        {
+            EventHandler<ErrorEventArgs> eh = UnhandledException;
+            eh?.Invoke(this, new ErrorEventArgs(ex));
+        }
+
+        private void BusPublish(MessageWrapper wrapper)
+        {
+            string json = JsonConvert.SerializeObject(wrapper, Formatting.None,
+                            new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+            byte[] rawBytes = Encoding.ASCII.GetBytes(json);
+            Transport.Publish(rawBytes);
         }
     }
 }
