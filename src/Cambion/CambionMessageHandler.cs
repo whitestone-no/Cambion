@@ -49,6 +49,8 @@ namespace Whitestone.Cambion
 
         public void Register(object handler)
         {
+            Validate();
+
             if (handler == null)
             {
                 throw new ArgumentNullException(nameof(handler));
@@ -121,6 +123,8 @@ namespace Whitestone.Cambion
 
         public void AddEventHandler<TEvent>(Action<TEvent> callback)
         {
+            Validate();
+
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
@@ -151,6 +155,8 @@ namespace Whitestone.Cambion
 
         public void PublishEvent<TEvent>(TEvent data)
         {
+            Validate();
+
             MessageWrapper wrapper = new MessageWrapper
             {
                 Data = data,
@@ -162,6 +168,8 @@ namespace Whitestone.Cambion
 
         public void AddSynchronizedHandler<TRequest, TResponse>(Func<TRequest, TResponse> callback)
         {
+            Validate();
+
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
@@ -190,6 +198,8 @@ namespace Whitestone.Cambion
 
         public TResponse CallSynchronizedHandler<TRequest, TResponse>(TRequest request, int timeout = 10000)
         {
+            Validate();
+
             Guid correlationId = Guid.NewGuid();
 
             ManualResetEvent mre = new ManualResetEvent(false);
