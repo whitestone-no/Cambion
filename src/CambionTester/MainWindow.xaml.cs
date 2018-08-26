@@ -76,11 +76,11 @@ namespace Whitestone.CambionTester
         {
             try
             {
-                TestMessageResponse response = _messageHandler.CallSynchronizedHandler<TestMessageRequest, TestMessageResponse>(new TestMessageRequest { Id = 47}, 1000);
+                TestMessageResponse response = _messageHandler.CallSynchronizedHandler<TestMessageRequest, TestMessageResponse>(new TestMessageRequest { Id = 47 }, 1000);
             }
             catch (Exception)
             {
-            }            
+            }
         }
 
         private void btnConnectMessageHost_Click(object sender, RoutedEventArgs e)
@@ -147,7 +147,9 @@ namespace Whitestone.CambionTester
 
         private class TempObject : IEventHandler<TestMessageSimple>
         {
+#pragma warning disable 414
             private int _one = 1;
+#pragma warning restore 414
             public TempObject(ICambion messageHandler)
             {
                 messageHandler.AddEventHandler<TestMessageSimple>(ev =>
