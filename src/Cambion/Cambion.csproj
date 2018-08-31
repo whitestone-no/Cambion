@@ -1,20 +1,36 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Whitestone.Cambion</AssemblyName>
     <RootNamespace>Whitestone.Cambion</RootNamespace>
-    <Version>1.0.1</Version>
+    <Version>1.0.1-rc2</Version>
     <Authors>Whitestone</Authors>
     <Company>Whitestone</Company>
     <Product>Whitestone Cambion</Product>
     <Description>A set of convenience functions for event handling. This not only covers regular asynchronous events, but can also call methods on a subscriber synchronously and get data back.</Description>
     <Copyright>Copyright © 2018</Copyright>
     <PackageProjectUrl>https://github.com/whitestone-no/Cambion</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/whitestone-no/Cambion/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>http://cambion.whitestone.no/img/CambionLogo.png</PackageIconUrl>
+    <PackageTags>esb enterprice-service-bus cambion event-aggregator</PackageTags>
+    <PackageReleaseNotes>Converted project to .NET Standard for increased compatibility.
+Removed MEF export because by using MEF in .NET Core you should add this manually.</PackageReleaseNotes>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);BackendIncludes</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+
+  <Target Name="BackendIncludes">
+    <ItemGroup>
+      <BuildOutputInPackage Include="..\Backend\Cambion.Loopback\$(OutputPath)Whitestone.Cambion.Backend.Loopback.dll">
+      </BuildOutputInPackage>
+    </ItemGroup>
+  </Target>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.Composition" Version="1.0.31" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 

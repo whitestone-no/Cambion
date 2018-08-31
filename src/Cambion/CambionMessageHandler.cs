@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Composition;
 using System.Text;
 using System.Linq;
 using System.Reflection;
@@ -14,7 +13,6 @@ using Whitestone.Cambion.Handlers;
 
 namespace Whitestone.Cambion
 {
-    [Export(typeof(ICambion))]
     public class CambionMessageHandler : IMessageHandlerInitializer, ICambion
     {
         public IBackendTransport Transport { get; set; }
@@ -65,7 +63,7 @@ namespace Whitestone.Cambion
                 foreach (var @interface in eventInterfaces)
                 {
                     Type type = @interface.GetGenericArguments()[0];
-                    MethodInfo method = @interface.GetMethod("HandleEvent", new Type[] { type });
+                    MethodInfo method = @interface.GetMethod("HandleEvent", new [] { type });
 
                     if (method != null)
                     {
@@ -97,7 +95,7 @@ namespace Whitestone.Cambion
                     Type requestType = @interface.GetGenericArguments()[0];
                     Type responseType = @interface.GetGenericArguments()[1];
 
-                    MethodInfo method = @interface.GetMethod("HandleSynchronized", new Type[] { requestType });
+                    MethodInfo method = @interface.GetMethod("HandleSynchronized", new [] { requestType });
 
                     if (method != null && method.ReturnType.IsAssignableFrom(responseType))
                     {
@@ -238,7 +236,10 @@ namespace Whitestone.Cambion
                 }
             }
 
-            _synchronizationPackages.Remove(correlationId);
+            lock (_synchronizationPackages)
+            {
+                _synchronizationPackages.Remove(correlationId);
+            }
 
             throw new TimeoutException("Timeout waiting for synchronous call");
         }
