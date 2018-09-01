@@ -214,6 +214,35 @@ cambion.Initialize(init =>
 
 ## MEF Compatibility
 
+### v1.0.1
+
+Starting from this version, explicit MEF compatibility has been removed. It is, however, still easy to use Cambion with MEF.
+The following is an example of how to initialize MEF in .NET Core, automatically including Cambion:
+
+```csharp
+ConventionBuilder conventions = new ConventionBuilder();
+conventions.ForTypesDerivedFrom<ICambion>()
+	.Export<ICambion>()
+	.Shared();
+
+ContainerConfiguration containerConfig = new ContainerConfiguration()
+	.WithAssembly(Assembly.GetExecutingAssembly(), conventions)
+	.WithAssembly(typeof(ICambion).Assembly, conventions);
+
+using (CompositionHost container = containerConfig.CreateContainer())
+{
+	// Your code here
+}
+```
+
+Then in your MEF instantiated classes you can simply import Cambion:
+
+```csharp
+[Import] public ICambion Cambion { get; set; }
+```
+
+### v1.0.0
+
 Cambion also supports [MEF](https://msdn.microsoft.com/en-us/library/dd460648). You can therefore add an `AssemblyCatalog` to your catalogues, then MEF will handle the instantiation and sharing throughout the code:
 
 ```csharp
