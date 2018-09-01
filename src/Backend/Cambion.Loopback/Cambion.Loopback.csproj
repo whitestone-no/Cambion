@@ -10,6 +10,8 @@
     <Description>Cambion Backend for Loopback</Description>
     <Copyright>Copyright © 2018</Copyright>
     <PackageProjectUrl>https://github.com/whitestone-no/Cambion</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/whitestone-no/Cambion/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>http://cambion.whitestone.no/img/CambionLogo.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
