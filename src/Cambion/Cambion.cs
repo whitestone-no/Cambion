@@ -2,7 +2,15 @@
 
 namespace Whitestone.Cambion
 {
-    public class Cambion : ICambion
+    internal class Cambion : ICambion
     {
+        private ITransport _transport;
+        private ISerializer _serializer;
+
+        public Cambion(ITransport transport, ISerializer serializer)
+        {
+            _transport = transport;
+            _serializer = serializer;
+        }
     }
 }

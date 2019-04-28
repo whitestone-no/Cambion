@@ -39,7 +39,7 @@ namespace Whitestone.Cambion.Configurations
                 Transport.UseLoopback();
             }
 
-            return new Cambion();
+            return new Cambion(_transport, _serializer);
         }
     }
 }
