@@ -13,10 +13,18 @@
     <PackageTags>esb enterprice-service-bus cambion event-aggregator netmq zeromq</PackageTags>
     <PackageReleaseNotes>Rebuild of how transports and serializers are added and used</PackageReleaseNotes>
     <Description>NetMQ transport for Whitestone Cambion</Description>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
