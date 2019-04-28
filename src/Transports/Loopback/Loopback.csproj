@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Whitestone.Cambion.Transports.Loopback</AssemblyName>
+    <RootNamespace>Whitestone.Cambion.Transports.Loopback</RootNamespace>
+    <Version>1.1.0</Version>
+    <Authors>Whitestone</Authors>
+    <Product>Whitestone Cambion</Product>
+    <Description>Loopback transport for Whitestone Cambion</Description>
+    <Copyright>Copyright © 2019</Copyright>
+    <PackageProjectUrl>https://github.com/whitestone-no/Cambion</PackageProjectUrl>
+    <PackageIconUrl>http://cambion.whitestone.no/img/CambionLogo.png</PackageIconUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Common.csproj" />
+  </ItemGroup>
+
+</Project>

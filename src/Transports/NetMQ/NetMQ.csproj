@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Copyright>Copyright © 2019</Copyright>
+    <AssemblyName>Whitestone.Cambion.Transports.NetMQ</AssemblyName>
+    <RootNamespace>Whitestone.Cambion.Transports.NetMQ</RootNamespace>
+    <Version>1.1.0</Version>
+    <Authors>Whitestone</Authors>
+    <Product>Whitestone Cambion</Product>
+    <PackageIconUrl>http://cambion.whitestone.no/img/CambionLogo.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/whitestone-no/Cambion</PackageProjectUrl>
+    <PackageTags>esb enterprice-service-bus cambion event-aggregator netmq zeromq</PackageTags>
+    <PackageReleaseNotes>Rebuild of how transports and serializers are added and used</PackageReleaseNotes>
+    <Description>NetMQ transport for Whitestone Cambion</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Common.csproj" />
+  </ItemGroup>
+
+</Project>
