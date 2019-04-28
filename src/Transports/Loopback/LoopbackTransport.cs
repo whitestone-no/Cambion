@@ -1,8 +1,26 @@
-﻿using Whitestone.Cambion.Common.Interfaces;
+﻿using System;
+using Whitestone.Cambion.Common.Events;
+using Whitestone.Cambion.Common.Interfaces;
+using Whitestone.Cambion.Common.Types;
 
 namespace Whitestone.Cambion.Transports.Loopback
 {
     public class LoopbackTransport : ITransport
     {
+        public ISerializer Serializer { get; set; }
+
+        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
+
+        public void Publish(MessageWrapper message)
+        {
+            // This is a loopback, so no need to serialize the message.
+            // Just fire the message received event at once.
+
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(message));
+        }
+
+        public void Dispose()
+        {
+        }
     }
 }
