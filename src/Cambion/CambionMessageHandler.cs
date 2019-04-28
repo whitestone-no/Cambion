@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using System.Reflection;
-using Newtonsoft.Json;
 using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
 using EventHandler = Whitestone.Cambion.Handlers.EventHandler;
@@ -16,6 +14,7 @@ namespace Whitestone.Cambion
     public class CambionMessageHandler : IMessageHandlerInitializer, ICambion
     {
         public IBackendTransport Transport { get; set; }
+        public ISerializer Serializer { get; set; }
 
         private readonly Dictionary<Type, List<EventHandler>> _eventHandlers = new Dictionary<Type, List<EventHandler>>();
         private readonly Dictionary<SynchronizedHandlerKey, SynchronizedHandler> _synchronizedHandlers = new Dictionary<SynchronizedHandlerKey, SynchronizedHandler>();
@@ -26,7 +25,9 @@ namespace Whitestone.Cambion
         public void Initialize(Action<IMessageHandlerInitializer> initializer)
         {
             initializer(this);
+
             Validate();
+            Transport.Serializer = Serializer;
             Transport.MessageReceived += Transport_MessageReceived;
         }
 
@@ -42,6 +43,8 @@ namespace Whitestone.Cambion
         {
             if (Transport == null)
                 throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing transport"));
+            if (Serializer == null)
+                throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing serializer"));
         }
 
 
@@ -161,7 +164,8 @@ namespace Whitestone.Cambion
                 DataType = data.GetType(),
                 MessageType = MessageType.Event
             };
-            BusPublish(wrapper);
+
+            Transport.Publish(wrapper);
         }
 
         public void AddSynchronizedHandler<TRequest, TResponse>(Func<TRequest, TResponse> callback)
@@ -222,7 +226,7 @@ namespace Whitestone.Cambion
                 CorrelationId = correlationId
             };
 
-            BusPublish(wrapper);
+            Transport.Publish(wrapper);
 
             if (mre.WaitOne(timeout))
             {
@@ -248,8 +252,7 @@ namespace Whitestone.Cambion
         {
             try
             {
-                string json = Encoding.ASCII.GetString(e.Data);
-                MessageWrapper wrapper = JsonConvert.DeserializeObject<MessageWrapper>(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+                MessageWrapper wrapper = e.Message;
 
                 if (wrapper.MessageType == MessageType.Event)
                 {
@@ -318,7 +321,7 @@ namespace Whitestone.Cambion
                                     CorrelationId = wrapper.CorrelationId
                                 };
 
-                                BusPublish(replyWrapper);
+                                Transport.Publish(wrapper);
                             }
                             catch (Exception ex)
                             {
@@ -352,14 +355,6 @@ namespace Whitestone.Cambion
         {
             EventHandler<ErrorEventArgs> eh = UnhandledException;
             eh?.Invoke(this, new ErrorEventArgs(ex));
-        }
-
-        private void BusPublish(MessageWrapper wrapper)
-        {
-            string json = JsonConvert.SerializeObject(wrapper, Formatting.None,
-                            new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-            byte[] rawBytes = Encoding.ASCII.GetBytes(json);
-            Transport.Publish(rawBytes);
         }
     }
 }

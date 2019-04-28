@@ -2,11 +2,11 @@
 {
     public class MessageReceivedEventArgs
     {
-        public byte[] Data { get; set; }
+        public MessageWrapper Message { get; set; }
 
-        public MessageReceivedEventArgs(byte[] data)
+        public MessageReceivedEventArgs(MessageWrapper message)
         {
-            Data = data;
+            Message = message;
         }
     }
 }

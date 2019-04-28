@@ -123,6 +123,10 @@
       <Project>{f4d41296-8e1b-48f7-a73f-52d96265147a}</Project>
       <Name>Cambion</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Serializers\Cambion.Serializers.JsonNet\Cambion.Serializers.JsonNet.csproj">
+      <Project>{b0ac5d89-1089-4b56-a652-4691f9d129d4}</Project>
+      <Name>Cambion.Serializers.JsonNet</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

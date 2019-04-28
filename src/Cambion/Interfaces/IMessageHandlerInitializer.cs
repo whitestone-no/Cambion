@@ -3,5 +3,6 @@
     public interface IMessageHandlerInitializer
     {
         IBackendTransport Transport { get; set; }
+        ISerializer Serializer { get; set; }
     }
 }

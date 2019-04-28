@@ -6,11 +6,15 @@ using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
 using System.Threading;
 using System.Net.NetworkInformation;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace Whitestone.Cambion.Backend.NetMQ
 {
     internal class Transport : IBackendTransport, INetMqConfigurator
     {
+        public ISerializer Serializer { get; set; }
+
         public string PublishAddress { get; set; }
         public string SubscribeAddress { get; set; }
 
@@ -120,7 +124,9 @@ namespace Whitestone.Cambion.Backend.NetMQ
                 {
                     byte[] messageBytes = _subscribeSocket.ReceiveFrameBytes();
 
-                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageBytes));
+                    MessageWrapper wrapper = Serializer.Deserialize(messageBytes);
+
+                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(wrapper));
                 }
                 // ReSharper disable once FunctionNeverReturns because this is designed to run forever
             }
@@ -130,11 +136,13 @@ namespace Whitestone.Cambion.Backend.NetMQ
             }
         }
 
-        public void Publish(byte[] data)
+        public void Publish(MessageWrapper message)
         {
+            byte[] rawBytes = Serializer.Serialize(message);
+
             lock (_publishSocket)
             {
-                _publishSocket.SendFrame(data);
+                _publishSocket.SendFrame(rawBytes);
             }
         }
 

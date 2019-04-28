@@ -6,6 +6,7 @@ using Whitestone.Cambion;
 using Whitestone.Cambion.Backend.Loopback;
 using Whitestone.Cambion.Backend.NetMQ;
 using Whitestone.Cambion.Interfaces;
+using Whitestone.Cambion.Serializers.JsonNet;
 
 namespace Whitestone.CambionTester
 {
@@ -32,6 +33,7 @@ namespace Whitestone.CambionTester
                         "tcp://localhost:9990",
                         "tcp://localhost:9991",
                         netmq => { netmq.StartMessageHost(); });
+                    init.UseJsonNet();
                 });
             }
             catch (Exception ex)
@@ -88,7 +90,11 @@ namespace Whitestone.CambionTester
             try
             {
                 _messageHandler = new CambionMessageHandler();
-                _messageHandler.Initialize(init => { init.UseNetMq("tcp://localhost:9990", "tcp://localhost:9991"); });
+                _messageHandler.Initialize(init =>
+                {
+                    init.UseNetMq("tcp://localhost:9990", "tcp://localhost:9991");
+                    init.UseJsonNet();
+                });
             }
             catch (Exception ex)
             {
@@ -98,13 +104,21 @@ namespace Whitestone.CambionTester
 
         private void btnReinitialize_Click(object sender, RoutedEventArgs e)
         {
-            _messageHandler.Reinitialize(init => { init.UseNetMq("tcp://localhost:9990", "tcp://localhost:9991"); });
+            _messageHandler.Reinitialize(init =>
+            {
+                init.UseNetMq("tcp://localhost:9990", "tcp://localhost:9991");
+                init.UseJsonNet();
+            });
         }
 
         private void btnInitLoopback_Click(object sender, RoutedEventArgs e)
         {
             _messageHandler = new CambionMessageHandler();
-            _messageHandler.Initialize(init => { init.UseLoopback(); });
+            _messageHandler.Initialize(init =>
+            {
+                init.UseLoopback();
+                init.UseJsonNet();
+            });
         }
 
         public void HandleEvent(TestMessageSimple input)
@@ -121,7 +135,8 @@ namespace Whitestone.CambionTester
                 ;
             });
 
-            _messageHandler.AddSynchronizedHandler<TestMessageSimple, TestMessageSimple>(sync => {
+            _messageHandler.AddSynchronizedHandler<TestMessageSimple, TestMessageSimple>(sync =>
+            {
                 return new TestMessageSimple { CurrentDateTime = DateTime.Now.AddDays(7) };
             });
         }

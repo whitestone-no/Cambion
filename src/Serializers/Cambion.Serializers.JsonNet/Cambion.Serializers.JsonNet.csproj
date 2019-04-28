@@ -2,15 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Whitestone.Cambion.Backend.Loopback</AssemblyName>
-    <RootNamespace>Whitestone.Cambion.Backend.Loopback</RootNamespace>
-    <Version>1.0.1</Version>
+    <AssemblyName>Whitestone.Cambion.Serializers.JsonNet</AssemblyName>
+    <RootNamespace>Whitestone.Cambion.Serializers.JsonNet</RootNamespace>
     <Authors>Whitestone</Authors>
-    <Product>Whitestone Cambion</Product>
-    <Description>Cambion Backend for Loopback</Description>
-    <Copyright>Copyright © 2018</Copyright>
+    <Product>Whitestone.Cambion</Product>
+    <Description>JSON.NET serializer for Cambion</Description>
+    <Copyright>Copyright © 2019</Copyright>
     <PackageProjectUrl>https://github.com/whitestone-no/Cambion</PackageProjectUrl>
-    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageIconUrl>http://cambion.whitestone.no/img/CambionLogo.png</PackageIconUrl>
   </PropertyGroup>
 
