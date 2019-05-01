@@ -30,6 +30,7 @@ namespace Whitestone.Cambion
             Validate();
 
             _transport.MessageReceived += Transport_MessageReceived;
+            _transport.Start();
         }
 
         private void Validate()
@@ -38,6 +39,17 @@ namespace Whitestone.Cambion
                 throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing transport"));
             if (_serializer == null)
                 throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing serializer"));
+        }
+
+        public void Reinitialize()
+        {
+            Validate();
+
+            _transport.MessageReceived -= Transport_MessageReceived;
+            _transport.Stop();
+
+            _transport.MessageReceived += Transport_MessageReceived;
+            _transport.Start();
         }
 
         public void Register(object handler)

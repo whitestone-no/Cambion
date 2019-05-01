@@ -7,6 +7,7 @@ namespace Whitestone.Cambion.Common.Interfaces
     {
         event EventHandler<ErrorEventArgs> UnhandledException;
 
+        void Reinitialize();
         void Register(object handler);
         void AddEventHandler<TEvent>(Action<TEvent> callback);
         void PublishEvent<TEvent>(TEvent data);

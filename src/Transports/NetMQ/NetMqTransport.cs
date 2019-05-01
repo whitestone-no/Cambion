@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Net.NetworkInformation;
+using System.Threading;
+using NetMQ;
+using NetMQ.Sockets;
 using Whitestone.Cambion.Common.Events;
 using Whitestone.Cambion.Common.Interfaces;
 using Whitestone.Cambion.Common.Types;
@@ -11,19 +15,162 @@ namespace Whitestone.Cambion.Transports.NetMQ
 
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
-        public NetMqTransport(string publishAddress, string subscribeAddress)
-        {
+        private string _publishAddress { get; set; }
+        private string _subscribeAddress { get; set; }
 
+        private readonly PublisherSocket _publishSocket;
+        private SubscriberSocket _subscribeSocket;
+        private MessageHost _messageHost;
+
+        private Thread _subscribeThread;
+        private Thread _pingThread;
+
+
+        public NetMqTransport(string publishAddress, string subscribeAddress, bool useMessageHost)
+        {
+            _publishAddress = publishAddress;
+            _subscribeAddress = subscribeAddress;
+
+            if (useMessageHost)
+            {
+                _messageHost = new MessageHost(subscribeAddress, publishAddress);
+            }
+
+            _publishSocket = new PublisherSocket();
+        }
+
+        public void Start()
+        {
+            if (_messageHost != null)
+            {
+                _messageHost.Start();
+            }
+
+            lock (_publishSocket)
+            {
+                _publishSocket.Connect(_publishAddress);
+            }
+
+            _subscribeThread = new Thread(SubscribeThread) { IsBackground = true };
+            _subscribeThread.Start();
+
+            _pingThread = new Thread(PingThread) { IsBackground = true };
+            _pingThread.Start();
+        }
+
+        public void Stop()
+        {
+            _subscribeThread.Abort();
+            _pingThread.Abort();
+
+            _publishSocket?.Disconnect(_publishAddress);
+            _subscribeSocket?.Disconnect(_subscribeAddress);
+
+            _publishSocket?.Dispose();
+            _subscribeSocket?.Dispose();
+
+            if (_messageHost != null)
+            {
+                _messageHost.Stop();
+            }
         }
 
         public void Publish(MessageWrapper message)
         {
+            byte[] rawBytes = Serializer.Serialize(message);
 
+            lock (_publishSocket)
+            {
+                _publishSocket.SendFrame(rawBytes);
+            }
         }
 
-        public void Dispose()
+        /// <summary>
+        /// This thread is needed to handle network disconnects.
+        /// </summary>
+        /// <remarks>
+        /// If the PC the message host is running on disconnects from the
+        /// network, the subscribe thread is never able to reconnect to it by
+        /// itself. Therefore we periodically network ping the subscriber
+        /// address to check if it responds. If it at one point does not
+        /// respond we will need to reconnect to it again when it starts
+        /// responding.
+        /// </remarks>
+        private void PingThread()
         {
-            
+            try
+            {
+                Uri uri = new Uri(_subscribeAddress);
+                bool needsReinitialization = false;
+
+                while (true)
+                {
+                    bool pingable = false;
+
+                    Ping pinger = new Ping();
+                    try
+                    {
+                        PingReply reply = pinger.Send(uri.Host, 1000);
+                        pingable = reply != null && (reply.Status == IPStatus.Success);
+                    }
+                    catch (PingException)
+                    {
+                        pingable = false;
+                    }
+
+                    if (!pingable)
+                    {
+                        needsReinitialization = true;
+                    }
+
+                    if (pingable && needsReinitialization)
+                    {
+                        _subscribeThread.Abort();
+
+                        _subscribeSocket.Disconnect(_subscribeAddress);
+                        _subscribeSocket.Dispose();
+
+                        _subscribeThread.Join();
+
+                        _subscribeThread = new Thread(SubscribeThread) { IsBackground = true };
+                        _subscribeThread.Start();
+
+                        needsReinitialization = false;
+                    }
+
+                    Thread.Sleep(5000);
+                }
+            }
+            catch (ThreadAbortException)
+            {
+                Thread.ResetAbort();
+            }
+        }
+
+        private void SubscribeThread()
+        {
+            try
+            {
+                // Place subscribe socket initialization inside thread to make all subscribe calls happen on the same thread
+                // Trying to prevent "Cannot close an uninitialised Msg" exceptions
+                _subscribeSocket = new SubscriberSocket();
+                _subscribeSocket.Connect(_subscribeAddress);
+                _subscribeSocket.SubscribeToAnyTopic();
+
+                while (true)
+                {
+                    byte[] messageBytes = _subscribeSocket.ReceiveFrameBytes();
+
+                    MessageWrapper wrapper = Serializer.Deserialize(messageBytes);
+
+                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(wrapper));
+                }
+                // ReSharper disable once FunctionNeverReturns because this is designed to run forever
+            }
+            catch (ThreadAbortException)
+            {
+                Thread.ResetAbort();
+            }
         }
     }
 }

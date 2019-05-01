@@ -4,9 +4,12 @@ using Whitestone.Cambion.Common.Types;
 
 namespace Whitestone.Cambion.Common.Interfaces
 {
-    public interface ITransport : IDisposable
+    public interface ITransport
     {
         ISerializer Serializer { get; set; }
+
+        void Start();
+        void Stop();
 
         void Publish(MessageWrapper message);
 
