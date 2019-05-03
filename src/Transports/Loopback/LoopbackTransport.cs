@@ -16,6 +16,10 @@ namespace Whitestone.Cambion.Transports.Loopback
 
         public void Publish(MessageWrapper message)
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
             // This is a loopback, so no need to serialize the message.
             // Just fire the message received event at once.
 

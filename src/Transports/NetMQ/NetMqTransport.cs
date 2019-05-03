@@ -77,6 +77,11 @@ namespace Whitestone.Cambion.Transports.NetMQ
 
         public void Publish(MessageWrapper message)
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             byte[] rawBytes = Serializer.Serialize(message);
 
             lock (_publishSocket)
