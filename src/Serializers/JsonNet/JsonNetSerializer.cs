@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Text;
 using Whitestone.Cambion.Common.Interfaces;
 using Whitestone.Cambion.Common.Types;
@@ -15,9 +16,14 @@ namespace Whitestone.Cambion.Serializers.JsonNet
             return wrapper;
         }
 
-        public byte[] Serialize(MessageWrapper messageBytes)
+        public byte[] Serialize(MessageWrapper message)
         {
-            string json = JsonConvert.SerializeObject(messageBytes, Formatting.None, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            string json = JsonConvert.SerializeObject(message, Formatting.None, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
             byte[] rawBytes = Encoding.ASCII.GetBytes(json);
 
             return rawBytes;
