@@ -3,8 +3,9 @@ using System;
 using Whitestone.Cambion.Common.Interfaces;
 using Whitestone.Cambion.Serializers.JsonNet;
 
-namespace Whitestone.Cambion.Tests
+namespace Whitestone.Cambion.Test
 {
+    [Order(1)]
     public class JsonNetSerializerTests
     {
         private ISerializer _serializer;
