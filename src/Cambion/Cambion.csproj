@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Whitestone.Cambion</AssemblyName>
     <RootNamespace>Whitestone.Cambion</RootNamespace>
-    <Version>1.1.0</Version>
+    <Version>1.1.0-preview</Version>
     <Authors>Whitestone</Authors>
     <Product>Whitestone Cambion</Product>
     <Description>A set of convenience functions for event handling. This not only covers regular asynchronous events, but can also call methods on a subscriber synchronously and get data back.</Description>
@@ -14,6 +14,7 @@
     <PackageTags>esb enterprice-service-bus cambion event-aggregator</PackageTags>
     <PackageReleaseNotes>Rebuild of how transports and serializers are added and used</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
