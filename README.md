@@ -1,8 +1,5 @@
 # Cambion
-Cambion is a lightweight distributed application framework with multiple and pluggable backends, providing a set of convenience functions for event handling. This not only covers regular asynchronous events, but can also call methods on a subscriber synchronously and get data back.
-
-It is an indirect fork of [Succubus](https://github.com/COCPORN/succubus)
-
+Cambion is a lightweight distributed application framework with multiple and pluggable transports and serializers, providing a set of convenience functions for event handling. This not only covers regular asynchronous events, but can also call methods on a subscriber synchronously and get data back.
 
 ## Installation
 
@@ -24,27 +21,22 @@ Install-Package Whitestone.Cambion
   - [Consuming](#consuming)
     - [Events](#events)
     - [Synchronized](#synchronized)
-- [Backends](#backends)
+- [Transports](#transports)
   - [Loopback](#loopback)
-- [MEF Compatibility](#mef-compatibility)
+  - [NetMQ](#netmq)
+- [Serializers](#serializers)
 
 ## The Basics
 
 ### Instantiation
 
 ```csharp
-var cambion = new CambionMessageHandler();
+ICambion cambion = new CambionConfiguration().Create();
 ```
 
+This creates a configuration object, which you use to create an instance of `ICambion`. This will be initialized with a default Transport and Serializer.
 This instance should preferrably be shared among all usages throughout the code.
 
-### Initialization
-
-Then initialize it using the default provided backend:
-
-```csharp
-messageHandler.Initialize(init => { init.UseLoopback(); });
-```
 
 ### Subscribing
 
@@ -133,37 +125,35 @@ All the examples regarding synchronized described above use the `TRequest` and `
 
 #### A note about synchronized messages
 
-Because the distributed backends will use multiple instances of Cambion, a synchronized handler can be set up for the same message signature in multiple instances. Because Cambion sends the synchronized message out to all handlers, there is no way of telling which one will reply, and the reply will be handled by the first instance that is able to send a reply.
+Because the distributed transports will use multiple instances of Cambion, a synchronized handler can be set up for the same message signature in multiple instances. Because Cambion sends the synchronized message out to all handlers, there is no way of telling which one will reply, and the reply will be handled by the first instance that is able to send a reply.
 
 Therefore, make sure that no synchronized handler signatures are shared between all your instances.
 
-## Backends
+## Transports
 
-A backend is a transport layer to transfer messages. Cambion can easily be configured to use any backend, and you can even create your own, but that's a discussion for another chapter.
+A transport is a layer to transfer messages. Cambion can easily be configured to use any transport, and you can even create your own, but that's a discussion for another chapter.
 
 ### Loopback
  
-The default backend that comes preinstalled with Cambion is called `Loopback`. This does not require any specific configuration, apart from having to tell Cambion to use it.
+The default transport that comes preinstalled with Cambion is called `Loopback`. This does not require any specific configuration, and is used if no other transport is specified.
 
 ```csharp
-var cambion = new CambionMessageHandler();
-cambion.Initialize(init =>
-{
-    init.UseLoopback();
-}
+ICambion cambion = new CambionConfiguration()
+    .Transport.UseLoopback()
+    .Create();
 ```
 
-This backend is limited in that Cambion cannot share data with other applications, or even separate instances of Cambion within the same application. For this you need another backend.
+This transport is limited in that Cambion cannot share data with other applications, or even separate instances of Cambion within the same application. For this you need another transport.
 
 ### NetMQ
 
-If you have one application that needs to talk to another application, either on the same computer, or even on a different computer, you can't use the loopback backend.
+If you have one application that needs to talk to another application, either on the same computer, or even on a different computer, you can't use the loopback transport.
 
-Fortunately Cambion has another backend to cover these use-cases, called `NetMQ`. This uses [NetMQ](https://github.com/zeromq/netmq) to send data between instances of Cambion.
+Fortunately Cambion has another transport to cover these use-cases, called `NetMQ`. This uses [NetMQ](https://github.com/zeromq/netmq) to send data between instances of Cambion.
 
 > NetMQ uses two TCP ports, so you need to have these two ports open in your firewall.
 
-The `NetMQ` backend for Cambion is also available on [NuGet](https://www.nuget.org/packages/Whitestone.Cambion.Transport.NetMQ/) so you can install it using the NuGet Package Manager Console:
+The `NetMQ` transport for Cambion is also available on [NuGet](https://www.nuget.org/packages/Whitestone.Cambion.Transport.NetMQ/) so you can install it using the NuGet Package Manager Console:
 
 ```
 Install-Package Whitestone.Cambion.Transport.NetMQ
@@ -171,52 +161,16 @@ Install-Package Whitestone.Cambion.Transport.NetMQ
 
 See the documentation for this transport in its own repo: [Cambion.Transport.NetMQ](https://github.com/whitestone-no/Cambion.Transport.NetMQ)
 
-## MEF Compatibility
+## Serializers
 
-### v1.0.1
+Serializers are used by Cambion to serialize the data being sent over the transport. As with Transports, Cambion can easily be configured to use any serializer, and you can even crete your own, but that's also a discussion for another chapter.
 
-Starting from this version, explicit MEF compatibility has been removed. It is, however, still easy to use Cambion with MEF.
-The following is an example of how to initialize MEF in .NET Core, automatically including Cambion:
+### Newtonsoft.JSON
 
-```csharp
-ConventionBuilder conventions = new ConventionBuilder();
-conventions.ForTypesDerivedFrom<ICambion>()
-	.Export<ICambion>()
-	.Shared();
-
-ContainerConfiguration containerConfig = new ContainerConfiguration()
-	.WithAssembly(Assembly.GetExecutingAssembly(), conventions)
-	.WithAssembly(typeof(ICambion).Assembly, conventions);
-
-using (CompositionHost container = containerConfig.CreateContainer())
-{
-	// Your code here
-}
-```
-
-Then in your MEF instantiated classes you can simply import Cambion:
+The default serializer that comes preinstalled with Cambion is called `JsonNet` and uses Newtonsoft.Json to serialize the data for the transport. Thisdoes not require any specific configuration, and is used if no other serializer is specified.
 
 ```csharp
-[Import] public ICambion Cambion { get; set; }
-```
-
-### v1.0.0
-
-Cambion also supports [MEF](https://msdn.microsoft.com/en-us/library/dd460648). You can therefore add an `AssemblyCatalog` to your catalogues, then MEF will handle the instantiation and sharing throughout the code:
-
-```csharp
-var cambionAssemblyCatalog = new AssemblyCatalog(typeof(ICambion).Assembly)
-```
-
-Then you can have MEF import it automatically based on convention:
-
-```csharp
-[Import]
-private ICambion _cambion;
-```
-
-Or you can use the MEF container to get an instance:
-
-```csharp
-var cambion = yourCompositionContainer.GetExportedValue<ICambion>();
+ICambion cambion = new CambionConfiguration()
+    .Serializer.UseJsonNet()
+	.Create();
 ```
