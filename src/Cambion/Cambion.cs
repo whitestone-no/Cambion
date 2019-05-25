@@ -13,8 +13,8 @@ namespace Whitestone.Cambion
 {
     internal class Cambion : ICambion
     {
-        private ITransport _transport;
-        private ISerializer _serializer;
+        private readonly ITransport _transport;
+        private readonly ISerializer _serializer;
 
         private readonly Dictionary<Type, List<EventHandler>> _eventHandlers = new Dictionary<Type, List<EventHandler>>();
         private readonly Dictionary<SynchronizedHandlerKey, SynchronizedHandler> _synchronizedHandlers = new Dictionary<SynchronizedHandlerKey, SynchronizedHandler>();
@@ -325,7 +325,7 @@ namespace Whitestone.Cambion
                                     CorrelationId = wrapper.CorrelationId
                                 };
 
-                                _transport.Publish(wrapper);
+                                _transport.Publish(replyWrapper);
                             }
                             catch (Exception ex)
                             {
