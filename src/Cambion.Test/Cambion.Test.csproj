@@ -27,7 +27,6 @@
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Serializers\JsonNet\JsonNet.csproj" />
     <ProjectReference Include="..\Transports\Loopback\Loopback.csproj" />
-    <ProjectReference Include="..\Transports\NetMQ\NetMQ.csproj" />
   </ItemGroup>
 
 </Project>
