@@ -19,7 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Serializers\JsonNet\JsonNet.csproj" />
-    <ProjectReference Include="..\Transports\Loopback\Loopback.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +26,10 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Serializer\" />
   </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@ using Whitestone.Cambion.Common.Events;
 using Whitestone.Cambion.Common.Interfaces;
 using Whitestone.Cambion.Common.Types;
 
-namespace Whitestone.Cambion.Transports.Loopback
+namespace Whitestone.Cambion.Transport.Loopback
 {
     public class LoopbackTransport : ITransport
     {

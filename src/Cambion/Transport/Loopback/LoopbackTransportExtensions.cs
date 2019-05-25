@@ -1,7 +1,7 @@
 ﻿using Whitestone.Cambion.Common.Configurations;
 using Whitestone.Cambion.Common.Interfaces;
 
-namespace Whitestone.Cambion.Transports.Loopback
+namespace Whitestone.Cambion.Transport.Loopback
 {
     public static class LoopbackTransportExtensions
     {

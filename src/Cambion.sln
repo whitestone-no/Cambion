@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Transports", "Transports", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serializers", "Serializers", "{9691C161-9900-4701-8B58-041BAB76987F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loopback", "Transports\Loopback\Loopback.csproj", "{12DF7065-F068-443C-B30F-EF8163908A37}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonNet", "Serializers\JsonNet\JsonNet.csproj", "{B33D653B-88BB-45C1-B90F-00B5C0E6B81F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cambion.Test", "Cambion.Test\Cambion.Test.csproj", "{3CD18E91-DA8D-4871-B431-29814BD4F0BF}"
@@ -31,10 +29,6 @@ Global
 		{D77E5691-83BF-4027-93B4-7DB653C91343}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D77E5691-83BF-4027-93B4-7DB653C91343}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D77E5691-83BF-4027-93B4-7DB653C91343}.Release|Any CPU.Build.0 = Release|Any CPU
-		{12DF7065-F068-443C-B30F-EF8163908A37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{12DF7065-F068-443C-B30F-EF8163908A37}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{12DF7065-F068-443C-B30F-EF8163908A37}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{12DF7065-F068-443C-B30F-EF8163908A37}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B33D653B-88BB-45C1-B90F-00B5C0E6B81F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B33D653B-88BB-45C1-B90F-00B5C0E6B81F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B33D653B-88BB-45C1-B90F-00B5C0E6B81F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -48,7 +42,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{12DF7065-F068-443C-B30F-EF8163908A37} = {C728F7C5-5BE8-46D9-8A30-B9A167B788DD}
 		{B33D653B-88BB-45C1-B90F-00B5C0E6B81F} = {9691C161-9900-4701-8B58-041BAB76987F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

@@ -26,7 +26,6 @@
     <ProjectReference Include="..\Cambion\Cambion.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Serializers\JsonNet\JsonNet.csproj" />
-    <ProjectReference Include="..\Transports\Loopback\Loopback.csproj" />
   </ItemGroup>
 
 </Project>
