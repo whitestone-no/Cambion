@@ -36,8 +36,8 @@ namespace Whitestone.Cambion.Types
 
     internal class SynchronizedHandlerKey
     {
-        public Type RequestType { get; set; }
-        public Type ResponseType { get; set; }
+        public Type RequestType { get; }
+        public Type ResponseType { get; }
 
         public SynchronizedHandlerKey(Type requestType, Type responseType)
         {

@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using System;
 using Whitestone.Cambion.Common.Interfaces;
-using Whitestone.Cambion.Serializers.JsonNet;
+using Whitestone.Cambion.Serializer.JsonNet;
 
 namespace Whitestone.Cambion.Test
 {
@@ -25,7 +25,7 @@ namespace Whitestone.Cambion.Test
         [Test]
         public void Serialize_DefaultObject_Equals()
         {
-            string base64expected = "eyIkdHlwZSI6IldoaXRlc3RvbmUuQ2FtYmlvbi5Db21tb24uVHlwZXMuTWVzc2FnZVdyYXBwZXIsIFdoaXRlc3RvbmUuQ2FtYmlvbi5Db21tb24iLCJEYXRhIjoxLCJEYXRhVHlwZSI6IlN5c3RlbS5JbnQzMiwgU3lzdGVtLlByaXZhdGUuQ29yZUxpYiwgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTdjZWM4NWQ3YmVhNzc5OGUiLCJSZXNwb25zZVR5cGUiOm51bGwsIk1lc3NhZ2VUeXBlIjowLCJDb3JyZWxhdGlvbklkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwIn0=";
+            const string base64Expected = "eyIkdHlwZSI6IldoaXRlc3RvbmUuQ2FtYmlvbi5Db21tb24uVHlwZXMuTWVzc2FnZVdyYXBwZXIsIFdoaXRlc3RvbmUuQ2FtYmlvbi5Db21tb24iLCJEYXRhIjoxLCJEYXRhVHlwZSI6IlN5c3RlbS5JbnQzMiwgU3lzdGVtLlByaXZhdGUuQ29yZUxpYiwgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTdjZWM4NWQ3YmVhNzc5OGUiLCJSZXNwb25zZVR5cGUiOm51bGwsIk1lc3NhZ2VUeXBlIjowLCJDb3JyZWxhdGlvbklkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwIn0=";
 
             byte[] returns = _serializer.Serialize(new Common.Types.MessageWrapper()
             {
@@ -36,9 +36,9 @@ namespace Whitestone.Cambion.Test
                 ResponseType = null
             });
 
-            string base64return = System.Convert.ToBase64String(returns);
+            string base64Return = Convert.ToBase64String(returns);
 
-            Assert.AreEqual(base64expected, base64return);
+            Assert.AreEqual(base64Expected, base64Return);
         }
 
         [Test]

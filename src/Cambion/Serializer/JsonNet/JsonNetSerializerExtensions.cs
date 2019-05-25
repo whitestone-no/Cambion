@@ -1,7 +1,7 @@
 ﻿using Whitestone.Cambion.Common.Configurations;
 using Whitestone.Cambion.Common.Interfaces;
 
-namespace Whitestone.Cambion.Serializers.JsonNet
+namespace Whitestone.Cambion.Serializer.JsonNet
 {
     public static class JsonNetSerializerExtensions
     {

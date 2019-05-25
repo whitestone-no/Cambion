@@ -4,7 +4,6 @@ using System.Threading;
 using Whitestone.Cambion.Common.Events;
 using Whitestone.Cambion.Common.Types;
 using Whitestone.Cambion.Transport.Loopback;
-using Whitestone.Cambion.Transports.Loopback;
 
 namespace Whitestone.Cambion.Test
 {

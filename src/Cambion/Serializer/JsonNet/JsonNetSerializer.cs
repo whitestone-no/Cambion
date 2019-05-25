@@ -4,7 +4,7 @@ using System.Text;
 using Whitestone.Cambion.Common.Interfaces;
 using Whitestone.Cambion.Common.Types;
 
-namespace Whitestone.Cambion.Serializers.JsonNet
+namespace Whitestone.Cambion.Serializer.JsonNet
 {
     public class JsonNetSerializer : ISerializer
     {
