@@ -5,7 +5,8 @@ namespace Whitestone.Cambion.Transports.NetMQ
 {
     public static class NetMqTransportExtensions
     {
-        public static ICambionConfiguration UseLoopback(this TransportConfiguration transportConfiguration, string publishAddress, string subscribeAddress, bool useMessageHost = false)
+        // ReSharper disable once InconsistentNaming
+        public static ICambionConfiguration UseNetMQ(this TransportConfiguration transportConfiguration, string publishAddress, string subscribeAddress, bool useMessageHost = false)
         {
             NetMqTransport transport = new NetMqTransport(publishAddress, subscribeAddress, useMessageHost);
             return transportConfiguration.Transport(transport);
