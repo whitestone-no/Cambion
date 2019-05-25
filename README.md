@@ -26,9 +26,6 @@ Install-Package Whitestone.Cambion
     - [Synchronized](#synchronized)
 - [Backends](#backends)
   - [Loopback](#loopback)
-  - [NetMQ Backend](#netmq-backend)
-    - [Clients](#clients)
-    - [MessageHost](#messagehost)
 - [MEF Compatibility](#mef-compatibility)
 
 ## The Basics
@@ -166,51 +163,13 @@ Fortunately Cambion has another backend to cover these use-cases, called `NetMQ`
 
 > NetMQ uses two TCP ports, so you need to have these two ports open in your firewall.
 
-The `NetMQ` backend for Cambion is also available on [NuGet](https://www.nuget.org/packages/Whitestone.Cambion.Backend.NetMQ/) so you can install it using the NuGet Package Manager Console:
+The `NetMQ` backend for Cambion is also available on [NuGet](https://www.nuget.org/packages/Whitestone.Cambion.Transport.NetMQ/) so you can install it using the NuGet Package Manager Console:
 
 ```
-Install-Package Whitestone.Cambion.Backend.NetMQ
+Install-Package Whitestone.Cambion.Transport.NetMQ
 ```
 
-#### Clients
-
-NetMQ is setup during regular Cambion initialization. Instead of using the `Loopback` backend as described above, use the `NetMQ` backend instead.
-
-```csharp
-var cambion = new CambionMessageHandler();
-cambion.Initialize(init =>
-{
-    init.UseNetMq(
-    	publishAddress: "tcp://localhost:9999",
-        subscribeAddress: "tcp://localhost:9998"
-    );
-}
-```
-
-TCP ports `9998` and `9999` are arbitrary ports, and you can use whichever ports you fancy (that are available). Remember that the ports must be the same (both numerical, and the same order) for all instances of Cambion that will talk to eachother.
-
-#### MessageHost
-
-In order for Cambion to send and receive data using NetMQ, one of the Cambion instances needs to work as a MessageHost. The other Cambion instances will then connect to the MessageHost.
-
-> The MessageHost will work as a normal client in addition to being the host without any additional configuration
-
-Initialize the NetMQ backend as normal, but use the optional `INetMqConfigurator` parameter in addition:
-
-```csharp
-var cambion = new CambionMessageHandler();
-cambion.Initialize(init =>
-{
-    init.UseNetMq(
-    	publishAddress: "tcp://localhost:9999",
-        subscribeAddress: "tcp://localhost:9998",
-        netmq =>
-        {
-            netmq.StartMessageHost();
-        }
-    );
-}
-```
+See the documentation for this transport in its own repo: [Cambion.Transport.NetMQ](https://github.com/whitestone-no/Cambion.Transport.NetMQ)
 
 ## MEF Compatibility
 
