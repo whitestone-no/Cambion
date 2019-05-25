@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Whitestone.Cambion.Common.Interfaces
+namespace Whitestone.Cambion.Interfaces
 {
     public interface ICambion
     {

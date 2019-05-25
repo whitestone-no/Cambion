@@ -1,7 +1,7 @@
 ﻿using System;
-using Whitestone.Cambion.Common.Interfaces;
+using Whitestone.Cambion.Interfaces;
 
-namespace Whitestone.Cambion.Common.Configurations
+namespace Whitestone.Cambion.Configurations
 {
     public class SerializerConfiguration
     {

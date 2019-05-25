@@ -1,4 +1,4 @@
-﻿namespace Whitestone.Cambion.Common.Interfaces
+﻿namespace Whitestone.Cambion.Interfaces
 {
     public interface ISynchronizedHandler
     {

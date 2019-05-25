@@ -1,5 +1,5 @@
-﻿using Whitestone.Cambion.Common.Configurations;
-using Whitestone.Cambion.Common.Interfaces;
+﻿using Whitestone.Cambion.Configurations;
+using Whitestone.Cambion.Interfaces;
 
 namespace Whitestone.Cambion.Serializer.JsonNet
 {

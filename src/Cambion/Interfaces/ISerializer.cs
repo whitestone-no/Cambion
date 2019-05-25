@@ -1,6 +1,6 @@
-﻿using Whitestone.Cambion.Common.Types;
+﻿using Whitestone.Cambion.Types;
 
-namespace Whitestone.Cambion.Common.Interfaces
+namespace Whitestone.Cambion.Interfaces
 {
     public interface ISerializer
     {

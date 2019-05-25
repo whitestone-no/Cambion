@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Text;
-using Whitestone.Cambion.Common.Interfaces;
-using Whitestone.Cambion.Common.Types;
+using Whitestone.Cambion.Interfaces;
+using Whitestone.Cambion.Types;
 
 namespace Whitestone.Cambion.Serializer.JsonNet
 {

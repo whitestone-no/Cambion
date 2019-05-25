@@ -1,7 +1,7 @@
 ﻿using System;
-using Whitestone.Cambion.Common.Events;
-using Whitestone.Cambion.Common.Interfaces;
-using Whitestone.Cambion.Common.Types;
+using Whitestone.Cambion.Events;
+using Whitestone.Cambion.Interfaces;
+using Whitestone.Cambion.Types;
 
 namespace Whitestone.Cambion.Transport.Loopback
 {

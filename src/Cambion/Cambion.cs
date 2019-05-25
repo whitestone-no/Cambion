@@ -4,8 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.IO;
 using System.Threading;
-using Whitestone.Cambion.Common.Interfaces;
-using Whitestone.Cambion.Common.Types;
+using Whitestone.Cambion.Interfaces;
 using Whitestone.Cambion.Types;
 using EventHandler = Whitestone.Cambion.Types.EventHandler;
 
@@ -252,7 +251,7 @@ namespace Whitestone.Cambion
             throw new TimeoutException("Timeout waiting for synchronous call");
         }
 
-        private void Transport_MessageReceived(object sender, Common.Events.MessageReceivedEventArgs e)
+        private void Transport_MessageReceived(object sender, Events.MessageReceivedEventArgs e)
         {
             try
             {

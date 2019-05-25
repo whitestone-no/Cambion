@@ -1,6 +1,6 @@
-﻿using Whitestone.Cambion.Common.Configurations;
+﻿using Whitestone.Cambion.Configurations;
 
-namespace Whitestone.Cambion.Common.Interfaces
+namespace Whitestone.Cambion.Interfaces
 {
     public interface ICambionConfiguration
     {

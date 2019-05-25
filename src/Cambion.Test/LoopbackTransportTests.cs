@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Threading;
-using Whitestone.Cambion.Common.Events;
-using Whitestone.Cambion.Common.Types;
+using Whitestone.Cambion.Events;
+using Whitestone.Cambion.Types;
 using Whitestone.Cambion.Transport.Loopback;
 
 namespace Whitestone.Cambion.Test

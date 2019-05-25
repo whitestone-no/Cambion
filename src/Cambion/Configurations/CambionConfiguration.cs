@@ -1,6 +1,6 @@
 ﻿using System;
-using Whitestone.Cambion.Common.Configurations;
-using Whitestone.Cambion.Common.Interfaces;
+using Whitestone.Cambion.Configurations;
+using Whitestone.Cambion.Interfaces;
 using Whitestone.Cambion.Serializer.JsonNet;
 using Whitestone.Cambion.Transport.Loopback;
 
