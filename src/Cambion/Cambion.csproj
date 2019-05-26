@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -12,7 +12,6 @@
     <PackageProjectUrl>https://github.com/whitestone-no/Cambion</PackageProjectUrl>
     <PackageIconUrl>http://cambion.whitestone.no/img/CambionLogo.png</PackageIconUrl>
     <PackageTags>esb enterprice-service-bus cambion event-aggregator</PackageTags>
-    <PackageReleaseNotes>Rebuild of how transports and serializers are added and used</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
