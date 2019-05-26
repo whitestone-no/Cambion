@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Whitestone.Cambion.Transport.NetMQ</AssemblyName>
+    <RootNamespace>Whitestone.Cambion.Transport.NetMQ</RootNamespace>
+    <Version>1.1.0-preview</Version>
+    <Authors>Whitestone</Authors>
+    <Product>Whitestone Cambion</Product>
+    <Description>NetMQ transport for Whitestone Cambion</Description>
+    <Copyright>Copyright © 2019</Copyright>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/whitestone-no/Cambion.Transport.NetMQ</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/whitestone-no/Cambion.Transport.NetMQ</RepositoryUrl>
+    <PackageIconUrl>http://cambion.whitestone.no/img/CambionLogo.png</PackageIconUrl>
+    <PackageTags>esb enterprice-service-bus cambion event-aggregator netmq zeromq</PackageTags>
+    <PackageReleaseNotes>Rebuild of how transports and serializers are added and used, and separated NetMQ transport to its own solution</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetMQ" Version="4.0.0.1" />
+    <PackageReference Include="Whitestone.Cambion" Version="1.1.0-preview" />
+  </ItemGroup>
+
+</Project>
