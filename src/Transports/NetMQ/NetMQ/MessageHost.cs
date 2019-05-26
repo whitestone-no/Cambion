@@ -37,6 +37,7 @@ namespace Whitestone.Cambion.Transport.NetMQ
 
                     mre.Set();
 
+                    // This method is blocking, so important to set the ManualResetEvent before this.
                     _proxy.Start();
                 }
             });
