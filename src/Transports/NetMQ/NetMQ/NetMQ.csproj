@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -14,7 +14,6 @@
     <RepositoryUrl>https://github.com/whitestone-no/Cambion.Transport.NetMQ</RepositoryUrl>
     <PackageIconUrl>http://cambion.whitestone.no/img/CambionLogo.png</PackageIconUrl>
     <PackageTags>esb enterprice-service-bus cambion event-aggregator netmq zeromq</PackageTags>
-    <PackageReleaseNotes>Rebuild of how transports and serializers are added and used, and separated NetMQ transport to its own solution</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
