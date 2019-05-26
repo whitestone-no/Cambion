@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="NetMQ" Version="4.0.0.1" />
-    <PackageReference Include="Whitestone.Cambion" Version="1.1.0-preview" />
+    <PackageReference Include="Whitestone.Cambion" Version="1.1.0-preview2" />
   </ItemGroup>
 
 </Project>
