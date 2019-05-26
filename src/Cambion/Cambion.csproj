@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Whitestone.Cambion</AssemblyName>
     <RootNamespace>Whitestone.Cambion</RootNamespace>
-    <Version>1.1.0-preview</Version>
+    <Version>1.1.0-preview2</Version>
     <Authors>Whitestone</Authors>
     <Product>Whitestone Cambion</Product>
     <Description>A set of convenience functions for event handling. This not only covers regular asynchronous events, but can also call methods on a subscriber synchronously and get data back.</Description>

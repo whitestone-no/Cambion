@@ -26,6 +26,8 @@ namespace Whitestone.Cambion
             _transport = transport;
             _serializer = serializer;
 
+            _transport.Serializer = _serializer;
+
             Validate();
 
             _transport.MessageReceived += Transport_MessageReceived;
