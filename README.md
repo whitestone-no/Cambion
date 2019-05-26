@@ -159,7 +159,7 @@ The `NetMQ` transport for Cambion is also available on [NuGet](https://www.nuget
 Install-Package Whitestone.Cambion.Transport.NetMQ
 ```
 
-See the documentation for this transport in its own repo: [Cambion.Transport.NetMQ](https://github.com/whitestone-no/Cambion.Transport.NetMQ)
+See the documentation for this transport here: [Cambion.Transport.NetMQ](https://github.com/whitestone-no/Cambion/src/Transports/NetMQ)
 
 ## Serializers
 
