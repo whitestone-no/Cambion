@@ -1,4 +1,6 @@
-﻿namespace Whitestone.Cambion.Events
+﻿using Whitestone.Cambion.Types;
+
+namespace Whitestone.Cambion.Events
 {
     public class MessageReceivedEventArgs
     {

@@ -3,19 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cambion", "Cambion\Cambion.csproj", "{F4D41296-8E1B-48F7-A73F-52D96265147A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cambion", "Cambion\Cambion.csproj", "{00AD666B-4214-4FA0-92A9-6386E5F620D9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{CBE75BC6-B536-4A3D-BCA7-B9116D28AD5D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cambion.Loopback", "Backend\Cambion.Loopback\Cambion.Loopback.csproj", "{C45C00FB-5585-4C0D-8C4F-84A0312731FC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cambion.NetMQ", "Backend\Cambion.NetMQ\Cambion.NetMQ.csproj", "{9303BB17-39F4-45DC-8796-A582847EAF24}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CambionTester", "CambionTester\CambionTester.csproj", "{B6F65919-00C7-4979-9064-0679CDA7A989}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serializers", "Serializers", "{7E579DFB-DC18-4378-BA58-128F26E512A6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cambion.Serializers.JsonNet", "Serializers\Cambion.Serializers.JsonNet\Cambion.Serializers.JsonNet.csproj", "{B0AC5D89-1089-4B56-A652-4691F9D129D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cambion.Test", "Cambion.Test\Cambion.Test.csproj", "{3CD18E91-DA8D-4871-B431-29814BD4F0BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,36 +13,19 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F4D41296-8E1B-48F7-A73F-52D96265147A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F4D41296-8E1B-48F7-A73F-52D96265147A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F4D41296-8E1B-48F7-A73F-52D96265147A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F4D41296-8E1B-48F7-A73F-52D96265147A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C45C00FB-5585-4C0D-8C4F-84A0312731FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C45C00FB-5585-4C0D-8C4F-84A0312731FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C45C00FB-5585-4C0D-8C4F-84A0312731FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C45C00FB-5585-4C0D-8C4F-84A0312731FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9303BB17-39F4-45DC-8796-A582847EAF24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9303BB17-39F4-45DC-8796-A582847EAF24}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9303BB17-39F4-45DC-8796-A582847EAF24}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9303BB17-39F4-45DC-8796-A582847EAF24}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B6F65919-00C7-4979-9064-0679CDA7A989}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B6F65919-00C7-4979-9064-0679CDA7A989}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B6F65919-00C7-4979-9064-0679CDA7A989}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B6F65919-00C7-4979-9064-0679CDA7A989}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B0AC5D89-1089-4B56-A652-4691F9D129D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B0AC5D89-1089-4B56-A652-4691F9D129D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B0AC5D89-1089-4B56-A652-4691F9D129D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B0AC5D89-1089-4B56-A652-4691F9D129D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00AD666B-4214-4FA0-92A9-6386E5F620D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00AD666B-4214-4FA0-92A9-6386E5F620D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00AD666B-4214-4FA0-92A9-6386E5F620D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00AD666B-4214-4FA0-92A9-6386E5F620D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CD18E91-DA8D-4871-B431-29814BD4F0BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CD18E91-DA8D-4871-B431-29814BD4F0BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CD18E91-DA8D-4871-B431-29814BD4F0BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CD18E91-DA8D-4871-B431-29814BD4F0BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{C45C00FB-5585-4C0D-8C4F-84A0312731FC} = {CBE75BC6-B536-4A3D-BCA7-B9116D28AD5D}
-		{9303BB17-39F4-45DC-8796-A582847EAF24} = {CBE75BC6-B536-4A3D-BCA7-B9116D28AD5D}
-		{B0AC5D89-1089-4B56-A652-4691F9D129D4} = {7E579DFB-DC18-4378-BA58-128F26E512A6}
-	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {EED31222-7D7D-4957-9D04-AAB9B7E316B6}
+		SolutionGuid = {A8080ED3-04FB-4E21-B63F-55B5AAB135B2}
 	EndGlobalSection
 EndGlobal
