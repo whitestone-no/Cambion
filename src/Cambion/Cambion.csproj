@@ -4,16 +4,20 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Whitestone.Cambion</AssemblyName>
     <RootNamespace>Whitestone.Cambion</RootNamespace>
-    <Version>1.1.0-preview2</Version>
+    <Version>0.0.1</Version>
     <Authors>Whitestone</Authors>
     <Product>Whitestone Cambion</Product>
-    <Description>A set of convenience functions for event handling. This not only covers regular asynchronous events, but can also call methods on a subscriber synchronously and get data back.</Description>
+    <Description>Cambion is a light-weight open-source service bus for .NET with a set of convenience functions for synchronous and asynchronous event handling.</Description>
     <Copyright>Copyright © 2019</Copyright>
     <PackageProjectUrl>https://github.com/whitestone-no/Cambion</PackageProjectUrl>
     <PackageIconUrl>http://cambion.whitestone.no/img/CambionLogo.png</PackageIconUrl>
-    <PackageTags>esb enterprice-service-bus cambion event-aggregator</PackageTags>
+    <PackageTags>messaging servicebus esb enterprice-service-bus cambion event-aggregator</PackageTags>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>NU5105</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

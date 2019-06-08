@@ -13,8 +13,12 @@
     <PackageProjectUrl>https://github.com/whitestone-no/Cambion</PackageProjectUrl>
     <RepositoryUrl>https://github.com/whitestone-no/Cambion</RepositoryUrl>
     <PackageIconUrl>http://cambion.whitestone.no/img/CambionLogo.png</PackageIconUrl>
-    <PackageTags>esb enterprice-service-bus cambion event-aggregator netmq zeromq</PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageTags>messaging servicebus esb enterprice-service-bus cambion event-aggregator netmq zeromq</PackageTags>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+	<NoWarn>NU5105</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,7 +30,10 @@
 
   <ItemGroup>
     <PackageReference Include="NetMQ" Version="4.0.0.1" />
-    <PackageReference Include="Whitestone.Cambion" Version="1.1.0-preview2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Cambion\Cambion.csproj" />
   </ItemGroup>
 
 </Project>
