@@ -1,0 +1,8 @@
+mode: ContinuousDelivery
+branches: {
+    release: {
+        tag: prerelease
+    }
+}
+ignore:
+  sha: []
