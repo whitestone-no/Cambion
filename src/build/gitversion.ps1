@@ -4,7 +4,7 @@ $gitVersionOutput = & "$PSScriptRoot\..\lib\GitVersion\GitVersion.exe"
 
 $buildVersion = ($gitVersionOutput | ConvertFrom-Json).MajorMinorPatch
 $buildBuild = ($gitVersionOutput | ConvertFrom-Json).BuildMetaData
-$buildLabel = ($gitVersionOutput | ConvertFrom-Json).PreReleaseLabel
+$buildLabel = "prerelease"
 
 if ($isPreview) {
     $buildVersion = $buildVersion + "-" + $buildLabel + $buildBuild
