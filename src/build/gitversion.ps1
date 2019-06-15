@@ -10,11 +10,11 @@ if ($isPreview) {
     $buildVersion = $buildVersion + "-" + $buildLabel + $buildBuild
 }
 
-$buildVersionComplete = $buildVersion + "+" + ${env:Build.Date:ddddMMyy} + ${env:Build.Rev:r}
+$buildVersionComplete = $buildVersion + "+" + ${env:BUILD_DATE:ddddMMyy} + ${env:BUILD_REV:r}
 
-Write-Host "buildVersion: " + $buildVersion
-Write-Host "buildBuild: " + $buildBuild
-Write-Host "buildVersionComplete: " + $buildVersionComplete
+Write-Host "buildVersion:         " $buildVersion
+Write-Host "buildBuild:           " $buildBuild
+Write-Host "buildVersionComplete: " $buildVersionComplete
 
-Write-Host "##vso[build.updatebuildnumber]" + $buildVersionComplete
-Write-Host "##vso[task.setvariable variable=buildVersion]" + $buildVersion
+Write-Host "##vso[build.updatebuildnumber]" $buildVersionComplete
+Write-Host "##vso[task.setvariable variable=buildVersion]" $buildVersion
