@@ -6,7 +6,8 @@ $buildVersion = ($gitVersionOutput | ConvertFrom-Json).MajorMinorPatch
 $buildBuild = ($gitVersionOutput | ConvertFrom-Json).BuildMetaData
 $buildLabel = "prerelease"
 
-if ($isPreview) {
+if ($isPreview)
+{
     $buildVersion = $buildVersion + "-" + $buildLabel + $buildBuild
 }
 
@@ -17,4 +18,4 @@ Write-Host "buildBuild:           " $buildBuild
 Write-Host "buildVersionComplete: " $buildVersionComplete
 
 Write-Host "##vso[build.updatebuildnumber]" $buildVersionComplete
-Write-Host "##vso[task.setvariable variable=buildVersion]" $buildVersion
+Write-Host "##vso[task.setvariable variable=currentVersion]" $buildVersion
