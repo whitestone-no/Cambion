@@ -1,6 +1,6 @@
 $isPreview = "$env:PreviewBuild" -eq [bool]::TrueString
 
-$gitVersionOutput = & "../lib/GitVersion/GitVersion.exe"
+$gitVersionOutput = & "$PSScriptRoot\..\lib\GitVersion\GitVersion.exe"
 
 $buildVersion = ($gitVersionOutput | ConvertFrom-Json).MajorMinorPatch
 $buildBuild = ($gitVersionOutput | ConvertFrom-Json).BuildMetaData
