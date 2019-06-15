@@ -8,14 +8,14 @@ $buildLabel = "prerelease"
 
 if ($isPreview)
 {
-    $buildVersion = $buildVersion + "-" + $buildLabel + $buildBuild
+    $buildVersionSemver = $buildVersion + "-" + $buildLabel + $buildBuild
 }
 
-$buildVersionComplete = $buildVersion + "+" + $env:BUILD_BUILDNUMBER
+$buildVersionComplete = $buildVersionSemver + "+" + $env:BUILD_BUILDNUMBER
 
 Write-Host "buildVersion:         " $buildVersion
-Write-Host "buildBuild:           " $buildBuild
-Write-Host "buildVersionComplete: " $buildVersionComplete
+Write-Host "buildVersionSemver:   " $buildVersionSemver
 
 Write-Host "##vso[build.updatebuildnumber]" $buildVersionComplete
-Write-Host "##vso[task.setvariable variable=buildVersion]" $buildVersion
+Write-Host "##vso[task.setvariable variable=buildVersionSemver]" $buildVersionSemver
+Write-Host "##vso[task.setvariable variable=buildVersion]" $buildVersion"."$buildBuild
