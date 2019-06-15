@@ -10,7 +10,7 @@ if ($isPreview) {
     $buildVersion = $buildVersion + "-" + $buildLabel + $buildBuild
 }
 
-$buildVersionComplete = $buildVersion + "+" + $(Date:yyyyMMdd) + $(Rev:.r)
+$buildVersionComplete = $buildVersion + "+" + $(Build.Date:yyyyMMdd) + $(Build.Rev:.r)
 
 Write-Host "##vso[build.updatebuildnumber]" + $buildVersionComplete
 Write-Host "##vso[task.setvariable variable=buildVersion]" + $buildVersion
