@@ -16,7 +16,7 @@ if (-Not $isPreview)
 
 $buildVersionComplete = $buildVersionSemver + "+" + (Get-Date).ToString("yyyyMMdd") + "." + $env:BUILD_BUILDID
 
-Write-Host "##vso[build.updatebuildnumber]" $buildVersionComplete
-Write-Host "##vso[task.setvariable variable=buildVersionSemver]" $buildVersionSemver
-Write-Host "##vso[task.setvariable variable=buildVersion]" $buildVersion"."$buildBuild
-Write-Host "##vso[task.setvariable variable=buildConfiguration]" $buildConfiguration
+Write-Host ("##vso[build.updatebuildnumber]{0}" -f $buildVersionComplete)
+Write-Host ("##vso[task.setvariable variable=buildVersionSemver]{0}" -f $buildVersionSemver)
+Write-Host ("##vso[task.setvariable variable=buildVersion]{0}.{1}" -f $buildVersion, $buildBuild)
+Write-Host ("##vso[task.setvariable variable=buildConfiguration]{0}" -f $buildConfiguration)
