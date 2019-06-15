@@ -10,7 +10,7 @@ if ($isPreview) {
     $buildVersion = $buildVersion + "-" + $buildLabel + $buildBuild
 }
 
-$buildVersionComplete = $buildVersion + "+" + ${env:BUILD_DATE:ddddMMyy} + ${env:BUILD_REV:r}
+$buildVersionComplete = $buildVersion + "+" + $env:BUILD_BUILDNUMBER
 
 Write-Host "buildVersion:         " $buildVersion
 Write-Host "buildBuild:           " $buildBuild
