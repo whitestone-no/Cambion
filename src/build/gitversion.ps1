@@ -18,4 +18,4 @@ Write-Host "buildBuild:           " $buildBuild
 Write-Host "buildVersionComplete: " $buildVersionComplete
 
 Write-Host "##vso[build.updatebuildnumber]" $buildVersionComplete
-Write-Host "##vso[task.setvariable variable=currentVersion]" $buildVersion
+Write-Host "##vso[task.setvariable variable=buildVersion]" $buildVersion
