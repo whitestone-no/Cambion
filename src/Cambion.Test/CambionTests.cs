@@ -27,5 +27,30 @@ namespace Whitestone.Cambion.Test
         {
             Assert.Throws<ArgumentNullException>(() => { _cambion.Register(null); });
         }
+
+        [Test]
+        public void Register_TwoOfSameObject_ThrowsArgumentException()
+        {
+            TwoOfSameObjectTest obj = new TwoOfSameObjectTest();
+
+            _cambion.Register(obj);
+
+            Assert.Throws<ArgumentException>(() => _cambion.Register(obj));
+        }
+    }
+
+    class TestEvent { }
+
+    class TestRequest { }
+
+    class TestResponse { }
+
+
+    class TwoOfSameObjectTest : ISynchronizedHandler<TestRequest, TestResponse>
+    {
+        public TestResponse HandleSynchronized(TestRequest input)
+        {
+            return new TestResponse();
+        }
     }
 }
