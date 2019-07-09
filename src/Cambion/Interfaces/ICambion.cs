@@ -19,6 +19,7 @@ namespace Whitestone.Cambion.Interfaces
         /// </summary>
         /// <param name="handler">An object that implements one or more of <see cref="IEventHandler"/>
         /// and/or <see cref="ISynchronizedHandler"/>.</param>
+        /// <remarks>Throws <see cref="System.ArgumentException"/> if trying to add an <see cref="ISynchronizedHandler"/> twice.</remarks>
         void Register(object handler);
 
         /// <summary>
