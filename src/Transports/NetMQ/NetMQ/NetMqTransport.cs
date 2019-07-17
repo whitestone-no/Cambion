@@ -23,6 +23,7 @@ namespace Whitestone.Cambion.Transport.NetMQ
         private readonly MessageHost _messageHost;
 
         private Thread _subscribeThread;
+        private bool _subscribeThreadRunning;
         private Thread _pingThread;
 
 
@@ -53,6 +54,13 @@ namespace Whitestone.Cambion.Transport.NetMQ
 
             _pingThread = new Thread(PingThread) { IsBackground = true };
             _pingThread.Start();
+
+            // Wait until the subscribe thread has actually subscribed before continuing.
+            // For some reason a "reset event" doesn't work here.
+            while (!_subscribeThreadRunning)
+            {
+                Thread.Sleep(50);
+            }
         }
 
         public void Stop()
@@ -140,6 +148,11 @@ namespace Whitestone.Cambion.Transport.NetMQ
                         _subscribeThread = new Thread(SubscribeThread) { IsBackground = true };
                         _subscribeThread.Start();
 
+                        while (!_subscribeThreadRunning)
+                        {
+                            Thread.Sleep(50);
+                        }
+
                         needsReinitialization = false;
                     }
 
@@ -162,6 +175,8 @@ namespace Whitestone.Cambion.Transport.NetMQ
                 _subscribeSocket.Connect(_subscribeAddress);
                 _subscribeSocket.SubscribeToAnyTopic();
 
+                _subscribeThreadRunning = true;
+
                 while (true)
                 {
                     byte[] messageBytes = _subscribeSocket.ReceiveFrameBytes();
@@ -176,6 +191,8 @@ namespace Whitestone.Cambion.Transport.NetMQ
             {
                 Thread.ResetAbort();
             }
+
+            _subscribeThreadRunning = false;
         }
     }
 }
