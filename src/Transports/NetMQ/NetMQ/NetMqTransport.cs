@@ -25,6 +25,8 @@ namespace Whitestone.Cambion.Transport.NetMQ
         private Thread _subscribeThread;
         private bool _subscribeThreadRunning;
         private Thread _pingThread;
+        private CancellationTokenSource _subscribeThreadCancellation = new CancellationTokenSource();
+        private CancellationTokenSource _pingThreadCancellation = new CancellationTokenSource();
 
 
         public NetMqTransport(string publishAddress, string subscribeAddress, bool useMessageHost)
@@ -65,8 +67,8 @@ namespace Whitestone.Cambion.Transport.NetMQ
 
         public void Stop()
         {
-            _subscribeThread.Abort();
-            _pingThread.Abort();
+            _subscribeThreadCancellation.Cancel();
+            _pingThreadCancellation.Cancel();
 
             lock (_publishSocket)
             {
@@ -111,73 +113,67 @@ namespace Whitestone.Cambion.Transport.NetMQ
         /// </remarks>
         private void PingThread()
         {
-            try
-            {
-                Uri uri = new Uri(_subscribeAddress);
-                bool needsReinitialization = false;
+            Uri uri = new Uri(_subscribeAddress);
+            bool needsReinitialization = false;
 
-                while (true)
+            while (!_pingThreadCancellation.IsCancellationRequested)
+            {
+                bool pingable;
+
+                Ping pinger = new Ping();
+                try
                 {
-                    bool pingable;
-
-                    Ping pinger = new Ping();
-                    try
-                    {
-                        PingReply reply = pinger.Send(uri.Host, 1000);
-                        pingable = reply != null && (reply.Status == IPStatus.Success);
-                    }
-                    catch (PingException)
-                    {
-                        pingable = false;
-                    }
-
-                    if (!pingable)
-                    {
-                        needsReinitialization = true;
-                    }
-
-                    if (pingable && needsReinitialization)
-                    {
-                        _subscribeThread.Abort();
-
-                        _subscribeSocket.Disconnect(_subscribeAddress);
-                        _subscribeSocket.Dispose();
-
-                        _subscribeThread.Join();
-
-                        _subscribeThread = new Thread(SubscribeThread) { IsBackground = true };
-                        _subscribeThread.Start();
-
-                        while (!_subscribeThreadRunning)
-                        {
-                            Thread.Sleep(50);
-                        }
-
-                        needsReinitialization = false;
-                    }
-
-                    Thread.Sleep(5000);
+                    PingReply reply = pinger.Send(uri.Host, 1000);
+                    pingable = reply != null && (reply.Status == IPStatus.Success);
                 }
-            }
-            catch (ThreadAbortException)
-            {
-                Thread.ResetAbort();
+                catch (PingException)
+                {
+                    pingable = false;
+                }
+
+                if (!pingable)
+                {
+                    needsReinitialization = true;
+                }
+
+                if (pingable && needsReinitialization)
+                {
+                    _subscribeThreadCancellation.Cancel();
+
+                    _subscribeSocket.Disconnect(_subscribeAddress);
+                    _subscribeSocket.Dispose();
+
+                    _subscribeThread.Join();
+
+                    _subscribeThreadCancellation = new CancellationTokenSource();
+                    _subscribeThread = new Thread(SubscribeThread) { IsBackground = true };
+                    _subscribeThread.Start();
+
+                    while (!_subscribeThreadRunning)
+                    {
+                        Thread.Sleep(50);
+                    }
+
+                    needsReinitialization = false;
+                }
+
+                Thread.Sleep(5000);
             }
         }
 
         private void SubscribeThread()
         {
-            try
+            // Place subscribe socket initialization inside thread to make all subscribe calls happen on the same thread
+            // Trying to prevent "Cannot close an uninitialised Msg" exceptions
+            _subscribeSocket = new SubscriberSocket();
+            _subscribeSocket.Connect(_subscribeAddress);
+            _subscribeSocket.SubscribeToAnyTopic();
+
+            _subscribeThreadRunning = true;
+
+            while (!_subscribeThreadCancellation.IsCancellationRequested)
             {
-                // Place subscribe socket initialization inside thread to make all subscribe calls happen on the same thread
-                // Trying to prevent "Cannot close an uninitialised Msg" exceptions
-                _subscribeSocket = new SubscriberSocket();
-                _subscribeSocket.Connect(_subscribeAddress);
-                _subscribeSocket.SubscribeToAnyTopic();
-
-                _subscribeThreadRunning = true;
-
-                while (true)
+                try
                 {
                     byte[] messageBytes = _subscribeSocket.ReceiveFrameBytes();
 
@@ -185,11 +181,7 @@ namespace Whitestone.Cambion.Transport.NetMQ
 
                     MessageReceived?.Invoke(this, new MessageReceivedEventArgs(wrapper));
                 }
-                // ReSharper disable once FunctionNeverReturns because this is designed to run forever
-            }
-            catch (ThreadAbortException)
-            {
-                Thread.ResetAbort();
+                catch (ObjectDisposedException) { }
             }
 
             _subscribeThreadRunning = false;

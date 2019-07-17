@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
@@ -49,10 +50,24 @@ namespace Whitestone.Cambion.Transport.NetMQ
         public void Stop()
         {
             _proxy.Stop();
-            _fromSocket.Unbind(_fromAddress);
+            try
+            {
+                _fromSocket.Unbind(_fromAddress);
+            }
+            catch (ObjectDisposedException)
+            {
+                // Ignored
+            }
             _fromSocket.Close();
             _fromSocket.Dispose();
-            _toSocket.Unbind(_toAddress);
+            try
+            {
+                _toSocket.Unbind(_toAddress);
+            }
+            catch (ObjectDisposedException)
+            {
+                // Ignored
+            }
             _toSocket.Close();
             _toSocket.Dispose();
         }
