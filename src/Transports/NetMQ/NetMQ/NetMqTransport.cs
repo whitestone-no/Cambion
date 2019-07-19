@@ -175,10 +175,12 @@ namespace Whitestone.Cambion.Transport.NetMQ
             {
                 try
                 {
-                    byte[] messageBytes = _subscribeSocket.ReceiveFrameBytes();
+                    if (!_subscribeSocket.TryReceiveFrameBytes(new TimeSpan(0, 0, 0, 0, 200), out byte[] messageBytes))
+                    {
+                        continue;
+                    }
 
                     MessageWrapper wrapper = Serializer.Deserialize(messageBytes);
-
                     MessageReceived?.Invoke(this, new MessageReceivedEventArgs(wrapper));
                 }
                 catch (ObjectDisposedException) { }
