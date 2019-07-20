@@ -47,5 +47,32 @@ namespace NetMQ.Test
 
             Assert.True(eventFired);
         }
+
+        [Test]
+        public void Publish_TestObject_SameDataReceived()
+        {
+            ManualResetEvent mre = new ManualResetEvent(false);
+            MessageWrapper mwOut = new MessageWrapper
+            {
+                CorrelationId = Guid.NewGuid(),
+                Data = 47,
+                DataType = typeof(int),
+                MessageType = MessageType.Event,
+                ResponseType = typeof(DateTime)
+            };
+            MessageWrapper mwIn = null;
+
+            _transportWithHost.MessageReceived += (sender, e) =>
+            {
+                mwIn = e.Message;
+                mre.Set();
+            };
+
+            _transportWithHost.Publish(mwOut);
+
+            mre.WaitOne(new TimeSpan(0, 0, 5));
+
+            Assert.AreEqual(mwOut, mwIn);
+        }
     }
 }
