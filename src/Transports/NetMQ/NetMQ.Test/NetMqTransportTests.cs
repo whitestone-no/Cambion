@@ -74,5 +74,23 @@ namespace NetMQ.Test
 
             Assert.AreEqual(mwOut, mwIn);
         }
+
+        [Test]
+        public void PublishOnHost_ReceiveOnNonHost()
+        {
+            NetMqTransport transportWithoutHost = new NetMqTransport("tcp://localhost:9990", "tcp://localhost:9991", false);
+            transportWithoutHost.Serializer = new JsonNetSerializer();
+            transportWithoutHost.Start();
+
+            ManualResetEvent mre = new ManualResetEvent(false);
+
+            transportWithoutHost.MessageReceived += (sender, e) => { mre.Set(); };
+
+            _transportWithHost.Publish(new MessageWrapper());
+
+            bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
+
+            Assert.True(eventFired);
+        }
     }
 }
