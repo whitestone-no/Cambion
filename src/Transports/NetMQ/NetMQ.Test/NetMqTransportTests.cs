@@ -90,6 +90,8 @@ namespace NetMQ.Test
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
 
+            transportWithoutHost.Stop();
+
             Assert.True(eventFired);
         }
     }
