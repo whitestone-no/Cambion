@@ -18,15 +18,16 @@ namespace Whitestone.Cambion.Transport.NetMQ
         private readonly string _publishAddress;
         private readonly string _subscribeAddress;
 
-        private readonly PublisherSocket _publishSocket;
-        private SubscriberSocket _subscribeSocket;
         private readonly MessageHost _messageHost;
+        private readonly object _publishSocketLocker = new object();
+        private PublisherSocket _publishSocket;
+        private SubscriberSocket _subscribeSocket;
 
         private Thread _subscribeThread;
         private bool _subscribeThreadRunning;
         private Thread _pingThread;
-        private CancellationTokenSource _subscribeThreadCancellation = new CancellationTokenSource();
-        private CancellationTokenSource _pingThreadCancellation = new CancellationTokenSource();
+        private CancellationTokenSource _subscribeThreadCancellation;
+        private CancellationTokenSource _pingThreadCancellation;
 
 
         public NetMqTransport(string publishAddress, string subscribeAddress, bool useMessageHost)
@@ -38,18 +39,20 @@ namespace Whitestone.Cambion.Transport.NetMQ
             {
                 _messageHost = new MessageHost(subscribeAddress, publishAddress);
             }
-
-            _publishSocket = new PublisherSocket();
         }
 
         public void Start()
         {
             _messageHost?.Start();
 
-            lock (_publishSocket)
+            lock (_publishSocketLocker)
             {
+                _publishSocket = new PublisherSocket();
                 _publishSocket.Connect(_publishAddress);
             }
+
+            _subscribeThreadCancellation = new CancellationTokenSource();
+            _pingThreadCancellation = new CancellationTokenSource();
 
             _subscribeThread = new Thread(SubscribeThread) { IsBackground = true };
             _subscribeThread.Start();
@@ -70,13 +73,19 @@ namespace Whitestone.Cambion.Transport.NetMQ
             _subscribeThreadCancellation.Cancel();
             _pingThreadCancellation.Cancel();
 
-            lock (_publishSocket)
+            _subscribeThread.Join();
+            _pingThread.Join();
+
+            _subscribeThreadCancellation.Dispose();
+            _pingThreadCancellation.Dispose();
+
+            lock (_publishSocketLocker)
             {
                 _publishSocket?.Disconnect(_publishAddress);
             }
             _subscribeSocket?.Disconnect(_subscribeAddress);
 
-            lock (_publishSocket)
+            lock (_publishSocketLocker)
             {
                 _publishSocket?.Dispose();
             }
@@ -94,7 +103,7 @@ namespace Whitestone.Cambion.Transport.NetMQ
 
             byte[] rawBytes = Serializer.Serialize(message);
 
-            lock (_publishSocket)
+            lock (_publishSocketLocker)
             {
                 _publishSocket.SendFrame(rawBytes);
             }

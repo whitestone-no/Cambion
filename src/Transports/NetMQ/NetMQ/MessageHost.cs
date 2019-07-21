@@ -60,6 +60,7 @@ namespace Whitestone.Cambion.Transport.NetMQ
             }
             _fromSocket.Close();
             _fromSocket.Dispose();
+
             try
             {
                 _toSocket.Unbind(_toAddress);

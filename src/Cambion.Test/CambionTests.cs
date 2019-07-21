@@ -22,6 +22,12 @@ namespace Whitestone.Cambion.Test
                 .Create();
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            _cambion.Dispose();
+        }
+
 
         [Test]
         public void Register_NullValue_ThrowsArgumentNullException()

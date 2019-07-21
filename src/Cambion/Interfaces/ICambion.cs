@@ -3,7 +3,16 @@ using System.IO;
 
 namespace Whitestone.Cambion.Interfaces
 {
-    public interface ICambion
+    /// <summary>
+    /// Main Cambion interface
+    /// </summary>
+    /// <remarks>
+    /// Even though Cambion implements <see cref="System.IDisposable"/> it is designed
+    /// to only have one instance running at a time (per process). Therefore do
+    /// not use Cambion in <c>using</c> statements, but use only one instance
+    /// like you would <see cref="System.Net.Http.HttpClient"/>.
+    /// </remarks>
+    public interface ICambion : IDisposable
     {
         event EventHandler<ErrorEventArgs> UnhandledException;
 

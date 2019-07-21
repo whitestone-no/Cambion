@@ -19,6 +19,8 @@ namespace Whitestone.Cambion
         private readonly Dictionary<SynchronizedHandlerKey, SynchronizedHandler> _synchronizedHandlers = new Dictionary<SynchronizedHandlerKey, SynchronizedHandler>();
         private readonly Dictionary<Guid, SynchronizedDataPackage> _synchronizationPackages = new Dictionary<Guid, SynchronizedDataPackage>();
 
+        private bool _disposed;
+
         public event EventHandler<ErrorEventArgs> UnhandledException;
 
         public Cambion(ITransport transport, ISerializer serializer)
@@ -359,6 +361,37 @@ namespace Whitestone.Cambion
         {
             EventHandler<ErrorEventArgs> eh = UnhandledException;
             eh?.Invoke(this, new ErrorEventArgs(ex));
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (_disposed)
+            {
+                return;
+            }
+
+            // If disposing equals true, dispose all managed
+            // and unmanaged resources.
+            if (disposing)
+            {
+                // Dispose managed resources.
+                _transport.MessageReceived -= Transport_MessageReceived;
+                _transport.Stop();
+            }
+
+            // Note disposing has been done.
+            _disposed = true;
+        }
+
+        ~Cambion()
+        {
+            Dispose(false);
         }
     }
 }
