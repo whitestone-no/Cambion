@@ -2,3 +2,4 @@ site_name: Cambion
 nav:
     - Overview:
         - Home: index.md
+        - Sub: sub.md
