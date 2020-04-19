@@ -1,5 +1,5 @@
 site_name: Cambion
 nav:
-    - Overview:
-        - Home: index.md
-        - Sub: sub.md
+- Home: index.md
+- 'Overview':
+  - 'Sub': sub.md
