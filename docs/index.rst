@@ -7,26 +7,28 @@ It also includes a set of convenience functions for synchronous and asynchronous
 The framework is easily extensible to add support for other transports and serializers.
 
 .. toctree::
-    :caption: Installation
-	
-	installation/nuget
-	
-.. toctree::
-    :caption: The Basics
-	
-	basics/instantiation
-	basics/subscribing
-	basics/consuming
+   :maxdepth: 3
+   :hidden:
+   :caption: Installation
+
+   installation/nuget
 
 .. toctree::
-    :caption: Transports
-	
-	transports/introduction
-	transports/loopback
-	transports/netmq
+   :caption: The Basics
+
+   basics/instantiation
+   basics/subscribing
+   basics/consuming
 
 .. toctree::
-    :caption: Serializers
-	
-	serializers/introduction
-	serializers/newtonsoft
+   :caption: Transports
+
+   transports/introduction
+   transports/loopback
+   transports/netmq
+
+.. toctree::
+   :caption: Serializers
+
+   serializers/introduction
+   serializers/newtonsoft
