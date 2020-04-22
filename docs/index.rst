@@ -33,4 +33,4 @@ The framework is easily extensible to add support for other transports and seria
    :caption: Serializers
 
    serializers/introduction
-   serializers/newtonsoft
+   serializers/jsonnet
