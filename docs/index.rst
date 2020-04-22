@@ -7,13 +7,13 @@ It also includes a set of convenience functions for synchronous and asynchronous
 The framework is easily extensible to add support for other transports and serializers.
 
 .. toctree::
-   :maxdepth: 3
    :hidden:
    :caption: Installation
 
    installation/nuget
 
 .. toctree::
+   :hidden:
    :caption: The Basics
 
    basics/instantiation
@@ -21,6 +21,7 @@ The framework is easily extensible to add support for other transports and seria
    basics/consuming
 
 .. toctree::
+   :hidden:
    :caption: Transports
 
    transports/introduction
@@ -28,6 +29,7 @@ The framework is easily extensible to add support for other transports and seria
    transports/netmq
 
 .. toctree::
+   :hidden:
    :caption: Serializers
 
    serializers/introduction
