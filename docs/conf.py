@@ -10,6 +10,7 @@ master_doc = 'index'
 highlight_language = 'csharp'
 
 html_favicon = 'favicon.ico'
+html_logo = 'images/logoTiny.png'
 html_theme_options = {
     'collapse_navigation': False,
     'prev_next_buttons_location': 'None'
