@@ -1,4 +1,4 @@
-.. rst-class: IndexHeading
+.. rst-class:: IndexHeading
 
 Welcome to Cambion
 ------------------
