@@ -2,12 +2,16 @@ div.indexheading h1 {
 	text-align: center;
 }
 
+.wy-side-nav-search {
+	color: #922525;
+}
+
 .wy-menu-vertical header, .wy-menu-vertical p.caption {
 	color: #db6e6e;
 }
 
-a,
-a:hover,
-a:visited {
+.wy-nav-content-wrap a,
+.wy-nav-content-wrap a:hover,
+.wy-nav-content-wrap a:visited {
 	color: #c83232;
 }
