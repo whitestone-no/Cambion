@@ -32,7 +32,7 @@ Publish a synchronized using the following functionality:
 
 All the examples regarding synchronized described above use the `TRequest` and `TResponse` types during subscription, so this call to `CallSynchronizedHandler` will cause the callbacks for all those subscriptions to be called.
 
-> Note that you are here required to specify the types as generics for the method signature.
+.. note:: Note that you are here required to specify the types as generics for the method signature.
 
 
 A note about synchronized messages
