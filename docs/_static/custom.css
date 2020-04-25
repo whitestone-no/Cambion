@@ -16,3 +16,10 @@ div.indexheading h1 {
 .wy-nav-content-wrap a:visited {
 	color: #c83232;
 }
+
+.rst-content .note {
+	background: #f3e6e6;
+}
+.rst-content .note .admonition-title {
+	background: #922525;
+}
