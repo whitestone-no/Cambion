@@ -16,14 +16,14 @@ You can subscribe using the methods found in ``ICambion``, which are accessible 
     cambion.AddEventHandler<TEvent>(MyEventCallback);
     cambion.AddSynchronizedHandler<TRequest, TResponse>(MySynchronizedCallback);
 
-The method signature for the callbacks will then be as follows
+The method signature for the callbacks will then be as follows:
 
 ::
 
     private void MyEventCallback(TEvent data) { }
     private TResponse MySynchronizedCallback(TRequest data) { }
 
-You can also use lambda expressions instead of callback methods
+You can also use lambda expressions instead of callback methods:
 
 ::
 
