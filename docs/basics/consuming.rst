@@ -26,9 +26,9 @@ Synchronized are two-way, and there should be only one recipient.
 
 Publish a synchronized using the following functionality:
 
-```csharp
-TResponse response = cambion.CallSynchronizedHandler<TRequest, TResponse>(new TRequest());
-```
+::
+
+    TResponse response = cambion.CallSynchronizedHandler<TRequest, TResponse>(new TRequest());
 
 All the examples regarding synchronized described above use the `TRequest` and `TResponse` types during subscription, so this call to `CallSynchronizedHandler` will cause the callbacks for all those subscriptions to be called.
 
