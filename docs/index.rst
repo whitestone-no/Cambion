@@ -5,7 +5,6 @@ Welcome to Cambion
 
 .. image:: images/logo.png
    :align: center
-   :width: 175
    :alt: Logo
 
 Cambion is a lightweight and open-source distributed application framework providing a service bus for .NET
