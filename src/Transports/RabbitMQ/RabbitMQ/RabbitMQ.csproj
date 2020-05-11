@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Whitestone.Cambion.Transport.RabbitMQ</RootNamespace>
     <AssemblyName>Whitestone.Cambion.Transport.RabbitMQ</AssemblyName>
+    <RootNamespace>Whitestone.Cambion.Transport.RabbitMQ</RootNamespace>
     <Version>1.1.0-preview</Version>
     <Authors>Whitestone</Authors>
     <Product>Whitestone Cambion</Product>
@@ -17,10 +17,14 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <PropertyGroup>
+	<NoWarn>NU5105</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="..\..\..\..\LICENSE.txt" Link="LICENSE.txt">
-      <PackagePath></PackagePath>
       <Pack>True</Pack>
+      <PackagePath></PackagePath>
     </None>
   </ItemGroup>
 
