@@ -10,14 +10,22 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Transports", "Transports", "{06522A04-9918-4471-98CC-92ADCEF38482}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetMQ", "NetMQ", "{E5E45472-F88D-4BF5-A8E8-4B8D72DC2D8D}"
+	ProjectSection(SolutionItems) = preProject
+		Transports\NetMQ\README.md = Transports\NetMQ\README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetMQ", "Transports\NetMQ\NetMQ\NetMQ.csproj", "{5593D74C-4426-4A6A-BE80-46A8FAE5D237}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetMQ.Test", "Transports\NetMQ\NetMQ.Test\NetMQ.Test.csproj", "{67892CEB-E96E-4534-9D2E-24BDB93E1FAE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RabbitMQ", "RabbitMQ", "{B45FA162-5250-4178-ABDD-2AD5D2F4AC73}"
+	ProjectSection(SolutionItems) = preProject
+		Transports\RabbitMQ\README.md = Transports\RabbitMQ\README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQ", "Transports\RabbitMQ\RabbitMQ\RabbitMQ.csproj", "{10D0F734-01C2-4BB1-9947-EBC6195BA70B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQ.Test", "Transports\RabbitMQ\RabbitMQ.Test\RabbitMQ.Test.csproj", "{9DA1C42B-C9E1-4EDC-8FDF-AB8D0B831767}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +53,10 @@ Global
 		{10D0F734-01C2-4BB1-9947-EBC6195BA70B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10D0F734-01C2-4BB1-9947-EBC6195BA70B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10D0F734-01C2-4BB1-9947-EBC6195BA70B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DA1C42B-C9E1-4EDC-8FDF-AB8D0B831767}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DA1C42B-C9E1-4EDC-8FDF-AB8D0B831767}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DA1C42B-C9E1-4EDC-8FDF-AB8D0B831767}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DA1C42B-C9E1-4EDC-8FDF-AB8D0B831767}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +67,7 @@ Global
 		{67892CEB-E96E-4534-9D2E-24BDB93E1FAE} = {E5E45472-F88D-4BF5-A8E8-4B8D72DC2D8D}
 		{B45FA162-5250-4178-ABDD-2AD5D2F4AC73} = {06522A04-9918-4471-98CC-92ADCEF38482}
 		{10D0F734-01C2-4BB1-9947-EBC6195BA70B} = {B45FA162-5250-4178-ABDD-2AD5D2F4AC73}
+		{9DA1C42B-C9E1-4EDC-8FDF-AB8D0B831767} = {B45FA162-5250-4178-ABDD-2AD5D2F4AC73}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8080ED3-04FB-4E21-B63F-55B5AAB135B2}
