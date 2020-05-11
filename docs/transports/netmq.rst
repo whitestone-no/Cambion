@@ -1,9 +1,7 @@
 NetMQ
 -----
 
-If you have one application that needs to talk to another application, either on the same computer, or even on a different computer, you can't use the loopback transport.
-
-Fortunately Cambion has another transport, called ``NetMQ``, to cover these use-cases. This uses `NetMQ <https://github.com/zeromq/netmq>`_ to send data between instances of Cambion.
+When the default Loopback transport doesn't cover your use-cases, Cambion has other transports available. One of these uses `NetMQ <https://github.com/zeromq/netmq>`_ to send data between instances of Cambion.
 
 .. note:: NetMQ uses two TCP ports. These two ports needs to be open in your firewall.
 
