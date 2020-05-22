@@ -12,7 +12,7 @@ The previous example will initialize Cambion with a default Transport and Serial
 .. note:: The Cambion instance should be a singleton so that the same instance is shared among all usages throughout the code.
 
 Disposing
----------	
+=========	
 
 Cambion implements ``IDisposable`` and the Disposable pattern. Calling ``Dispose()`` on the Cambion object ensures that any
 external connections established by transports are properly closed and handled.
