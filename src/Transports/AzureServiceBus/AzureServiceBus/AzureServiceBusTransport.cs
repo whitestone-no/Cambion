@@ -90,7 +90,7 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
             if (_config.Topic.AutoDelete)
             {
                 TopicRuntimeInfo topicInfo = await _managementClient.GetTopicRuntimeInfoAsync(_config.Topic.Name);
-                if (topicInfo.SubscriptionCount <= 0)
+                if (topicInfo.SubscriptionCount < 1)
                 {
                     await _managementClient.DeleteTopicAsync(_config.Topic.Name);
                 }
