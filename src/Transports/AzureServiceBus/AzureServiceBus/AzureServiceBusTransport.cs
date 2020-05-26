@@ -115,7 +115,11 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
             if (!topicExists)
             {
-                await _managementClient.CreateTopicAsync(_config.Topic.Name);
+                TopicDescription topic = new TopicDescription(_config.Topic.Name)
+                {
+                    AutoDeleteOnIdle = TimeSpan.MaxValue
+                };
+                await _managementClient.CreateTopicAsync(topic);
             }
         }
 
@@ -125,7 +129,11 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
             if (!subscriptionExists)
             {
-                await _managementClient.CreateSubscriptionAsync(_config.Topic.Name, _config.Subscription.Name);
+                SubscriptionDescription sub = new SubscriptionDescription(_config.Topic.Name, _config.Subscription.Name)
+                {
+                    AutoDeleteOnIdle = TimeSpan.MaxValue
+                };
+                await _managementClient.CreateSubscriptionAsync(sub);
             }
         }
 
