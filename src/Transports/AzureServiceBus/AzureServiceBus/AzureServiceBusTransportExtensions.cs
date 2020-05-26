@@ -6,16 +6,9 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 {
     public static class AzureServiceBusTransportExtensions
     {
-        public static ICambionConfiguration UseAzureServiceBus(this TransportConfiguration transportConfiguration, string endpoint)
+        public static ICambionConfiguration UseAzureServiceBus(this TransportConfiguration transportConfiguration, Action<AzureServiceBusConfig> configAction)
         {
-            AzureServiceBusConfig config = new AzureServiceBusConfig(endpoint);
-            AzureServiceBusTransport transport = new AzureServiceBusTransport(config);
-            return transportConfiguration.Transport(transport);
-        }
-
-        public static ICambionConfiguration UseAzureServiceBus(this TransportConfiguration transportConfiguration, string endpoint, Action<AzureServiceBusConfig> configAction)
-        {
-            AzureServiceBusConfig config = new AzureServiceBusConfig(endpoint);
+            AzureServiceBusConfig config = new AzureServiceBusConfig();
             configAction(config);
             AzureServiceBusTransport transport = new AzureServiceBusTransport(config);
             return transportConfiguration.Transport(transport);

@@ -4,24 +4,17 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 {
     public class AzureServiceBusConfig
     {
-        public string Endpoint { get; }
-        public AzureServiceBusEntity Topic { get; } = new AzureServiceBusEntity("cambion");
-
-        public AzureServiceBusEntity Subscription { get; } = new AzureServiceBusEntity("cambion-" + Guid.NewGuid().ToString("N"));
+        public string Endpoint { get; set; }
+        public AzureServiceBusEntity Topic { get; } = new AzureServiceBusEntity();
+        public AzureServiceBusEntity Subscription { get; } = new AzureServiceBusEntity();
         public AzureServiceBusAuthentication Autentication { get; } = new AzureServiceBusAuthentication();
 
-        public AzureServiceBusConfig(string endpoint)
+        public AzureServiceBusConfig()
         {
-            Endpoint = endpoint;
         }
 
         public class AzureServiceBusEntity
         {
-            public AzureServiceBusEntity(string name)
-            {
-                Name = name;
-            }
-
             public string Name { get; set; }
             public bool AutoCreate { get; set; } = false;
             public bool AutoDelete { get; set; } = false;
@@ -40,11 +33,11 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
             {
                 throw new ArgumentNullException(nameof(Endpoint));
             }
-            if (string.IsNullOrEmpty(Topic.Name))
+            if (string.IsNullOrEmpty(Topic?.Name))
             {
                 throw new ArgumentNullException(nameof(Topic.Name));
             }
-            if (string.IsNullOrEmpty(Subscription.Name))
+            if (string.IsNullOrEmpty(Subscription?.Name))
             {
                 throw new ArgumentNullException(nameof(Subscription.Name));
             }
@@ -67,6 +60,7 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
         }
 
         internal bool UseManagedIdentity() =>
+            Autentication == null ||
             string.IsNullOrEmpty(Autentication.TenantId) &&
             string.IsNullOrEmpty(Autentication.ClientId) &&
             string.IsNullOrEmpty(Autentication.ClientSecret);
