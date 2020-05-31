@@ -1,19 +1,16 @@
 ﻿using System;
+using Microsoft.Azure.ServiceBus.Management;
 
 namespace Whitestone.Cambion.Transport.AzureSericeBus
 {
     public class AzureServiceBusConfig
     {
         public string Endpoint { get; set; }
-        public AzureServiceBusEntity Topic { get; } = new AzureServiceBusEntity();
-        public AzureServiceBusEntity Subscription { get; } = new AzureServiceBusEntity();
+        public AzureServiceBusTopic Topic { get; } = new AzureServiceBusTopic();
+        public AzureServiceBusSubscription Subscription { get; } = new AzureServiceBusSubscription();
         public AzureServiceBusAuthentication Autentication { get; } = new AzureServiceBusAuthentication();
 
-        public AzureServiceBusConfig()
-        {
-        }
-
-        public class AzureServiceBusEntity
+        public abstract class AzureServiceBusEntity
         {
             public string Name { get; set; }
             public bool AutoCreate { get; set; } = false;
@@ -25,6 +22,16 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
             public string TenantId{ get; set; }
             public string ClientId { get; set; }
             public string ClientSecret { get; set; }
+        }
+
+        public class AzureServiceBusTopic : AzureServiceBusEntity
+        {
+            public TopicDescription Details { get; } = new TopicDescription(null);
+        }
+
+        public class AzureServiceBusSubscription : AzureServiceBusEntity
+        {
+            public SubscriptionDescription Details { get; } = new SubscriptionDescription(null, null);
         }
 
         internal void AssertIsValid()

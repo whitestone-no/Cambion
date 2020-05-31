@@ -115,10 +115,16 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
             if (!topicExists)
             {
-                TopicDescription topic = new TopicDescription(_config.Topic.Name)
+                TopicDescription topic;
+                if (_config.Topic.Details == null)
                 {
-                    AutoDeleteOnIdle = TimeSpan.MaxValue
-                };
+                    topic = new TopicDescription(_config.Topic.Name);
+                }
+                else
+                {
+                    topic = _config.Topic.Details;
+                    topic.Path = _config.Topic.Name;
+                }
                 await _managementClient.CreateTopicAsync(topic);
             }
         }
@@ -129,11 +135,18 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
             if (!subscriptionExists)
             {
-                SubscriptionDescription sub = new SubscriptionDescription(_config.Topic.Name, _config.Subscription.Name)
+                SubscriptionDescription subscription;
+                if (_config.Subscription.Details == null)
                 {
-                    AutoDeleteOnIdle = TimeSpan.MaxValue
-                };
-                await _managementClient.CreateSubscriptionAsync(sub);
+                    subscription = new SubscriptionDescription(_config.Topic.Name, _config.Subscription.Name);
+                }
+                else
+                {
+                    subscription = _config.Subscription.Details;
+                    subscription.TopicPath = _config.Topic.Name;
+                    subscription.SubscriptionName = _config.Subscription.Name;
+                }
+                await _managementClient.CreateSubscriptionAsync(subscription);
             }
         }
 
@@ -154,13 +167,13 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
         private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
-            Console.WriteLine($"Message handler encountered an exception {exceptionReceivedEventArgs.Exception}.");
-
             ExceptionReceivedContext context = exceptionReceivedEventArgs.ExceptionReceivedContext;
-            Console.WriteLine("Exception context for troubleshooting:");
-            Console.WriteLine($"- Endpoint: {context.Endpoint}");
-            Console.WriteLine($"- Entity Path: {context.EntityPath}");
-            Console.WriteLine($"- Executing Action: {context.Action}");
+
+            Console.Error.WriteLine($"Message handler encountered an exception {exceptionReceivedEventArgs.Exception}.");
+            Console.Error.WriteLine("Exception context for troubleshooting:");
+            Console.Error.WriteLine($"- Endpoint: {context.Endpoint}");
+            Console.Error.WriteLine($"- Entity Path: {context.EntityPath}");
+            Console.Error.WriteLine($"- Executing Action: {context.Action}");
 
             return Task.CompletedTask;
         }
