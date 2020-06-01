@@ -3,12 +3,18 @@ div.indexheading h1 {
 	font-size: 350%;
 }
 
-.wy-side-nav-search {
+.wy-side-nav-search,
+.wy-nav-top {
 	background-color: #922525;
 }
 
-.wy-menu-vertical header, .wy-menu-vertical p.caption {
+.wy-menu-vertical header,
+.wy-menu-vertical p.caption {
 	color: #cc5a5a;
+}
+
+.wy-nav-top a {
+	color: #fff!important;
 }
 
 .wy-nav-content-wrap a,
