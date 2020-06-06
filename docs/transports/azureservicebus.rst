@@ -70,7 +70,7 @@ The ``AzureServiceBusConfig`` object has even more configuration options that co
 |                    |                |          | AutoCreate for more fine grained         |                    |
 |                    |                |          | control of topic creation options        |                    |
 +--------------------+----------------+----------+------------------------------------------+--------------------+
-| **Subscription**   | Name           | No       | The name of the subscription             | *null*             |
+| **Subscription**   | Name           | Yes      | The name of the subscription             | *null*             |
 |                    +----------------+----------+------------------------------------------+--------------------+
 |                    | AutoCreate     | No       | Automatically create the subscription    | false              |
 |                    |                |          | if it does not already exist             |                    |
