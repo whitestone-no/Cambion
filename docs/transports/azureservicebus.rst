@@ -54,9 +54,9 @@ The ``AzureServiceBusConfig`` object has even more configuration options that co
 +--------------------+----------------+----------+------------------------------------------+--------------------+
 | Group              | Parameter name | Required | Description                              | Default value      |
 +====================+================+==========+==========================================+====================+
-|                    | Endpoint       | Yes      | The full URI to your Azure Service Bus   | *null*             |
+|                    | Endpoint       | **Yes**  | The full URI to your Azure Service Bus   | *null*             |
 +--------------------+----------------+----------+------------------------------------------+--------------------+
-| **Topic**          | Name           | Yes      | The name of the topic                    | *null*             |
+| **Topic**          | Name           | **Yes**  | The name of the topic                    | *null*             |
 |                    +----------------+----------+------------------------------------------+--------------------+
 |                    | AutoCreate     | No       | Automatically create the topic if it     | false              |
 |                    |                |          | does not already exist                   |                    |
@@ -70,7 +70,7 @@ The ``AzureServiceBusConfig`` object has even more configuration options that co
 |                    |                |          | AutoCreate for more fine grained         |                    |
 |                    |                |          | control of topic creation options        |                    |
 +--------------------+----------------+----------+------------------------------------------+--------------------+
-| **Subscription**   | Name           | Yes      | The name of the subscription             | *null*             |
+| **Subscription**   | Name           | **Yes**  | The name of the subscription             | *null*             |
 |                    +----------------+----------+------------------------------------------+--------------------+
 |                    | AutoCreate     | No       | Automatically create the subscription    | false              |
 |                    |                |          | if it does not already exist             |                    |
