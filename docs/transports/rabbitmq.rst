@@ -52,11 +52,11 @@ The following is a list of all possible configuration parameters:
 +----------------+----------------+----------+-------------------------------------+--------------------+
 | Group          | Parameter name | Required | Description                         | Default value      |
 +================+================+==========+=====================================+====================+
-| **Connection** | Hostname       | Yes      | The hostname of the RabbitMQ server | *null*             |
+| **Connection** | Hostname       | **Yes**  | The hostname of the RabbitMQ server | *null*             |
 |                +----------------+----------+-------------------------------------+--------------------+
-|                | Username       | Yes      | The username needed to connect      | *null*             |
+|                | Username       | **Yes**  | The username needed to connect      | *null*             |
 |                +----------------+----------+-------------------------------------+--------------------+
-|                | Password       | Yes      | The password needed to connect      | *null*             |
+|                | Password       | **Yes**  | The password needed to connect      | *null*             |
 |                +----------------+----------+-------------------------------------+--------------------+
 |                | VirtualHost    | No       | The vhost on the RabbitMQ server    | "/"                |
 |                +----------------+----------+-------------------------------------+--------------------+
