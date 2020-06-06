@@ -26,12 +26,12 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
         public class AzureServiceBusTopic : AzureServiceBusEntity
         {
-            public TopicDescription Details { get; } = new TopicDescription(null);
+            public TopicDescription Details { get; } = new TopicDescription("cambion");
         }
 
         public class AzureServiceBusSubscription : AzureServiceBusEntity
         {
-            public SubscriptionDescription Details { get; } = new SubscriptionDescription(null, null);
+            public SubscriptionDescription Details { get; } = new SubscriptionDescription("cambion", "cambion-sub");
         }
 
         internal void AssertIsValid()
