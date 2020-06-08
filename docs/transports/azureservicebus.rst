@@ -22,7 +22,7 @@ Seeing as Cambion uses a pub/sub pattern for its inner workings, you will need a
 Setting up this in Azure is well `documented <https://docs.microsoft.com/en-us/azure/service-bus-messaging/>`_ by Microsoft and is not covered in this documentation.
 
 The Azure Service Bus transport is set up using an extension method for ``ICambionConfiguration.Transport``. This extension method takes an
-``Action<AzureServiceBusConfig>`` as the input parameter. The most basic vales for this configuration are also minimum required values:
+``Action<AzureServiceBusConfig>`` as the input parameter. The most basic values for this configuration are also minimum required values:
 
 ::
 
