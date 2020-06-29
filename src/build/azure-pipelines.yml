@@ -22,17 +22,19 @@ steps:
     projects: |
       **/*.csproj
       !**/*.Test.csproj
-    arguments: '-p:Version=$(GitVersion.FullSemVer) -p:FileVersion=$(GitVersion.MajorMinorPatch) -c Release'
+    arguments: '-p:Version=$(GITVERSION_FULLSEMVER) -p:FileVersion=$(GITVERSION_MAJORMINORPATCH) -c Debug'
 - task: DotNetCoreCLI@2
   displayName: 'Pack projects for NuGet'
   inputs:
     command: 'pack'
     packagesToPack: '**/*.csproj;!**/*.Test.csproj'
-    versioningScheme: 'off'
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: 'GITVERSION_FULLSEMVER'
+    verbosityPack: 'Normal'
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'cambionArtifacts'
+    ArtifactName: 'CambionArtifacts'
     publishLocation: 'Container'
 - task: PowerShell@2
   displayName: 'DEBUG: Environment Variables'
@@ -44,4 +46,4 @@ steps:
       Write-Host "************************************"
       Get-ChildItem Env: | Format-Table -AutoSize
     errorActionPreference: 'continue'
-  enabled: false
+  enabled: true
