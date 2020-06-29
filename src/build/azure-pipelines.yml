@@ -2,53 +2,53 @@ trigger: none
 
 pool:
   name: 'Whitestone'
-
-variables:
-- name: System.Debug
-  value: true
-
-steps:
-- task: UseDotNet@2
-  displayName: 'Use .NET Core SDK 3.1.x'
-  inputs:
-    packageType: 'sdk'
-    version: '3.1.x'
-- task: gitversion/setup@0
-  displayName: 'Setup GitVersion 5.x'
-  inputs:
-    versionSpec: '5.x'
-- task: gitversion/execute@0
-  displayName: 'Execute GitVersion'
-- task: DotNetCoreCLI@2
-  displayName: 'Build projects'
-  inputs:
-    command: 'build'
-    projects: |
-      **/*.csproj
-      !**/*.Test.csproj
-    arguments: '-p:Version=$(env:GITVERSION_FULLSEMVER) -p:FileVersion=$(env:GITVERSION_MAJORMINORPATCH) -c Debug'
-- task: DotNetCoreCLI@2
-  displayName: 'Pack projects for NuGet'
-  inputs:
-    command: 'pack'
-    packagesToPack: '**/*.csproj;!**/*.Test.csproj'
-    versioningScheme: 'byEnvVar'
-    versionEnvVar: 'GITVERSION_FULLSEMVER'
-    verbosityPack: 'Normal'
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish artifacts'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'CambionArtifacts'
-    publishLocation: 'Container'
-- task: PowerShell@2
-  displayName: 'DEBUG: Environment Variables'
-  inputs:
-    targetType: 'inline'
-    script: |
-      Write-Host "************************************"
-      Write-Host "*** ENVIRONMENT VARIABLES ***"
-      Write-Host "************************************"
-      Get-ChildItem Env: | Format-Table -AutoSize
-    errorActionPreference: 'continue'
-  enabled: true
+  
+stages:
+- stage: 'Build Preview Release'
+  jobs:
+  - job: 'Build'
+    steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core SDK 3.1.x'
+      inputs:
+        packageType: 'sdk'
+        version: '3.1.x'
+    - task: gitversion/setup@0
+      displayName: 'Setup GitVersion 5.x'
+      inputs:
+        versionSpec: '5.x'
+    - task: gitversion/execute@0
+      displayName: 'Execute GitVersion'
+    - task: DotNetCoreCLI@2
+      displayName: 'Build projects'
+      inputs:
+        command: 'build'
+        projects: |
+          **/*.csproj
+          !**/*.Test.csproj
+        arguments: '-p:Version=$env:GITVERSION_FULLSEMVER -p:FileVersion=$env:GITVERSION_MAJORMINORPATCH -c Debug'
+    - task: DotNetCoreCLI@2
+      displayName: 'Pack projects for NuGet'
+      inputs:
+        command: 'pack'
+        packagesToPack: '**/*.csproj;!**/*.Test.csproj'
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: 'GITVERSION_FULLSEMVER'
+        verbosityPack: 'Normal'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish artifacts'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'CambionArtifacts'
+        publishLocation: 'Container'
+    - task: PowerShell@2
+      displayName: 'DEBUG: Environment Variables'
+      inputs:
+        targetType: 'inline'
+        script: |
+          Write-Host "************************************"
+          Write-Host "*** ENVIRONMENT VARIABLES ***"
+          Write-Host "************************************"
+          Get-ChildItem Env: | Format-Table -AutoSize
+        errorActionPreference: 'continue'
+      enabled: true
