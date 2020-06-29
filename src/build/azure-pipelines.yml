@@ -12,7 +12,12 @@ steps:
   inputs:
     versionSpec: '5.x'
 - task: gitversion/execute@0
-  
-- script: 'dir env:'
-  displayName: 'Print environment variables'
-  
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      Write-Host "************************************"
+      Write-Host "*** ENVIRONMENT VARIABLES ***"
+      Write-Host "************************************"
+      Get-ChildItem Env:
+    errorActionPreference: 'continue'
