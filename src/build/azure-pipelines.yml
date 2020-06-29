@@ -4,7 +4,7 @@ pool:
   name: 'Whitestone'
   
 stages:
-- stage: 'Build Preview Release'
+- stage: 'Build_Preview_Release'
   jobs:
   - job: 'Build'
     steps:
