@@ -37,12 +37,7 @@ namespace RabbitMQ.Test
         }
 
         [Test]
-        public void Publish_NullValue_ThrowsArgumentNullException()
-        {
-            Assert.Throws<ArgumentNullException>(() => { _transport.Publish(null); });
-        }
-
-        [Test]
+        [Order(1)]
         public void Publish_DefaultObject_EventReceived()
         {
             ManualResetEvent mre = new ManualResetEvent(false);
@@ -60,6 +55,7 @@ namespace RabbitMQ.Test
         }
 
         [Test]
+        [Order(2)]
         public void Publish_TestObject_SameDataReceived()
         {
             ManualResetEvent mre = new ManualResetEvent(false);
@@ -87,6 +83,7 @@ namespace RabbitMQ.Test
         }
 
         [Test]
+        [Order(3)]
         public void Publish_HostWithCustomConfig_EventReceived()
         {
             RabbitMqConfig config = new RabbitMqConfig
@@ -119,6 +116,13 @@ namespace RabbitMQ.Test
             Assert.True(eventFired);
 
             _transport.Stop();
+        }
+
+        [Test]
+        [Order(4)]
+        public void Publish_NullValue_ThrowsArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => { _transport.Publish(null); });
         }
     }
 }
