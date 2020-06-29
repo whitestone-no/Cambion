@@ -49,7 +49,7 @@ stages:
           **/*.csproj
           !**/*.Test.csproj
         custom: 'pack'
-        arguments: '-p:PackageVersion=$(GitVersion.SemVer)-$(GitVersion.BuildMetaDataPadded) -p:Version=$(GitVersion.FullSemVer) -p:FileVersion=$(GitVersion.MajorMinorPatch) -o $(Build.ArtifactStagingDirectory) -c Debug'
+        arguments: '/p:VersionPrefix=$(GitVersion.MajorMinorPatch) /p:VersionSuffix=$(GitVersion.PreReleaseLabel)-b$(GitVersion.BuildMetaData) /p:InformationalVersion=$(GitVersion.FullSemVer) -o $(Build.ArtifactStagingDirectory) -c Debug'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifacts'
       inputs:
