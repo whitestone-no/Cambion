@@ -3,6 +3,10 @@ trigger: none
 pool:
   name: 'Whitestone'
 
+variables:
+- name: System.Debug
+  value: true
+
 steps:
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK 3.1.x'
@@ -22,7 +26,7 @@ steps:
     projects: |
       **/*.csproj
       !**/*.Test.csproj
-    arguments: '-p:Version=$(GITVERSION_FULLSEMVER) -p:FileVersion=$(GITVERSION_MAJORMINORPATCH) -c Debug'
+    arguments: '-p:Version=$(env:GITVERSION_FULLSEMVER) -p:FileVersion=$(env:GITVERSION_MAJORMINORPATCH) -c Debug'
 - task: DotNetCoreCLI@2
   displayName: 'Pack projects for NuGet'
   inputs:
@@ -32,6 +36,7 @@ steps:
     versionEnvVar: 'GITVERSION_FULLSEMVER'
     verbosityPack: 'Normal'
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish artifacts'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'CambionArtifacts'
