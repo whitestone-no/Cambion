@@ -8,7 +8,7 @@
     <Authors>Whitestone</Authors>
     <Product>Whitestone Cambion</Product>
     <Description>Cambion is a light-weight open-source service bus for .NET with a set of convenience functions for synchronous and asynchronous event handling.</Description>
-    <Copyright>Copyright © 2019</Copyright>
+    <Copyright>Copyright © 2020</Copyright>
     <PackageProjectUrl>https://github.com/whitestone-no/Cambion</PackageProjectUrl>
     <PackageIconUrl>http://cambion.whitestone.no/img/CambionLogo.png</PackageIconUrl>
     <PackageTags>messaging servicebus esb enterprice-service-bus cambion event-aggregator</PackageTags>
