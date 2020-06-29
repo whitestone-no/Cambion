@@ -26,7 +26,7 @@ stages:
         projects: |
           **/*.csproj
           !**/*.Test.csproj
-        arguments: '-p:Version=$env:GITVERSION_FULLSEMVER -p:FileVersion=$env:GITVERSION_MAJORMINORPATCH -c Debug'
+        arguments: '-p:Version=$(GitVersion.FullSemVer) -p:FileVersion=$(GitVersion.MajorMinorPatch) -c Debug'
     - task: DotNetCoreCLI@2
       displayName: 'Pack projects for NuGet'
       inputs:
