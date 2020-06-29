@@ -29,6 +29,11 @@ steps:
     command: 'pack'
     packagesToPack: '**/*.csproj;!**/*.Test.csproj'
     versioningScheme: 'off'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'cambionArtifacts'
+    publishLocation: 'Container'
 - task: PowerShell@2
   displayName: 'DEBUG: Environment Variables'
   inputs:
