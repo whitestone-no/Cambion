@@ -2,14 +2,12 @@ mode: ContinuousDelivery
 major-version-bump-message: '\[(breaking|major)\]'
 minor-version-bump-message: '\[(feature|minor)\]'
 patch-version-bump-message: '\[(fix|patch)\]'
-branches: {
+branches:
   master:
     increment: Patch
-  release: {
+  release:
     tag: preview
     increment: Patch
     regex: ^release[s]?[\/-]
-  }
-}
 ignore:
   sha: []
