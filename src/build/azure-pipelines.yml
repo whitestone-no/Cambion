@@ -40,6 +40,16 @@ stages:
         versionEnvVar: 'GITVERSION_FULLSEMVER'
         verbosityPack: 'Normal'
         arguments: '-p:Version=$(GitVersion.FullSemVer) -p:FileVersion=$(GitVersion.MajorMinorPatch) -c Debug'
+      enabled: false
+    - task: DotNetCoreCLI@2
+      displayName: 'Build and pack projects for NuGet'
+      inputs:
+        command: 'custom'
+        projects: |
+          **/*.csproj
+          !**/*.Test.csproj
+        custom: 'pack'
+        arguments: '-p:PackageVersion=$(GitVersion.SemVer)_$(GitVersion.BuildMetaDataPadded) -p:Version=$(GitVersion.FullSemVer) -p:FileVersion=$(GitVersion.MajorMinorPatch) -c Debug -o $(Build.ArtifactStagingDirectory)'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifacts'
       inputs:
