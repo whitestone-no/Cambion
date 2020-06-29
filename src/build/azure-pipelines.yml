@@ -26,7 +26,7 @@ stages:
         projects: |
           **/*.csproj
           !**/*.Test.csproj
-        arguments: '-p:Version=$(GitVersion.FullSemVer) -p:FileVersion=$(GitVersion.MajorMinorPatch) -c Debug'
+        arguments: '-c Debug'
       enabled: false
     - task: DotNetCoreCLI@2
       displayName: 'Build and pack projects for NuGet'
@@ -36,7 +36,7 @@ stages:
           **/*.csproj
           !**/*.Test.csproj
         custom: 'pack'
-        arguments: '/p:PackageVersion=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-b$(GitVersion.BuildMetaData) /p:Version=$(GitVersion.FullSemVer) /p:InformationalVersion=$(GitVersion.FullSemVer) -o $(Build.ArtifactStagingDirectory) -c Debug'
+        arguments: '/p:PackageVersion=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-b$(GitVersion.BuildMetaData) /p:Version=$(GitVersion.FullSemVer) /p:InformationalVersion=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-b$(GitVersion.BuildMetaData) -o $(Build.ArtifactStagingDirectory) -c Debug'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifacts'
       inputs:
