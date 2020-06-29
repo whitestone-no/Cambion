@@ -4,7 +4,7 @@ pool:
   name: 'Whitestone'
   
 stages:
-- stage: 'Build Preview Release'
+- stage: 'Build_Preview_Release'
   jobs:
   - job: 'Build'
     steps:
@@ -26,15 +26,17 @@ stages:
         projects: |
           **/*.csproj
           !**/*.Test.csproj
-        arguments: '-p:Version=$env:GITVERSION_FULLSEMVER -p:FileVersion=$env:GITVERSION_MAJORMINORPATCH -c Debug'
+        arguments: '-c Debug'
+      enabled: false
     - task: DotNetCoreCLI@2
-      displayName: 'Pack projects for NuGet'
+      displayName: 'Build and pack projects for NuGet'
       inputs:
-        command: 'pack'
-        packagesToPack: '**/*.csproj;!**/*.Test.csproj'
-        versioningScheme: 'byEnvVar'
-        versionEnvVar: 'GITVERSION_FULLSEMVER'
-        verbosityPack: 'Normal'
+        command: 'custom'
+        projects: |
+          **/*.csproj
+          !**/*.Test.csproj
+        custom: 'pack'
+        arguments: '/p:PackageVersion=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData) /p:Version=$(GitVersion.FullSemVer) /p:InformationalVersion=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData) -o $(Build.ArtifactStagingDirectory) -c Debug'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifacts'
       inputs:
