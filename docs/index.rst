@@ -34,6 +34,7 @@ The framework is easily extensible to add support for other transports and seria
    transports/loopback
    transports/netmq
    transports/rabbitmq
+   transports/azureservicebus
 
 .. toctree::
    :hidden:

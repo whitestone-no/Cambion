@@ -20,10 +20,12 @@ namespace Whitestone.Cambion.Transport.Loopback
             {
                 throw new ArgumentNullException(nameof(message));
             }
-            // This is a loopback, so no need to serialize the message.
-            // Just fire the message received event at once.
 
-            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(message));
+            byte[] bytes = Serializer.Serialize(message);
+
+            MessageWrapper receivedMessage = Serializer.Deserialize(bytes);
+
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(receivedMessage));
         }
     }
 }

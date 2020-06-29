@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Whitestone.Cambion.Transport.AzureServiceBus</AssemblyName>
+    <RootNamespace>Whitestone.Cambion.Transport.AzureSericeBus</RootNamespace>
+    <Version>1.1.0-preview</Version>
+    <Authors>Whitestone</Authors>
+    <Product>Whitestone Cambion</Product>
+    <Description>Azure Service Bus transport for Whitestone Cambion</Description>
+    <Copyright>Copyright © 2020</Copyright>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/whitestone-no/Cambion</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/whitestone-no/Cambion</RepositoryUrl>
+    <PackageIconUrl>http://cambion.whitestone.no/img/CambionLogo.png</PackageIconUrl>
+    <PackageTags>messaging servicebus esb enterprice-service-bus cambion event-aggregator azure azure-service-bus</PackageTags>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>NU5105</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="4.1.3" />
+    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.4.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.13.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\LICENSE.txt" Link="LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Cambion\Cambion.csproj" />
+  </ItemGroup>
+
+</Project>
