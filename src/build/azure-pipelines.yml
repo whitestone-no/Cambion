@@ -15,6 +15,20 @@ steps:
     versionSpec: '5.x'
 - task: gitversion/execute@0
   displayName: 'Execute GitVersion'
+- task: DotNetCoreCLI@2
+  displayName: 'Build projects'
+  inputs:
+    command: 'build'
+    projects: |
+      **/*.csproj
+      !**/*.Test.csproj
+    arguments: '-p:Version=$(GitVersion.FullSemVer) -p:FileVersion=$(GitVersion.MajorMinorPatch) -c Release'
+- task: DotNetCoreCLI@2
+  displayName: 'Pack projects for NuGet'
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/*.csproj;!**/*.Test.csproj'
+    versioningScheme: 'off'
 - task: PowerShell@2
   displayName: 'DEBUG: Environment Variables'
   inputs:
@@ -23,5 +37,6 @@ steps:
       Write-Host "************************************"
       Write-Host "*** ENVIRONMENT VARIABLES ***"
       Write-Host "************************************"
-      Get-ChildItem Env:
+      Get-ChildItem Env: | Format-Table -AutoSize
     errorActionPreference: 'continue'
+  enabled: false
