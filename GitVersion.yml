@@ -6,7 +6,7 @@ branches: {
     master:
         increment: Patch
     release: {
-        tag: prerelease
+        tag: preview
         increment: Patch
         regex: ^release[s]?[\/-]
     }
