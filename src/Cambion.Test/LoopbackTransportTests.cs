@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using Whitestone.Cambion.Events;
+using Whitestone.Cambion.Serializer.JsonNet;
 using Whitestone.Cambion.Types;
 using Whitestone.Cambion.Transport.Loopback;
 
@@ -16,6 +17,7 @@ namespace Whitestone.Cambion.Test
         public void Setup()
         {
             _transport = new LoopbackTransport();
+            _transport.Serializer = new JsonNetSerializer();
         }
 
         [Test]
