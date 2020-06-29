@@ -5,14 +5,18 @@ pool:
 
 steps:
 - task: UseDotNet@2
+  displayName: 'Use .NET Core SDK 3.1.x'
   inputs:
     packageType: 'sdk'
     version: '3.1.x'
 - task: gitversion/setup@0
+  displayName: 'Setup GitVersion 5.x'
   inputs:
     versionSpec: '5.x'
 - task: gitversion/execute@0
+  displayName: 'Execute GitVersion'
 - task: PowerShell@2
+  displayName: 'DEBUG: Environment Variables'
   inputs:
     targetType: 'inline'
     script: |
