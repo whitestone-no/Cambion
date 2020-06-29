@@ -33,9 +33,12 @@ stages:
         command: 'pack'
         packagesToPack: '**/*.csproj;!**/*.Test.csproj'
         nobuild: true
+        includesymbols: true
+        includesource: true
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'GITVERSION_FULLSEMVER'
         verbosityPack: 'Normal'
+        arguments: '-p:Version=$(GitVersion.FullSemVer) -p:FileVersion=$(GitVersion.MajorMinorPatch) -c Debug'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifacts'
       inputs:
