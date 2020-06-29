@@ -33,6 +33,7 @@ The framework is easily extensible to add support for other transports and seria
    transports/introduction
    transports/loopback
    transports/netmq
+   transports/rabbitmq
 
 .. toctree::
    :hidden:
