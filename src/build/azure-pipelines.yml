@@ -5,6 +5,8 @@ pool:
   
 stages:
 - stage: 'Build_Preview_Release'
+  variables:
+  - group: 'RabbitMQ Test Parameters'
   jobs:
   - job: 'Build'
     steps:
@@ -20,14 +22,17 @@ stages:
     - task: gitversion/execute@0
       displayName: 'Execute GitVersion'
     - task: DotNetCoreCLI@2
-      displayName: 'Build projects'
+      displayName: 'Perform tests'
       inputs:
-        command: 'build'
-        projects: |
-          **/*.csproj
-          !**/*.Test.csproj
+        command: 'test'
+        projects: '**/*.Test.csproj'
         arguments: '-c Debug'
-      enabled: false
+      env:
+        RABBITMQTEST_RABBITMQ__CONNECTIONSTRING: $(RabbitMq.Test.ConnectionString)
+        RABBITMQTEST_RABBITMQ__HOSTNAME: $(RabbitMq.Test.Hostname)
+        RABBITMQTEST_RABBITMQ__USERNAME: $(RabbitMq.Test.Username)
+        RABBITMQTEST_RABBITMQ__PASSWORD: $(RabbitMq.Test.Password)
+        RABBITMQTEST_RABBITMQ__VIRTUALHOST: $(RabbitMq.Test.VirtualHost)
     - task: DotNetCoreCLI@2
       displayName: 'Build and pack projects for NuGet'
       inputs:
