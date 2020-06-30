@@ -44,12 +44,11 @@ stages:
           !**/*.Test.csproj
         custom: 'pack'
         arguments: '/p:PackageVersion=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData) /p:Version=$(GitVersion.FullSemVer) /p:InformationalVersion=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData) -o $(Build.ArtifactStagingDirectory) -c Debug'
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish artifacts'
+    - task: PublishPipelineArtifact@1
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'CambionPrereleaseArtifacts'
-        publishLocation: 'Container'
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifact: 'CambionPrereleaseArtifacts'
+        publishLocation: 'pipeline'
     - task: PowerShell@2
       displayName: 'DEBUG: Environment Variables'
       inputs:
@@ -59,6 +58,12 @@ stages:
           Write-Host "*** ENVIRONMENT VARIABLES ***"
           Write-Host "************************************"
           Get-ChildItem Env: | Format-Table -AutoSize
+          Write-Host "***********************"
+          Write-Host "*** OTHER VARIABLES ***"
+          Write-Host "***********************"
+          Write-Host "Build.ArtifactStagingDirectory: $(Build.ArtifactStagingDirectory)"
+          Write-Host "System.ArtifactsDirectory     : $(System.ArtifactsDirectory)"
+          Write-Host "Pipeline.Workspace            : $(Pipeline.Workspace)"
         errorActionPreference: 'continue'
       enabled: true
 - stage: DeployPrerelease
@@ -72,18 +77,18 @@ stages:
       runOnce:
         deploy:
           steps:
-            - task: DownloadBuildArtifacts@0
-              displayName: 'Download prerelease artifacts'
-              inputs:
-                buildType: 'current'
-                downloadType: 'single'
-                artifactName: 'CambionPrereleaseArtifacts'
-                downloadPath: '$(System.ArtifactsDirectory)'
             - task: NuGetCommand@2
               displayName: 'Push prerelease packages to NuGet'
               inputs:
                 command: 'push'
-                packagesToPush: '$(System.ArtifactStagingDirectory)/**/*.nupkg'
+                packagesToPush: '$(Pipeline.Workspace)/CambionPrereleaseArtifacts/*.nupkg'
                 nuGetFeedType: 'external'
                 publishFeedCredentials: 'NuGet (Whitestone)'
                 verbosityPush: 'Normal'
+              enabled: false
+            - task: PowerShell@2
+              displayName: 'Clean up artifacts folder'
+              inputs:
+                targetType: inline
+                script: |
+                  Remove-Item -Path "$(Pipeline.Workspace)/CambionPrereleaseArtifacts" -Recurse -Force
