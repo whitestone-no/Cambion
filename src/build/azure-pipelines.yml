@@ -85,6 +85,7 @@ stages:
                 nuGetFeedType: 'external'
                 publishFeedCredentials: 'NuGet (Whitestone)'
                 verbosityPush: 'Normal'
+              enabled: false
             - task: PowerShell@2
               displayName: 'Clean up artifacts folder'
               inputs:
