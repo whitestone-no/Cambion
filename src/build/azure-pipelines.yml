@@ -41,7 +41,7 @@ stages:
           **/*.csproj
           !**/*.Test.csproj
         custom: 'pack'
-        arguments: '/p:PackageVersion=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData) /p:Version=$(GitVersion.FullSemVer) /p:InformationalVersion=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData) -o $(Build.ArtifactStagingDirectory) -c Debug'
+        arguments: '/p:PackageVersion=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData) /p:Version=$(GitVersion.FullSemVer) /p:InformationalVersion=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData) -o $(Build.ArtifactStagingDirectory) -c Debug -v d'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifacts'
       inputs:
