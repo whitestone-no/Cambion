@@ -10,7 +10,8 @@
     <Description>Cambion is a light-weight open-source service bus for .NET with a set of convenience functions for synchronous and asynchronous event handling.</Description>
     <Copyright>Copyright © 2020</Copyright>
     <PackageProjectUrl>https://github.com/whitestone-no/Cambion</PackageProjectUrl>
-    <PackageIconUrl>http://cambion.whitestone.no/img/CambionLogo.png</PackageIconUrl>
+    <PackageIconUrl>http://cambion.whitestone.no/img/Cambion_Logo_128.png</PackageIconUrl>
+    <PackageIcon>Cambion_Logo_128.png</PackageIcon>
     <PackageTags>messaging servicebus esb enterprice-service-bus cambion event-aggregator</PackageTags>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -25,6 +26,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Include="..\..\Graphics\Cambion_Logo_128.png" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
