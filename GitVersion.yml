@@ -5,6 +5,10 @@ patch-version-bump-message: '\[(fix|patch)\]'
 branches:
   master:
     increment: Patch
+  feature:
+    tag: alpha
+    increment: Patch
+    regex: ^feature|issue[s]?[\/-]
   release:
     tag: preview
     increment: Patch
