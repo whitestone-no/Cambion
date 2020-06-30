@@ -103,13 +103,27 @@ stages:
     environment: 'Cambion Release'
     strategy:
       runOnce:
+        preDeploy:
+          steps:
+            - task: PowerShell@2
+              displayName: 'DEBUG Predeploy'
+              inputs:
+                targetType: inline
+                script: |
+                  Write-Host "*****************"
+                  Write-Host "*** Predeploy ***"
+                  Write-Host "*****************"
+                  Write-Host "Merge release branch to master"
+                  Write-Host "Tag master"
+                  Write-Host "Test and pack master"
         deploy:
           steps:
           - task: PowerShell@2
-            displayName: 'DEBUG'
+            displayName: 'DEBUG Deploy'
             inputs:
               targetType: inline
               script: |
-                Write-Host "************************************"
-                Write-Host "*** ENVIRONMENT VARIABLES ***"
-                Write-Host "************************************"
+                Write-Host "**************"
+                Write-Host "*** Deploy ***"
+                Write-Host "**************"
+                Write-Host "Deploy packages to NuGet"
