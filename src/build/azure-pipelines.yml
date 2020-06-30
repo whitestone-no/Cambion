@@ -92,3 +92,24 @@ stages:
                 targetType: inline
                 script: |
                   Remove-Item -Path "$(Pipeline.Workspace)/CambionPrereleaseArtifacts" -Recurse -Force
+- stage: BuildRelease
+  displayName: 'Tag and build Release'
+  dependsOn: DeployPrerelease
+  variables:
+  - group: 'RabbitMQ Test Parameters'
+  jobs:
+  - deployment: CreateGitHubRelease
+    displayName: 'Create GitHub Release'
+    environment: 'Cambion Release'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: PowerShell@2
+            displayName: 'DEBUG'
+            inputs:
+              targetType: inline
+              script: |
+                Write-Host "************************************"
+                Write-Host "*** ENVIRONMENT VARIABLES ***"
+                Write-Host "************************************"
