@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\Graphics\Cambion_Logo_128.png" Pack="true" Visible="false" PackagePath="" />
+    <None Include="..\..\img\Cambion_Logo_128.png" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
