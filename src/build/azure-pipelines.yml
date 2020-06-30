@@ -116,6 +116,7 @@ stages:
                   Write-Host "Merge release branch to master"
                   Write-Host "Tag master"
                   Write-Host "Test and pack master"
+                  Get-ChildItem Env: | Format-Table -AutoSize
         deploy:
           steps:
           - task: PowerShell@2
@@ -127,3 +128,4 @@ stages:
                 Write-Host "*** Deploy ***"
                 Write-Host "**************"
                 Write-Host "Deploy packages to NuGet"
+                Get-ChildItem Env: | Format-Table -AutoSize
