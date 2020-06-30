@@ -28,6 +28,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQ.Test", "Transports\RabbitMQ\RabbitMQ.Test\RabbitMQ.Test.csproj", "{9DA1C42B-C9E1-4EDC-8FDF-AB8D0B831767}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureServiceBus", "AzureServiceBus", "{D3356E16-CA57-474E-B4C0-4CF41EAFF773}"
+	ProjectSection(SolutionItems) = preProject
+		Transports\AzureServiceBus\README.md = Transports\AzureServiceBus\README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureServiceBus", "Transports\AzureServiceBus\AzureServiceBus\AzureServiceBus.csproj", "{AF9C3265-92C0-477C-BFAA-4A593EF5CBAE}"
 EndProject
