@@ -50,6 +50,12 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'CambionPrereleaseArtifacts'
         publishLocation: 'Container'
+      enabled: false
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Pipeline.Workspace)'
+        artifact: 'CambionPrereleaseArtifacts'
+        publishLocation: 'pipeline'
     - task: PowerShell@2
       displayName: 'DEBUG: Environment Variables'
       inputs:
@@ -79,11 +85,17 @@ stages:
                 downloadType: 'single'
                 artifactName: 'CambionPrereleaseArtifacts'
                 downloadPath: '$(System.ArtifactsDirectory)'
+              enabled: false
+            - task: DownloadPipelineArtifact@2
+              inputs:
+                buildType: 'current'
+                artifactName: 'CambionPrerelaseArtifacts'
+                targetPath: '$(Pipeline.Workspace)'
             - task: NuGetCommand@2
               displayName: 'Push prerelease packages to NuGet'
               inputs:
                 command: 'push'
-                packagesToPush: '$(System.ArtifactStagingDirectory)/**/*.nupkg'
+                packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg'
                 nuGetFeedType: 'external'
                 publishFeedCredentials: 'NuGet (Whitestone)'
                 verbosityPush: 'Normal'
