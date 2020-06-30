@@ -4,11 +4,13 @@ pool:
   name: 'Whitestone'
   
 stages:
-- stage: 'Build_Preview_Release'
+- stage: 'BuildPrerelease'
+  displayName: 'Build Prerelease'
   variables:
   - group: 'RabbitMQ Test Parameters'
   jobs:
   - job: 'Build'
+    displayName: 'Build, test and pack'
     steps:
     - task: UseDotNet@2
       displayName: 'Use .NET Core SDK 3.1.x'
@@ -46,7 +48,7 @@ stages:
       displayName: 'Publish artifacts'
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'CambionArtifacts'
+        ArtifactName: 'CambionPrereleaseArtifacts'
         publishLocation: 'Container'
     - task: PowerShell@2
       displayName: 'DEBUG: Environment Variables'
@@ -59,3 +61,28 @@ stages:
           Get-ChildItem Env: | Format-Table -AutoSize
         errorActionPreference: 'continue'
       enabled: true
+- stage: DeployPrerelease
+  dependsOn: BuildPrerelease
+  jobs:
+  - deployment: DeployPrerelease
+    displayName: 'Deploy prerelease to NuGet'
+    environment: 'Cambion Prerelease'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - task: DownloadBuildArtifacts@0
+              displayName: 'Download prerelease artifacts'
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: 'CambionPrereleaseArtifacts'
+                downloadPath: '$(System.ArtifactsDirectory)'
+            - task: NuGetCommand@2
+              displayName: 'Push prerelease packages to NuGet'
+              inputs:
+                command: 'push'
+                packagesToPush: '$(System.ArtifactStagingDirectory)/**/*.nupkg'
+                nuGetFeedType: 'external'
+                publishFeedCredentials: 'NuGet (Whitestone)'
+                verbosityPush: 'Normal'
