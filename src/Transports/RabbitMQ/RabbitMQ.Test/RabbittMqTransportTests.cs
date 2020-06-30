@@ -18,7 +18,7 @@ namespace RabbitMQ.Test
         {
             IConfigurationRoot configBuilder = new ConfigurationBuilder()
                 .AddUserSecrets("f7583692-a0ea-4e75-a825-9e61b8996832")
-                .AddEnvironmentVariables("RABBITMQTEST")
+                .AddEnvironmentVariables("RABBITMQTEST_")
                 .Build();
 
             _config = configBuilder.GetSection("RabbitMQ").Get<RabbitMqTestConfig>();
