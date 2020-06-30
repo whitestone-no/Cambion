@@ -85,3 +85,4 @@ stages:
                 nuGetFeedType: 'external'
                 publishFeedCredentials: 'NuGet (Whitestone)'
                 verbosityPush: 'Normal'
+                allowPackageConflicts: true
