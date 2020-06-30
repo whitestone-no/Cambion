@@ -90,4 +90,4 @@ stages:
               inputs:
                 targetType: inline
                 script: |
-                  Remove-Item -Path "$(Pipeline.Workspace)/CambionPrereleaseArtifacts" -Force
+                  Remove-Item -Path "$(Pipeline.Workspace)/CambionPrereleaseArtifacts" -Recurse -Force
