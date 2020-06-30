@@ -85,4 +85,9 @@ stages:
                 nuGetFeedType: 'external'
                 publishFeedCredentials: 'NuGet (Whitestone)'
                 verbosityPush: 'Normal'
-                allowPackageConflicts: true
+            - task: PowerShell@2
+              displayName: 'Clean up artifacts folder'
+              inputs:
+                targetType: inline
+                script: |
+                  Remove-Item -Path "$(Pipeline.Workspace)/CambionPrereleaseArtifacts" -Force
