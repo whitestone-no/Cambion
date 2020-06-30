@@ -62,6 +62,7 @@ stages:
         errorActionPreference: 'continue'
       enabled: true
 - stage: DeployPrerelease
+  displayName: 'Deploy Prerelease'
   dependsOn: BuildPrerelease
   jobs:
   - deployment: DeployPrerelease
