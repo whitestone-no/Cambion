@@ -81,6 +81,7 @@ stages:
 - stage: DeployPrerelease
   displayName: 'Deploy Prerelease'
   dependsOn: Build
+  condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:
   - deployment: DeployPrerelease
     displayName: 'Deploy prerelease to NuGet'
@@ -107,6 +108,7 @@ stages:
 - stage: DeployRelease
   displayName: 'Deploy Release'
   dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:
   - deployment: DeployRelease
     displayName: 'Deploy release to NuGet'
