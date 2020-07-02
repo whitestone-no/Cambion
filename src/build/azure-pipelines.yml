@@ -4,8 +4,8 @@ pool:
   name: 'Whitestone'
   
 stages:
-- stage: 'BuildPrerelease'
-  displayName: 'Build Prerelease'
+- stage: 'Build'
+  displayName: 'Build'
   variables:
   - group: 'RabbitMQ Test Parameters'
   jobs:
@@ -47,7 +47,7 @@ stages:
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)'
-        artifact: 'CambionPrereleaseArtifacts'
+        artifact: 'CambionBuildArtifacts'
         publishLocation: 'pipeline'
     - task: PowerShell@2
       displayName: 'DEBUG: Environment Variables'
@@ -66,9 +66,21 @@ stages:
           Write-Host "Pipeline.Workspace            : $(Pipeline.Workspace)"
         errorActionPreference: 'continue'
       enabled: true
+    - task: PowerShell@2
+      displayName: 'DEBUG IN PRERELEASE'
+      inputs:
+        targetType: 'Inline'
+        script: Write-Host "SCRIPT WITH PRERELEASE CONDITION"
+      condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+    - task: PowerShell@2
+      displayName: 'DEBUG IN RELEASE'
+      inputs:
+        targetType: 'Inline'
+        script: Write-Host "SCRIPT WITH RELEASE CONDITION"
+      condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
 - stage: DeployPrerelease
   displayName: 'Deploy Prerelease'
-  dependsOn: BuildPrerelease
+  dependsOn: Build
   jobs:
   - deployment: DeployPrerelease
     displayName: 'Deploy prerelease to NuGet'
@@ -81,7 +93,7 @@ stages:
               displayName: 'Push prerelease packages to NuGet'
               inputs:
                 command: 'push'
-                packagesToPush: '$(Pipeline.Workspace)/CambionPrereleaseArtifacts/*.nupkg'
+                packagesToPush: '$(Pipeline.Workspace)/CambionBuildArtifacts/*.nupkg'
                 nuGetFeedType: 'external'
                 publishFeedCredentials: 'NuGet (Whitestone)'
                 verbosityPush: 'Normal'
@@ -91,41 +103,30 @@ stages:
               inputs:
                 targetType: inline
                 script: |
-                  Remove-Item -Path "$(Pipeline.Workspace)/CambionPrereleaseArtifacts" -Recurse -Force
-- stage: BuildRelease
-  displayName: 'Tag and build Release'
-  dependsOn: DeployPrerelease
-  variables:
-  - group: 'RabbitMQ Test Parameters'
+                  Remove-Item -Path "$(Pipeline.Workspace)/CambionBuildArtifacts" -Recurse -Force
+- stage: DeployRelease
+  displayName: 'Deploy Release'
+  dependsOn: Build
   jobs:
-  - deployment: CreateGitHubRelease
-    displayName: 'Create GitHub Release'
+  - deployment: DeployRelease
+    displayName: 'Deploy release to NuGet'
     environment: 'Cambion Release'
     strategy:
       runOnce:
-        preDeploy:
+        deploy:
           steps:
+            - task: NuGetCommand@2
+              displayName: 'Push release packages to NuGet'
+              inputs:
+                command: 'push'
+                packagesToPush: '$(Pipeline.Workspace)/CambionBuildArtifacts/*.nupkg'
+                nuGetFeedType: 'external'
+                publishFeedCredentials: 'NuGet (Whitestone)'
+                verbosityPush: 'Normal'
+              enabled: false
             - task: PowerShell@2
-              displayName: 'DEBUG Predeploy'
+              displayName: 'Clean up artifacts folder'
               inputs:
                 targetType: inline
                 script: |
-                  Write-Host "*****************"
-                  Write-Host "*** Predeploy ***"
-                  Write-Host "*****************"
-                  Write-Host "Merge release branch to master"
-                  Write-Host "Tag master"
-                  Write-Host "Test and pack master"
-                  Get-ChildItem Env: | Format-Table -AutoSize
-        deploy:
-          steps:
-          - task: PowerShell@2
-            displayName: 'DEBUG Deploy'
-            inputs:
-              targetType: inline
-              script: |
-                Write-Host "**************"
-                Write-Host "*** Deploy ***"
-                Write-Host "**************"
-                Write-Host "Deploy packages to NuGet"
-                Get-ChildItem Env: | Format-Table -AutoSize
+                  Remove-Item -Path "$(Pipeline.Workspace)/CambionBuildArtifacts" -Recurse -Force
