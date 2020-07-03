@@ -12,8 +12,8 @@ stages:
   variables:
   - group: 'RabbitMQ Test Parameters'
   jobs:
-  - job: 'Build'
-    displayName: 'Build, test and pack'
+  - job: 'Prerequisites'
+    displayName: 'Prerequisites'
     steps:
     - task: UseDotNet@2
       displayName: 'Use .NET Core SDK 3.1.x'
@@ -26,6 +26,22 @@ stages:
         versionSpec: '5.x'
     - task: gitversion/execute@0
       displayName: 'Execute GitVersion'
+    - script: |
+        echo '##vso[task.setvariable variable=cambionSemVer;isOutput=true]$(GitVersion.MajorMinorPatch)'
+        echo '##vso[task.setvariable variable=cambionSemVerFull;isOutput=true]$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData)'
+      name: 'gitversion'
+      displayName: 'Set semantic versioning variables (Prerelease)'
+      condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+    - script: |
+        echo '##vso[task.setvariable variable=cambionSemVer;isOutput=true]$(GitVersion.MajorMinorPatch)'
+        echo '##vso[task.setvariable variable=cambionSemVerFull;isOutput=true]$(GitVersion.MajorMinorPatch)'
+      name: 'gitversion'
+      displayName: 'Set semantic versioning variables (Release)'
+      condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+  - job: 'Build'
+    displayName: 'Build, test and pack'
+    dependsOn: Prerequisites
+    steps:
     - task: DotNetCoreCLI@2
       displayName: 'Perform tests'
       inputs:
@@ -46,41 +62,12 @@ stages:
           **/*.csproj
           !**/*.Test.csproj
         custom: 'pack'
-        arguments: '/p:PackageVersion=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData) /p:Version=$(GitVersion.FullSemVer) /p:InformationalVersion=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData) -o $(Build.ArtifactStagingDirectory) -c Debug'
+        arguments: "/p:PackageVersion=$(dependencies.Prerequisites.outputs['gitversion.cambionSemVerFull']) /p:Version=$(dependencies.Prerequisites.outputs['gitversion.cambionSemVer']) /p:InformationalVersion=$(dependencies.Prerequisites.outputs['gitversion.cambionSemVerFull']) -o $(Build.ArtifactStagingDirectory) -c Debug"
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)'
         artifact: $(cambionArtifactName)
         publishLocation: 'pipeline'
-    - task: PowerShell@2
-      displayName: 'DEBUG: Environment Variables'
-      inputs:
-        targetType: 'inline'
-        script: |
-          Write-Host "************************************"
-          Write-Host "*** ENVIRONMENT VARIABLES ***"
-          Write-Host "************************************"
-          Get-ChildItem Env: | Format-Table -AutoSize
-          Write-Host "***********************"
-          Write-Host "*** OTHER VARIABLES ***"
-          Write-Host "***********************"
-          Write-Host "Build.ArtifactStagingDirectory: $(Build.ArtifactStagingDirectory)"
-          Write-Host "System.ArtifactsDirectory     : $(System.ArtifactsDirectory)"
-          Write-Host "Pipeline.Workspace            : $(Pipeline.Workspace)"
-        errorActionPreference: 'continue'
-      enabled: true
-    - task: PowerShell@2
-      displayName: 'DEBUG IN PRERELEASE'
-      inputs:
-        targetType: 'Inline'
-        script: Write-Host "SCRIPT WITH PRERELEASE CONDITION"
-      condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
-    - task: PowerShell@2
-      displayName: 'DEBUG IN RELEASE'
-      inputs:
-        targetType: 'Inline'
-        script: Write-Host "SCRIPT WITH RELEASE CONDITION"
-      condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
 - stage: DeployPrerelease
   displayName: 'Deploy Prerelease'
   dependsOn: Build
