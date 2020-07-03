@@ -2,8 +2,6 @@ trigger: none
 
 variables:
   cambionArtifactName: 'CambionBuildArtifacts'
-  cambionSemVer: '0.0.1'
-  cambionSemVerFull: '0.0.1-preview'
 
 pool:
   name: 'Whitestone'
@@ -33,29 +31,23 @@ stages:
       inputs:
         targetType: 'Inline'
         script: |
-          Write-Host $(cambionSemVerFull)
-          Write-Host "##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)]"
-          Write-Host "##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData)]"
-          Write-Host $(cambionSemVerFull)
+          Write-Host "##vso[task.setvariable variable=cambionSemVer;isOutput=true;]$(GitVersion.MajorMinorPatch)"
+          Write-Host "##vso[task.setvariable variable=cambionSemVerFull;isOutput=true;]$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData)"
       condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
     - task: PowerShell@2
       displayName: 'Set semantic versioning variables (Release)'
       inputs:
         targetType: 'Inline'
         script: |
-          Write-Host "##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)"
-          Write-Host "##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)"
+          Write-Host "##vso[task.setvariable variable=cambionSemVer;isOutput=true;]$(GitVersion.MajorMinorPatch)"
+          Write-Host "##vso[task.setvariable variable=cambionSemVerFull;isOutput=true;]$(GitVersion.MajorMinorPatch)"
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
-    - task: PowerShell@2
-      displayName: 'DEBUG'
-      inputs:
-        targetType: 'Inline'
-        script: |
-          Write-Host $(cambionSemVer)
-          Write-Host $(cambionSemVerFull)
   - job: 'Build'
     displayName: 'Build, test and pack'
     dependsOn: GitVersion
+    variables:
+      cambionSemVer: $[dependencies.GitVersion.outputs['cambionSemVer']]
+      cambionSemVerFull: $[dependencies.GitVersion.outputs['cambionSemVerFull']]
     steps:
     - task: PowerShell@2
       displayName: 'DEBUG'
