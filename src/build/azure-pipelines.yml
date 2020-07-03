@@ -34,8 +34,8 @@ stages:
         targetType: 'Inline'
         script: |
           Write-Host $(cambionSemVerFull)
-          Write-Host "##vso[task.setvariable cambionSemVer=$(GitVersion.MajorMinorPatch)]"
-          Write-Host "##vso[task.setvariable cambionSemVerFull=$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData)]"
+          Write-Host "##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)]"
+          Write-Host "##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData)]"
           Write-Host $(cambionSemVerFull)
       condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
     - task: PowerShell@2
@@ -43,8 +43,8 @@ stages:
       inputs:
         targetType: 'Inline'
         script: |
-          Write-Host "##vso[task.setvariable variable=cambionSemVer;]$(GitVersion.MajorMinorPatch)"
-          Write-Host "##vso[task.setvariable variable=cambionSemVerFull;]$(GitVersion.MajorMinorPatch)"
+          Write-Host "##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)"
+          Write-Host "##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)"
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
   - job: 'Build'
     displayName: 'Build, test and pack'
