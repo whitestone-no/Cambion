@@ -90,21 +90,9 @@ stages:
       runOnce:
         deploy:
           steps:
-            - task: NuGetCommand@2
-              displayName: 'Push prerelease packages to NuGet'
-              inputs:
-                command: 'push'
-                packagesToPush: '$(Pipeline.Workspace)/CambionBuildArtifacts/*.nupkg'
-                nuGetFeedType: 'external'
-                publishFeedCredentials: 'NuGet (Whitestone)'
-                verbosityPush: 'Normal'
-              enabled: false
-            - task: PowerShell@2
-              displayName: 'Clean up artifacts folder'
-              inputs:
-                targetType: inline
-                script: |
-                  Remove-Item -Path "$(Pipeline.Workspace)/CambionBuildArtifacts" -Recurse -Force
+          - template: deploy-template.yml
+              parameters:
+                artifactName: 'CambionBuildArtifacts'
 - stage: DeployRelease
   displayName: 'Deploy Release'
   dependsOn: Build
@@ -117,18 +105,6 @@ stages:
       runOnce:
         deploy:
           steps:
-            - task: NuGetCommand@2
-              displayName: 'Push release packages to NuGet'
-              inputs:
-                command: 'push'
-                packagesToPush: '$(Pipeline.Workspace)/CambionBuildArtifacts/*.nupkg'
-                nuGetFeedType: 'external'
-                publishFeedCredentials: 'NuGet (Whitestone)'
-                verbosityPush: 'Normal'
-              enabled: false
-            - task: PowerShell@2
-              displayName: 'Clean up artifacts folder'
-              inputs:
-                targetType: inline
-                script: |
-                  Remove-Item -Path "$(Pipeline.Workspace)/CambionBuildArtifacts" -Recurse -Force
+          - template: deploy-template.yml
+            parameters:
+              artifactName: 'CambionBuildArtifacts'
