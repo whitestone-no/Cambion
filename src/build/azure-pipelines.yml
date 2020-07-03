@@ -46,8 +46,8 @@ stages:
     displayName: 'Build, test and pack'
     dependsOn: GitVersion
     variables:
-      cambionSemVer: $[dependencies.GitVersion.outputs['cambionSemVer']]
-      cambionSemVerFull: $[dependencies.GitVersion.outputs['cambionSemVerFull']]
+      cambionSemVer: $[dependencies.GitVersion.outputs['outputVars.cambionSemVer']]
+      cambionSemVerFull: $[dependencies.GitVersion.outputs['outputVars.cambionSemVerFull']]
     steps:
     - task: PowerShell@2
       displayName: 'DEBUG'
