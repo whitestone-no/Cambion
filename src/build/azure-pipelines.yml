@@ -12,8 +12,8 @@ stages:
   variables:
   - group: 'RabbitMQ Test Parameters'
   jobs:
-  - job: 'Gitversion'
-    displayName: 'Gitversion'
+  - job: 'GitVersion'
+    displayName: 'GitVersion'
     steps:
     - task: UseDotNet@2
       displayName: 'Use .NET Core Runtime 3.1.x'
@@ -27,7 +27,7 @@ stages:
     - task: gitversion/execute@0
       displayName: 'Execute GitVersion'
     - task: PowerShell@2
-      displayName: 'Set semantic versioning variables (Prerelease)'
+      displayName: 'Set semver variables (Prerelease)'
       inputs:
         targetType: 'Inline'
         script: |
@@ -35,7 +35,7 @@ stages:
           Write-Host "##vso[task.setvariable variable=cambionSemVerFull;isOutput=true;]$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData)"
       condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
     - task: PowerShell@2
-      displayName: 'Set semantic versioning variables (Release)'
+      displayName: 'Set semver variables (Release)'
       inputs:
         targetType: 'Inline'
         script: |
