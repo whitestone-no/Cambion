@@ -14,13 +14,13 @@ stages:
   variables:
   - group: 'RabbitMQ Test Parameters'
   jobs:
-  - job: 'Prerequisites'
-    displayName: 'Prerequisites'
+  - job: 'Gitversion'
+    displayName: 'Gitversion'
     steps:
     - task: UseDotNet@2
-      displayName: 'Use .NET Core SDK 3.1.x'
+      displayName: 'Use .NET Core Runtime 3.1.x'
       inputs:
-        packageType: 'sdk'
+        packageType: 'runtime'
         version: '3.1.x'
     - task: gitversion/setup@0
       displayName: 'Setup GitVersion 5.x'
@@ -40,8 +40,13 @@ stages:
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
   - job: 'Build'
     displayName: 'Build, test and pack'
-    dependsOn: Prerequisites
+    dependsOn: GitVersion
     steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core SDK 3.1.x'
+      inputs:
+        packageType: 'sdk'
+        version: '3.1.x'
     - task: DotNetCoreCLI@2
       displayName: 'Perform tests'
       inputs:
