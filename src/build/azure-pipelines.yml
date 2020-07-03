@@ -46,6 +46,13 @@ stages:
           Write-Host "##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)"
           Write-Host "##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)"
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    - task: PowerShell@2
+      displayName: 'DEBUG'
+      inputs:
+        targetType: 'Inline'
+        script: |
+          Write-Host $(cambionSemVer)
+          Write-Host $(cambionSemVerFull)
   - job: 'Build'
     displayName: 'Build, test and pack'
     dependsOn: GitVersion
