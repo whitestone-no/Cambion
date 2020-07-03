@@ -3,17 +3,17 @@ parameters:
 
 steps:
 - task: NuGetCommand@2
-    displayName: 'Push artifact packages to NuGet'
-    inputs:
-        command: 'push'
-        packagesToPush: '$(Pipeline.Workspace)/${{parameters.artifactName}}/*.nupkg'
-        nuGetFeedType: 'external'
-        publishFeedCredentials: 'NuGet (Whitestone)'
-        verbosityPush: 'Normal'
-    enabled: false
+  displayName: 'Push artifact packages to NuGet'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Pipeline.Workspace)/${{parameters.artifactName}}/*.nupkg'
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'NuGet (Whitestone)'
+    verbosityPush: 'Normal'
+  enabled: false
 - task: PowerShell@2
-    displayName: 'Clean up artifacts folder'
-    inputs:
-        targetType: inline
-        script: |
-            Remove-Item -Path "$(Pipeline.Workspace)/${{parameters.artifactName}}" -Recurse -Force
+  displayName: 'Clean up artifacts folder'
+  inputs:
+    targetType: inline
+    script: |
+      Remove-Item -Path "$(Pipeline.Workspace)/${{parameters.artifactName}}" -Recurse -Force
