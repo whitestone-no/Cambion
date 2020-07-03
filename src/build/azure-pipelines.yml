@@ -1,5 +1,8 @@
 trigger: none
 
+variables:
+  cambionArtifactName: 'CambionBuildArtifacts'
+
 pool:
   name: 'Whitestone'
   
@@ -47,7 +50,7 @@ stages:
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)'
-        artifact: 'CambionBuildArtifacts'
+        artifact: $(cambionArtifactName)
         publishLocation: 'pipeline'
     - task: PowerShell@2
       displayName: 'DEBUG: Environment Variables'
@@ -92,7 +95,7 @@ stages:
           steps:
           - template: deploy-template.yml
             parameters:
-              artifactName: 'CambionBuildArtifacts'
+              artifactName: $(cambionArtifactName)
 - stage: DeployRelease
   displayName: 'Deploy Release'
   dependsOn: Build
@@ -107,4 +110,4 @@ stages:
           steps:
           - template: deploy-template.yml
             parameters:
-              artifactName: 'CambionBuildArtifacts'
+              artifactName: $(cambionArtifactName)
