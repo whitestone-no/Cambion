@@ -28,25 +28,41 @@ stages:
         versionSpec: '5.x'
     - task: gitversion/execute@0
       displayName: 'Execute GitVersion'
-    - script: |
-        echo '##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)'
-        echo '##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData)'
+    - task: PowerShell@2
       displayName: 'Set semantic versioning variables (Prerelease)'
+      inputs:
+        targetType: 'Inline'
+        script: |
+          Write-Host $(cambionSemVerFull)
+          echo '##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)'
+          echo '##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData)'
+          Write-Host $(cambionSemVerFull)
       condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
-    - script: |
-        echo '##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)'
-        echo '##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)'
+    - task: PowerShell@2
       displayName: 'Set semantic versioning variables (Release)'
+      inputs:
+        targetType: 'Inline'
+        script: |
+          echo '##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)'
+          echo '##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)'
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
   - job: 'Build'
     displayName: 'Build, test and pack'
     dependsOn: GitVersion
     steps:
+    - task: PowerShell@2
+      displayName: 'DEBUG'
+      inputs:
+        targetType: 'Inline'
+        script: |
+          Write-Host $(cambionSemVerFull)
+          Write-Host $(cambionSemVerFull)
     - task: UseDotNet@2
       displayName: 'Use .NET Core SDK 3.1.x'
       inputs:
         packageType: 'sdk'
         version: '3.1.x'
+      enabled: false
     - task: DotNetCoreCLI@2
       displayName: 'Perform tests'
       inputs:
@@ -59,6 +75,7 @@ stages:
         RABBITMQTEST_RABBITMQ__USERNAME: $(RabbitMq.Test.Username)
         RABBITMQTEST_RABBITMQ__PASSWORD: $(RabbitMq.Test.Password)
         RABBITMQTEST_RABBITMQ__VIRTUALHOST: $(RabbitMq.Test.VirtualHost)
+      enabled: false
     - task: DotNetCoreCLI@2
       displayName: 'Build and pack projects for NuGet'
       inputs:
@@ -68,11 +85,13 @@ stages:
           !**/*.Test.csproj
         custom: 'pack'
         arguments: "/p:PackageVersion=$(cambionSemVerFull) /p:Version=$(cambionSemVer) /p:InformationalVersion=$(cambionSemVerFull) -o $(Build.ArtifactStagingDirectory) -c Debug"
+      enabled: false
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)'
         artifact: $(cambionArtifactName)
         publishLocation: 'pipeline'
+      enabled: false
 - stage: DeployPrerelease
   displayName: 'Deploy Prerelease'
   dependsOn: Build
