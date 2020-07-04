@@ -49,6 +49,12 @@ stages:
           Write-Host "##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)"
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
     - task: PowerShell@2
+      displayName: 'Update build number'
+      inputs:
+        targetType: 'Inline'
+        script: |
+          Write-Host "##vso[build.updatebuildnumber]$(cambionSemVerFull)"
+    - task: PowerShell@2
       displayName: 'Output variables'
       inputs:
         targetType: 'Inline'
