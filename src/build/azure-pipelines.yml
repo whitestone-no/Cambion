@@ -14,6 +14,9 @@ stages:
   jobs:
   - job: 'GitVersion'
     displayName: 'GitVersion'
+    variables:
+      cambionSemVer: ''
+      cambionSemVerFull: ''
     steps:
     - task: UseDotNet@2
       displayName: 'Use .NET Core Runtime 3.1.x'
@@ -31,17 +34,25 @@ stages:
       inputs:
         targetType: 'Inline'
         script: |
-          Write-Host "##vso[task.setvariable variable=cambionSemVer;isOutput=true;]$(GitVersion.MajorMinorPatch)"
-          Write-Host "##vso[task.setvariable variable=cambionSemVerFull;isOutput=true;]$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData)"
+          Write-Host "##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)"
+          Write-Host "##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData)"
       condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
     - task: PowerShell@2
       displayName: 'Set semver variables (Release)'
       inputs:
         targetType: 'Inline'
         script: |
-          Write-Host "##vso[task.setvariable variable=cambionSemVer;isOutput=true;]$(GitVersion.MajorMinorPatch)"
-          Write-Host "##vso[task.setvariable variable=cambionSemVerFull;isOutput=true;]$(GitVersion.MajorMinorPatch)"
+          Write-Host "##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)"
+          Write-Host "##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)"
       condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    - task: PowerShell@2
+      displayName: 'Output variables'
+      inputs:
+        targetType: 'Inline'
+        script: |
+          Write-Host "##vso[task.setvariable variable=cambionSemVer;isOutput=true;]$(cambionSemVer)"
+          Write-Host "##vso[task.setvariable variable=cambionSemVerFull;isOutput=true;]$(cambionSemVerFull)"
+      name: outputVars
   - job: 'Build'
     displayName: 'Build, test and pack'
     dependsOn: GitVersion
