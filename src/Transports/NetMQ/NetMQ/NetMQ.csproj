@@ -10,7 +10,7 @@
     <Description>NetMQ transport for Whitestone Cambion</Description>
     <Copyright>Copyright © 2020</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/whitestone-no/Cambion</PackageProjectUrl>
+    <PackageProjectUrl>https://cambion.whitestone.no/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/whitestone-no/Cambion</RepositoryUrl>
     <PackageIconUrl>http://cambion.whitestone.no/img/Cambion_Logo_128.png</PackageIconUrl>
     <PackageIcon>Cambion_Logo_128.png</PackageIcon>
