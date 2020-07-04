@@ -60,19 +60,11 @@ stages:
       cambionSemVer: $[dependencies.GitVersion.outputs['outputVars.cambionSemVer']]
       cambionSemVerFull: $[dependencies.GitVersion.outputs['outputVars.cambionSemVerFull']]
     steps:
-    - task: PowerShell@2
-      displayName: 'DEBUG'
-      inputs:
-        targetType: 'Inline'
-        script: |
-          Write-Host $(cambionSemVer)
-          Write-Host $(cambionSemVerFull)
     - task: UseDotNet@2
       displayName: 'Use .NET Core SDK 3.1.x'
       inputs:
         packageType: 'sdk'
         version: '3.1.x'
-      enabled: false
     - task: DotNetCoreCLI@2
       displayName: 'Perform tests'
       inputs:
@@ -85,7 +77,6 @@ stages:
         RABBITMQTEST_RABBITMQ__USERNAME: $(RabbitMq.Test.Username)
         RABBITMQTEST_RABBITMQ__PASSWORD: $(RabbitMq.Test.Password)
         RABBITMQTEST_RABBITMQ__VIRTUALHOST: $(RabbitMq.Test.VirtualHost)
-      enabled: false
     - task: DotNetCoreCLI@2
       displayName: 'Build and pack projects for NuGet'
       inputs:
@@ -95,13 +86,11 @@ stages:
           !**/*.Test.csproj
         custom: 'pack'
         arguments: "/p:PackageVersion=$(cambionSemVerFull) /p:Version=$(cambionSemVer) /p:InformationalVersion=$(cambionSemVerFull) -o $(Build.ArtifactStagingDirectory) -c Debug"
-      enabled: false
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)'
         artifact: $(cambionArtifactName)
         publishLocation: 'pipeline'
-      enabled: false
 - stage: DeployPrerelease
   displayName: 'Deploy Prerelease'
   dependsOn: Build
