@@ -95,7 +95,7 @@ stages:
           **/*.csproj
           !**/*.Test.csproj
         custom: 'pack'
-        arguments: "/p:PackageVersion=$(cambionSemVerFull) /p:Version=$(cambionSemVer) /p:InformationalVersion=$(cambionSemVerFull) -o $(Build.ArtifactStagingDirectory) -c Debug"
+        arguments: "/p:PackageVersion=$(cambionSemVerFull) /p:Version=$(cambionSemVer) /p:InformationalVersion=$(cambionSemVerFull) -o $(Build.ArtifactStagingDirectory) -c Release"
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)'
