@@ -1,48 +1,145 @@
-<!DOCTYPE html>
-<html lang="en-US">
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
-	<meta charset="UTF-8" />
-	<title>Cambion</title>
-	<link rel="stylesheet" href="style.css" type="text/css" />
-	<script src="js/jquery-1.12.0.min.js"></script>
-	<script src="js/marked.js"></script>
-	<script src="js/main.js"></script>
-	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-	<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
-	<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
-	<link rel="manifest" href="/manifest.json">
-	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-	<meta name="theme-color" content="#ffffff">
-	<script>
-		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-		ga('create', 'UA-31285439-8', 'auto');
-		ga('send', 'pageview');
-	</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-31285439-8"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-31285439-8');
+    </script>
+    <meta charset="UTF-8">
+    <title>Cambion</title>
+    <link rel="stylesheet" href="styles.css"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
+    <link rel="mask-icon" href="favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="title" content="Cambion">
+    <meta name="description" content="A light-weight open-source service bus for .NET with a set of convenience functions for synchronous and asynchronous event handling.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cambion.whitestone.no/">
+    <meta property="og:title" content="Cambion">
+    <meta property="og:description" content="A light-weight open-source service bus for .NET with a set of convenience functions for synchronous and asynchronous event handling.">
+    <meta property="og:image" content="https://cambion.whitestone.no/images/logoCambionOpenGraph.png">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://cambion.whitestone.no/">
+    <meta property="twitter:title" content="Cambion">
+    <meta property="twitter:description" content="A light-weight open-source service bus for .NET with a set of convenience functions for synchronous and asynchronous event handling.">
+    <meta property="twitter:image" content="https://cambion.whitestone.no/images/logoCambionOpenGraph.png">
 </head>
-<body>	
-	<div class="wrap header">
-		<header>
-			<a href="https://github.com/whitestone-no/cambion">View on GitHub</a>
+<body>
+	<header>
+		<section>
 			<h1>Cambion</h1>
-			<h2>Lightweight distributed application framework</h2>
-		</header>
-	</div>
-	<div class="wrap">
-		<section id="ReadMe">
-			<div id="Loading">
-				<h1>Loading</h1>
-				<img src="img/loading.gif" />
+			<input id="nav-expander-button" type="checkbox" role="button" /> <!-- checked="checked" -->
+			<label id="nav-expander-icon" for="nav-expander-button">&nbsp;</label>
+			<nav>
+				<ul>
+					<li><a href="#licensing">Licensing</a></li>
+					<li><a href="#support">Support</a></li>
+					<li><a href="https://cambion.readthedocs.io">Documentation</a></li>
+				</ul>
+			</nav>
+		</section>
+	</header>
+
+	<main>
+		<section class="main-description">
+			<h1>Makes taking the bus feel like flying</h1>
+			<p>Cambion is a light-weight open-source service bus for .NET with a set of convenience functions for synchronous and asynchronous event handling.</p>			
+			<a href="https://cambion.readthedocs.io/en/latest/basics/instantiation.html">Get started</a>
+		</section>
+		<section class="main-points">
+			<ul>
+				<li>
+					<img src="images/feather.png" alt="Lightweight" />
+					<h2>Lightweight</h2>
+					<p>With less than 250 lines of executable code in its core functionality, Cambion is a very lightweight component</p>
+				</li>
+				<li>
+					<img src="images/stopwatch.png" alt="Fast" />
+					<h2>Fast</h2>
+					<p>Events are handled in the single digit millisecond range *</p>
+				</li>
+				<li>
+					<img src="images/gears.png" alt="Extensible" />
+					<h2>Extensible</h2>
+					<p>Cambion can easily be expanded to use other network transports or data serializers</p>
+				</li>
+			</ul>
+			<div class="caveat">
+				<p>* Benchmarked using the default serializer and transport</p>
 			</div>
 		</section>
-	</div>
-	<div class="wrap footer">
-		<footer>
-			Cambion is maintained by <a href="github.com/whitestone-no">Whitestone</a>, Copyright &copy; <span class="CurrentYear">2017</span>
-		</footer>
-	</div>
+		<section class="main-technologies">
+			<h2>Supported technologies</h2>
+			<ul>
+				<li><img src="images/logodotnetcore.png" alt=".NET Core" /></li>
+				<li><img src="images/logodotnetframework.png" alt=".NET Framework" /></li>
+				<li><img src="images/logoazureservicebus.png" alt="Azure Service Bus" /></li>
+				<li><img src="images/logorabbitmq.png" alt="RAbbitMQ" /></li>
+				<li><img src="images/logozeromq.png" alt="ZeroMQ" /></li>
+				<li><img src="images/logonetmq.png" alt="NetMQ" /></li>
+				<li><img src="images/logonewtonsoft.png" alt="Newtonsoft JSON.NET" /></li>
+			</ul>
+		</section>
+		<section>
+			<a name="licensing" />
+			<img src="images/legal.png" alt="License illustration" />
+			<h2>Licensing</h2>
+			<p>
+				Cambion is licensed through the MIT License. This means it's free of charge and does not have any licensing costs.
+				Basically, you can do whatever you want as long as you include the original copyright and license notice in any copy of the software/source.
+				Seeing as Microsoft also uses the MIT License for their .NET projects, it makes a good match for Cambion as well.
+				<a href="https://github.com/whitestone-no/Cambion/blob/master/LICENSE.txt">Read the full license here</a>.
+			</p>
+		</section>
+		<section>
+			<a name="support" />
+			<img src="images/support.png" alt="Support illustration" />
+			<h2>Support</h2>
+			<p>
+				In case you encounter some issues with Cambion you can use GitHub's <a href="https://github.com/whitestone-no/Cambion/issues">issue tracker</a>
+				to see if your issue is a known issue (with possible workarounds), or you can <a href="https://github.com/whitestone-no/Cambion/issues/new">create a new issue</a>.
+				Please be verbose when creating new issues to help with troubleshooting and debugging.
+			</p>
+			<p>
+				For more generic service bus questions please use the appropriate support services for the service bus supplier, or ask a question on
+				<a href="https://stackoverflow.com/">StackOverflow</a>. For Cambion related questions on StackOverflow, please use the "Cambion" tag if possible.
+			</p>
+		</section>
+	</main>
+
+	<footer>
+		<section>
+			<div>
+				Copyright &copy; 2020, Whitestone <img src="images/logowhitestone.png" alt="Whitestone Logo"/>
+			</div>
+			<div>
+				<a href="https://github.com/whitestone-no/Cambion">View project on GitHub</a>
+			</div>
+			<div class="acknowledgements">
+					<a href="https://www.freepik.com/free-photos-vectors/vintage">Vintage vector created by katemangostar</a>,
+					<a href="https://www.freepik.com/free-photos-vectors/abstract">Abstract vector created by freepik</a>,
+					<a href="https://www.freepik.com/free-photos-vectors/icon">Icon vector created by rawpixel.com</a>,
+					<a href="https://www.freepik.com/free-photos-vectors/background">Background vector created by freepik</a>,
+					<a href="https://www.freepik.com/free-photos-vectors/technology">Technology vector created by stories</a>
+					- <a href="https://www.freepik.com/">www.freepik.com</a>
+			</div>
+		</section>
+	</footer>
 </body>
 </html>
+
+<!-- Stopwatch <a href="https://www.freepik.com/free-photos-vectors/vintage">Vintage vector created by katemangostar - www.freepik.com</a>-->
+<!-- Feather   <a href="https://www.freepik.com/free-photos-vectors/abstract">Abstract vector created by freepik - www.freepik.com</a>-->
+<!-- Gears     <a href="https://www.freepik.com/free-photos-vectors/icon">Icon vector created by rawpixel.com - www.freepik.com</a> -->
+<!-- Legal     <a href="https://www.freepik.com/free-photos-vectors/background">Background vector created by freepik - www.freepik.com</a> -->
+<!-- Docs      <a href="https://www.freepik.com/free-photos-vectors/business">Business vector created by macrovector - www.freepik.com</a> -->
+<!-- Support   <a href="https://www.freepik.com/free-photos-vectors/technology">Technology vector created by stories - www.freepik.com</a> -->

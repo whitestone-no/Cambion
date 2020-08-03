@@ -1,118 +1,397 @@
+html {
+	scroll-behavior: smooth;
+}
+
 body {
 	margin: 0;
-	padding: 0;
-	color: #3f3f3f;
-	background-color: #f2f2f2;
-	font-family: 'Lucida Grande', 'Calibri', Helvetica, Arial, sans-serif;
-}
-
-a {
-	text-decoration: none;
-}
-a:hover {
-	text-decoration: underline;
-}
-
-.header,
-.footer {
-	color: #fff;
-	background-color: #401b1b;
-}
-
-div.wrap header,
-div.wrap section,
-div.wrap footer {
-	position: relative;
-	width: 800px;
-	margin: 0 auto;
-}
-
-div > header {
-	width: 625px!important;
-	padding: 45px 0 20px 175px;
-	background-image: url('https://raw.githubusercontent.com/whitestone-no/Cambion/master/Graphics/CambionLogo.png');
+	font-family: 'Roboto', sans-serif;
+	font-weight: 400;	
+	background-image: url("images/background.svg");
 	background-repeat: no-repeat;
-	background-size: 165px 108px;
-	background-position: 0 42px;
-	min-height: 135px;
+	background-size: 7616px 5556px;
+	background-position: calc(50% - 107px) -1660px;
 }
 
-header a {
-	color: #fff;
-	display: block;
-	position: absolute;
-	top: 0;
-	right: 10px;
-	padding: 10px 50px 10px 10px;
-	background-color: #804040;
-	background-image: url('img/GitHubLogo.png');
-	background-repeat: no-repeat;
-	background-position: 95% 50%;
-	border-radius: 0 0 5px 5px;
-}
-
-header h1 {
-	margin: 0;
-	font-weight: bold;
-	font-size: 42px;
-	text-shadow: 3px 3px 6px #192333;
-}
-
-header h2 {
-	margin: 10px 0 0 0;
-	font-size: 24px;
-	text-shadow: 3px 3px 6px #192333;
-}
-
-#Loading {
-	text-align: center;
+main {
+	padding-top: 130px; /* 70px header + 60px padding below the header */
 }
 
 section {
-	padding: 10px 0;
+	width: 960px;
+	margin: 0 auto;
 }
 
-section h1 {
-	font-size: 36px;
-	font-weight: 700;
-	margin: 25px 0 10px 0;
-	border-bottom: dotted 1px #cecece;
-}
-section h2 {
-	font-size: 32px;
-	font-weight: 700;
-	margin: 25px 0 10px 0;
-	border-bottom: dotted 1px #cecece;
-}
-section p {
-	margin: 10px 0 15px 0;
-	line-height: 1.5;
-	font-size: 16px;
-}
-section ul {
-	list-style-position: inside;
-	list-style: disc;
-	padding-left: 20px;
-}
-section li {
-	margin: 5px;
+h1 {
+	font-size: 2.5em;
 }
 
-section a {
-	color: #007edf;
+h2 {
+	font-size: 2em;
+}
+
+h3 {
+	font-size: 1.5em;
+}
+
+ul {
+	padding-left: 0;
+}
+
+header {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	position: fixed;
+	top: 0;
+	border-bottom: solid 2px #ccc;
+	font-weight: 700;
+	background-color: #fff;
+	font-size: 0.87em;
+	overflow: hidden;
+}
+
+header h1 {
+	display: block;
+	float: left;
+	width: 300px;
+	margin: 10px 0 6px 0;
+	padding: 0 0 4px 48px;
+	color: #922525;
+	background-image: url("images/logoCambion.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
+header a,
+header a:visited {
+	color: #222;
+	text-decoration: none;
+	transition: color 0.3s ease;
+}
+header a:hover {
+	color: #222!important;
+}
+
+nav:hover a,
+nav:hover a:visited {
+	color: #aaa;
+}
+
+header section {
+	margin-top: 0px!important;
+}
+
+header nav {
+	float: right;
+	padding-top: 12px;
+}
+
+header ul {
+	list-style-type: none;
+	text-transform: uppercase;
+	padding-left: 0;
+}
+
+header ul li {
+	display: inline;
+	margin: 20px;
+}
+header ul li:last-child {
+	margin-right: 0;
+}
+
+header input[type=checkbox] {
+	display: none;
+}
+
+label#nav-expander-icon {
+	display: none;
+}
+
+input#nav-expander-button:checked ~ label#nav-expander-icon {
+    transform: rotate(90deg);
+}
+
+
+.main-description {
+	color: #ffffff;
+	text-align: center;
+	min-height: 425px;
+	margin-top: 0px!important;
+}
+
+.main-description p {
+	font-size: 2em;
+}
+
+.main-description h1 {
+	margin: 0;
+}
+
+.main-description a {
+	display: inline-block;
+	text-transform: uppercase;
+	border-radius: 3px;
+	border: solid 1px rgba(255, 255, 255, 0.5);
+	margin: 10px 0 10px 0;
+	padding: 10px;
+	text-decoration: none;
+	color: rgba(255, 255, 255, 0.9);
+	font-size: 1.2em;
+	font-weight: 700;
+	transition: border-color 0.3s ease, color 0.3s ease;
+}
+.main-description a:hover {
+	color: rgba(255, 255, 255, 1.0);
+	border-color: rgba(255, 255, 255, 1.0);
+}
+
+
+
+.main-points {
+	margin-bottom: 10px;
+}
+.main-points ul {
+	display: flex;
+	list-style-type: none;
+	justify-content: center;
+	flex-wrap: wrap;
+	padding: 0;
+}
+.main-points ul li {
+	display: block;
+	color: #4e3939;
+	width: calc(100% / 3 - 30px);
+	text-align: center;
+	padding: 0 15px;
+}
+.main-points ul li img {
+	max-height: 120px;
+}
+.main-points h2 {
+	font-size: 1.5em!important;
+}
+.main-points p {
+	font-size: 1.1em;
+}
+
+.main-technologies {
+	text-align: center;
+	border-radius: 5px;
+	padding-top: 10px;
+}
+.main-technologies img {
+	max-height: 45px;
+}
+.main-technologies ul {
+	list-style-type: none;
+}
+.main-technologies ul li {
+	display: inline-block;
+	padding: 30px;
+}
+
+.caveat {
+	margin-top: 45px;
+	text-align: right;
+	font-size: 0.6em;
+}
+
+section {
+	text-align: center;
+}
+
+section:not(.main-points):not(.main-description) {
+	margin-top: 110px;
+	font-size: 1.15em;
+}
+
+section:not(.main-points) h2 {
+	text-align: center;
+	margin-top: 10px;
+	margin-bottom: 5px;
+}
+
+section:not(.main-points) img {
+	height: 125px;
 }
 
 footer {
-	padding: 30px 0;
+	background-color: #200000;
+	width: 100%;
+	color: #eee;
+	padding: 20px 0 1px 0;
+	margin-top: 100px;
 }
+footer img {
+	max-height: 20px;
+	position: relative;
+	top: 5px;
+	left: 1px;
+}
+footer section {
+	margin-top: 0px!important;
+}
+
+footer section div {
+	margin-bottom: 20px;
+}
+
 footer a {
-	color: #fff;
+	color: #eee;
+	text-decoration: underline;
+}
+
+footer a:hover {
+	text-decoration: none;
+}
+
+footer .acknowledgements {
+	margin-top: 15px;
+	color: #aaa;
+	font-size: 0.7em;
+}
+
+footer .acknowledgements a {
+	color: #aaa;
+	text-decoration: none;
+}
+
+footer .acknowledgements a:hover {
 	text-decoration: underline;
 }
 
 
+@media screen and (max-width: 1080px) {
+	body {
+		background-position: calc(50% + 59px) -1660px;
+	}
 
-#ReadMe pre {
-	padding: 16px;
-	background-color: #e5e5e5;
+	section {
+		width: 700px;
+	}
+	
+	header h1 {
+		width: 200px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+		
+	body {
+		background-position: calc(50% + 59px) -1660px;
+	}
+
+	header input[type=checkbox] {
+		display: none;
+	}
+
+	label#nav-expander-icon {
+		display: inline-block;
+		transition: transform 0.5s ease;
+		float: right;
+		background-image: url("images/hamburger.png");
+		background-repeat: no-repeat;
+		background-size: contain;
+		height: 40px;
+		width: 40px;
+		margin: 20px 6px 0 0;
+		cursor: pointer;
+	}
+
+	input#nav-expander-button:checked ~ label#nav-expander-icon {
+		transform: rotate(90deg);
+	}
+
+	input#nav-expander-button:checked ~ nav {
+		margin-bottom: 0;
+	}
+	input#nav-expander-button ~ nav {
+		margin-bottom: -38px;
+	}
+		
+	header nav {
+		float: none;
+		padding-top: 55px;
+		text-align: center;
+		margin-bottom: 0;
+		transition: margin 0.5s ease;
+	}
+	
+	header ul li {
+		margin: 10px;
+	}
+	
+	nav:hover a,
+	nav:hover a:visited {
+		color: #222!important;
+	}
+
+	
+	section {
+		width: calc(100% - 20px);
+		margin: 10px;
+	}
+	section.main-points {
+		padding-top: 30px;
+	}
+	
+	.main-points ul li {
+		width: calc(50% - 30px);
+	}
+}
+@media screen and (max-width: 700px) {
+	body {
+		background-position: calc(50% + 123px) -1611px;
+	}
+	section.main-points {
+		padding-top: 30px;
+	}
+	.main-technologies img {
+		height: auto!important;
+		width: auto!important;
+		max-height: 45px;
+		max-width: 300px;
+	}
+}
+@media screen and (max-width: 600px) {
+	body {
+		background-position: calc(50% + 123px) -1611px;
+	}
+	section.main-points {
+		padding-top: 30px;
+	}
+	.main-points ul li {
+		width: calc(100% - 30px);
+	}
+}
+@media screen and (max-width: 500px) {
+	body {
+		background-position: calc(50% + 240px) -1560px;
+	}
+}
+@media screen and (max-width: 460px) {
+	body {
+		background-position: calc(50% + 240px) -1550px;
+	}
+}
+@media screen and (max-width: 440px) {
+	body {
+		background-position: calc(50% + 240px) -1525px;
+	}
+}
+@media screen and (max-width: 400px) {
+	body {
+		background-position: calc(50% + 240px) -1510px;
+	}
+}
+@media screen and (max-width: 350px) {
+	body {
+		background-position: calc(50% + 240px) -1415px;
+	}
+}
+@media screen and (max-width: 300px) {
+	body {
+		background-position: calc(50% + 240px) -1370px;
+	}
 }
