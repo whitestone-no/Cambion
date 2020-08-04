@@ -319,7 +319,7 @@ footer .acknowledgements a:hover {
 	}
 	
 	header ul li {
-		margin: 10px;
+		margin: 10px 5px;
 	}
 	
 	nav:hover a,
@@ -351,7 +351,7 @@ footer .acknowledgements a:hover {
 		height: auto!important;
 		width: auto!important;
 		max-height: 45px;
-		max-width: 300px;
+		max-width: 280px;
 	}
 }
 @media screen and (max-width: 600px) {
