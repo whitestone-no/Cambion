@@ -12,7 +12,7 @@ highlight_language = 'csharp'
 html_favicon = 'favicon.ico'
 # html_logo = 'images/logoTiny.png'
 html_scaled_image_link = False
-html_theme: 'sphinx_rtd_theme'
+html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
 #   'logo_only': True,
     'collapse_navigation': False,
