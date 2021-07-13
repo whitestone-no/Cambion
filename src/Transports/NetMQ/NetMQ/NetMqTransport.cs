@@ -6,14 +6,11 @@ using NetMQ;
 using NetMQ.Sockets;
 using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
-using Whitestone.Cambion.Types;
 
 namespace Whitestone.Cambion.Transport.NetMQ
 {
     public class NetMqTransport : ITransport
     {
-        public ISerializer Serializer { get; set; }
-
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         private readonly string _publishAddress;
@@ -30,10 +27,8 @@ namespace Whitestone.Cambion.Transport.NetMQ
         private CancellationTokenSource _subscribeThreadCancellation;
         private CancellationTokenSource _pingThreadCancellation;
 
-        public NetMqTransport(IOptions<NetMqConfig> config, ISerializer serializer)
+        public NetMqTransport(IOptions<NetMqConfig> config)
         {
-            Serializer = serializer;
-
             _publishAddress = config.Value.PublishAddress;
             _subscribeAddress = config.Value.SubscribeAddress;
 
@@ -96,18 +91,16 @@ namespace Whitestone.Cambion.Transport.NetMQ
             _messageHost?.Stop();
         }
 
-        public void Publish(MessageWrapper message)
+        public void Publish(byte[] messsageBytes)
         {
-            if (message == null)
+            if (messsageBytes == null)
             {
-                throw new ArgumentNullException(nameof(message));
+                throw new ArgumentNullException(nameof(messsageBytes));
             }
-
-            byte[] rawBytes = Serializer.Serialize(message);
 
             lock (_publishSocketLocker)
             {
-                _publishSocket.SendFrame(rawBytes);
+                _publishSocket.SendFrame(messsageBytes);
             }
         }
 
@@ -191,8 +184,7 @@ namespace Whitestone.Cambion.Transport.NetMQ
                         continue;
                     }
 
-                    MessageWrapper wrapper = Serializer.Deserialize(messageBytes);
-                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(wrapper));
+                    MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageBytes));
                 }
                 catch (ObjectDisposedException) { }
             }

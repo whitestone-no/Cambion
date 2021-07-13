@@ -12,15 +12,13 @@ namespace NetMQ.Test
     class NetMqTransportTests
     {
         private NetMqTransport _transportWithHost;
-
-        private Mock<ISerializer> _serializer;
+        
         private Mock<IOptions<NetMqConfig>> _options;
         private NetMqConfig _config;
 
         [OneTimeSetUp]
         public void Setup()
         {
-            _serializer = new Mock<ISerializer>();
             _options = new Mock<IOptions<NetMqConfig>>();
             _config = new NetMqConfig
             {
@@ -31,7 +29,7 @@ namespace NetMQ.Test
 
             _options.SetupGet(x => x.Value).Returns(_config);
 
-            _transportWithHost = new NetMqTransport(_options.Object, _serializer.Object);
+            _transportWithHost = new NetMqTransport(_options.Object);
             _transportWithHost.Start();
         }
 
@@ -57,7 +55,7 @@ namespace NetMQ.Test
                 mre.Set();
             };
 
-            _transportWithHost.Publish(new MessageWrapper());
+            _transportWithHost.Publish(new byte[0]);
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
 
@@ -80,11 +78,10 @@ namespace NetMQ.Test
 
             _transportWithHost.MessageReceived += (sender, e) =>
             {
-                mwIn = e.Message;
                 mre.Set();
             };
 
-            _transportWithHost.Publish(mwOut);
+            _transportWithHost.Publish(new byte[0]);
 
             mre.WaitOne(new TimeSpan(0, 0, 5));
 
@@ -98,7 +95,7 @@ namespace NetMQ.Test
 
             _transportWithHost.MessageReceived += (sender, e) => { mre.Set(); };
 
-            _transportWithHost.Publish(new MessageWrapper());
+            _transportWithHost.Publish(new byte[0]);
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
 

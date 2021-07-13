@@ -13,8 +13,7 @@ namespace RabbitMQ.Test
     class RabbitMqTransportTests
     {
         private RabbitMqTransport _transport;
-
-        private Mock<ISerializer> _serializer;
+        
         private Mock<IOptions<RabbitMqConfig>> _options;
         private RabbitMqConfig _config;
 
@@ -37,13 +36,12 @@ namespace RabbitMQ.Test
                     VirtualHost = testConfig.VirtualHost
                 }
             };
-
-            _serializer = new Mock<ISerializer>();
+            
             _options = new Mock<IOptions<RabbitMqConfig>>();
 
             _options.SetupGet(x => x.Value).Returns(_config);
 
-            _transport = new RabbitMqTransport(_options.Object, _serializer.Object);
+            _transport = new RabbitMqTransport(_options.Object);
             _transport.Start();
         }
 
@@ -64,7 +62,7 @@ namespace RabbitMQ.Test
                 mre.Set();
             };
 
-            _transport.Publish(new MessageWrapper());
+            _transport.Publish(new byte[0]);
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
 
@@ -88,11 +86,10 @@ namespace RabbitMQ.Test
 
             _transport.MessageReceived += (sender, e) =>
             {
-                mwIn = e.Message;
                 mre.Set();
             };
 
-            _transport.Publish(mwOut);
+            _transport.Publish(new byte[0]);
 
             mre.WaitOne(new TimeSpan(0, 0, 5));
 
@@ -112,7 +109,7 @@ namespace RabbitMQ.Test
                 mre.Set();
             };
 
-            _transport.Publish(new MessageWrapper());
+            _transport.Publish(new byte[0]);
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
 

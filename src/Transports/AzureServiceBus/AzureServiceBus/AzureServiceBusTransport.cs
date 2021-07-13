@@ -8,14 +8,11 @@ using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
-using Whitestone.Cambion.Types;
 
 namespace Whitestone.Cambion.Transport.AzureSericeBus
 {
     public class AzureServiceBusTransport : ITransport
     {
-        public ISerializer Serializer { get; set; }
-
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         private readonly AzureServiceBusConfig _config;
@@ -24,10 +21,8 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
         private ManagementClient _managementClient;
         private ITokenProvider _tokenProvider;
 
-        public AzureServiceBusTransport(IOptions<AzureServiceBusConfig> config, ISerializer serializer)
+        public AzureServiceBusTransport(IOptions<AzureServiceBusConfig> config)
         {
-            Serializer = serializer;
-
             _config = config.Value;
         }
 
@@ -100,14 +95,12 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
             }
         }
 
-        public void Publish(MessageWrapper message)
+        public void Publish(byte[] messageBytes)
         {
-            if (message == null)
+            if (messageBytes == null)
             {
-                throw new ArgumentNullException(nameof(message));
+                throw new ArgumentNullException(nameof(messageBytes));
             }
-
-            byte[] messageBytes = Serializer.Serialize(message);
 
             AsyncAwaitHelper.RunSync(() => _topicClient.SendAsync(new Message(messageBytes)));
         }
@@ -156,9 +149,7 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
         private async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
             // Process the message.
-            MessageWrapper wrapper = Serializer.Deserialize(message.Body);
-
-            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(wrapper));
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(message.Body));
 
             // Complete the message so that it is not received again.
             // This can be done only if the subscriptionClient is created in ReceiveMode.PeekLock mode (which is the default).

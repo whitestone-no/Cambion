@@ -4,7 +4,6 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
-using Whitestone.Cambion.Types;
 
 namespace Whitestone.Cambion.Transport.RabbitMQ
 {
@@ -18,10 +17,8 @@ namespace Whitestone.Cambion.Transport.RabbitMQ
         private IConnection _conn;
         private IModel _channel;
 
-        public RabbitMqTransport(IOptions<RabbitMqConfig> config, ISerializer serializer)
+        public RabbitMqTransport(IOptions<RabbitMqConfig> config)
         {
-            Serializer = serializer;
-
             _config = config.Value;
         }
 
@@ -63,18 +60,16 @@ namespace Whitestone.Cambion.Transport.RabbitMQ
             _conn.Close();
         }
 
-        public void Publish(MessageWrapper message)
+        public void Publish(byte[] messagebytes)
         {
-            if (message == null)
+            if (messagebytes == null)
             {
-                throw new ArgumentNullException(nameof(message));
+                throw new ArgumentNullException(nameof(messagebytes));
             }
-
-            byte[] rawBytes = Serializer.Serialize(message);
 
             lock (_channel)
             {
-                _channel.BasicPublish(_config.Exchange.Name, string.Empty, null, rawBytes);
+                _channel.BasicPublish(_config.Exchange.Name, string.Empty, null, messagebytes);
             }
         }
 
@@ -82,9 +77,7 @@ namespace Whitestone.Cambion.Transport.RabbitMQ
         {
             ReadOnlyMemory<byte> messageBytes = e.Body;
 
-            MessageWrapper wrapper = Serializer.Deserialize(messageBytes.ToArray());
-
-            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(wrapper));
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageBytes.ToArray()));
         }
     }
 }

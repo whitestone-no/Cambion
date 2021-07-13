@@ -14,14 +14,10 @@ namespace Whitestone.Cambion.Test
     {
         private LoopbackTransport _transport;
 
-        private Mock<ISerializer> _serializer;
-
         [SetUp]
         public void Setup()
         {
-            _serializer = new Mock<ISerializer>();
-
-            _transport = new LoopbackTransport(_serializer.Object);
+            _transport = new LoopbackTransport();
         }
 
         [Test]
@@ -40,7 +36,7 @@ namespace Whitestone.Cambion.Test
                 mre.Set();
             };
 
-            _transport.Publish(new MessageWrapper());
+            _transport.Publish(new byte[0]);
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 1));
 
@@ -55,13 +51,12 @@ namespace Whitestone.Cambion.Test
             ManualResetEvent mre = new ManualResetEvent(false);
             EventHandler<MessageReceivedEventArgs> handler = (sender, e) =>
             {
-                actual = e.Message;
                 mre.Set();
             };
 
             _transport.MessageReceived += handler;
 
-            _transport.Publish(new MessageWrapper());
+            _transport.Publish(new byte[0]);
 
             Assert.True(mre.WaitOne(new TimeSpan(0, 0, 1)));
 

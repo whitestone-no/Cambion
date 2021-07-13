@@ -200,7 +200,9 @@ namespace Whitestone.Cambion
                 MessageType = MessageType.Event
             };
 
-            _transport.Publish(wrapper);
+            byte[] wrapperBytes = _serializer.Serialize(wrapper);
+
+            _transport.Publish(wrapperBytes);
         }
 
         public TResponse CallSynchronizedHandler<TRequest, TResponse>(TRequest request, int timeout = 10000)
@@ -231,7 +233,9 @@ namespace Whitestone.Cambion
                 CorrelationId = correlationId
             };
 
-            _transport.Publish(wrapper);
+            byte[] wrapperBytes = _serializer.Serialize(wrapper);
+
+            _transport.Publish(wrapperBytes);
 
             if (mre.WaitOne(timeout))
             {
@@ -257,7 +261,7 @@ namespace Whitestone.Cambion
         {
             try
             {
-                MessageWrapper wrapper = e.Message;
+                MessageWrapper wrapper = _serializer.Deserialize(e.MessageBytes);
 
                 if (wrapper.MessageType == MessageType.Event)
                 {
@@ -326,7 +330,9 @@ namespace Whitestone.Cambion
                                     CorrelationId = wrapper.CorrelationId
                                 };
 
-                                _transport.Publish(replyWrapper);
+                                byte[] replyWrapperBytes = _serializer.Serialize(replyWrapper);
+
+                                _transport.Publish(replyWrapperBytes);
                             }
                             catch (Exception ex)
                             {

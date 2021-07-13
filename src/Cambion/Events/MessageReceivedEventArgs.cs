@@ -1,14 +1,12 @@
-﻿using Whitestone.Cambion.Types;
-
-namespace Whitestone.Cambion.Events
+﻿namespace Whitestone.Cambion.Events
 {
     public class MessageReceivedEventArgs
     {
-        public MessageWrapper Message { get; set; }
+        public byte[] MessageBytes { get; set; }
 
-        public MessageReceivedEventArgs(MessageWrapper message)
+        public MessageReceivedEventArgs(byte[] messageBytes)
         {
-            Message = message;
+            MessageBytes = messageBytes;
         }
     }
 }

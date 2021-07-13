@@ -6,12 +6,10 @@ namespace Whitestone.Cambion.Interfaces
 {
     public interface ITransport
     {
-        ISerializer Serializer { get; set; }
-
         void Start();
         void Stop();
 
-        void Publish(MessageWrapper message);
+        void Publish(byte[] messageBytes);
 
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
     }
