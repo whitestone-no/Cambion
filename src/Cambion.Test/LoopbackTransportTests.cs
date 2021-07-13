@@ -1,8 +1,9 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Threading;
+using Moq;
 using Whitestone.Cambion.Events;
-using Whitestone.Cambion.Serializer.JsonNet;
+using Whitestone.Cambion.Interfaces;
 using Whitestone.Cambion.Types;
 using Whitestone.Cambion.Transport.Loopback;
 
@@ -13,11 +14,14 @@ namespace Whitestone.Cambion.Test
     {
         private LoopbackTransport _transport;
 
+        private Mock<ISerializer> _serializer;
+
         [SetUp]
         public void Setup()
         {
-            _transport = new LoopbackTransport();
-            _transport.Serializer = new JsonNetSerializer();
+            _serializer = new Mock<ISerializer>();
+
+            _transport = new LoopbackTransport(_serializer.Object);
         }
 
         [Test]

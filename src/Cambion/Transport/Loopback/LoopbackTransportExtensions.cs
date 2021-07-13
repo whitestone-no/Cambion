@@ -1,14 +1,16 @@
-﻿using Whitestone.Cambion.Configurations;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Whitestone.Cambion.Interfaces;
 
 namespace Whitestone.Cambion.Transport.Loopback
 {
     public static class LoopbackTransportExtensions
     {
-        public static ICambionConfiguration UseLoopback(this TransportConfiguration transportConfiguration)
+        public static ICambionBuilder UseLoopbackTransport(this ICambionBuilder builder)
         {
-            LoopbackTransport transport = new LoopbackTransport();
-            return transportConfiguration.Transport(transport);
+            builder.Services.Replace(new ServiceDescriptor(typeof(ITransport), typeof(LoopbackTransport), ServiceLifetime.Singleton));
+
+            return builder;
         }
     }
 }

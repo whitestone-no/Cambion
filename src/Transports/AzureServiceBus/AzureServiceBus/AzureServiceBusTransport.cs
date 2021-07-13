@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Management;
 using Microsoft.Azure.ServiceBus.Primitives;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
@@ -23,9 +24,11 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
         private ManagementClient _managementClient;
         private ITokenProvider _tokenProvider;
 
-        public AzureServiceBusTransport(AzureServiceBusConfig config)
+        public AzureServiceBusTransport(IOptions<AzureServiceBusConfig> config, ISerializer serializer)
         {
-            _config = config;
+            Serializer = serializer;
+
+            _config = config.Value;
         }
 
         public void Start()

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Whitestone.Cambion.Events;
@@ -17,20 +18,11 @@ namespace Whitestone.Cambion.Transport.RabbitMQ
         private IConnection _conn;
         private IModel _channel;
 
-        public RabbitMqTransport(string connectionString)
+        public RabbitMqTransport(IOptions<RabbitMqConfig> config, ISerializer serializer)
         {
-            _config = new RabbitMqConfig
-            {
-                Connection =
-                {
-                    ConnectionString = new Uri(connectionString)
-                }
-            };
-        }
+            Serializer = serializer;
 
-        public RabbitMqTransport(RabbitMqConfig config)
-        {
-            _config = config;
+            _config = config.Value;
         }
 
         public void Start()

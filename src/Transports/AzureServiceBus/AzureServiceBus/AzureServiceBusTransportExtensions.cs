@@ -1,17 +1,26 @@
 ﻿using System;
-using Whitestone.Cambion.Configurations;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Whitestone.Cambion.Interfaces;
 
 namespace Whitestone.Cambion.Transport.AzureSericeBus
 {
     public static class AzureServiceBusTransportExtensions
     {
-        public static ICambionConfiguration UseAzureServiceBus(this TransportConfiguration transportConfiguration, Action<AzureServiceBusConfig> configAction)
+        public static ICambionBuilder UseAzureServiceBus(this ICambionBuilder builder, Action<AzureServiceBusConfig> configure)
         {
-            AzureServiceBusConfig config = new AzureServiceBusConfig();
-            configAction(config);
-            AzureServiceBusTransport transport = new AzureServiceBusTransport(config);
-            return transportConfiguration.Transport(transport);
+            builder.Services.Replace(new ServiceDescriptor(typeof(ITransport), typeof(AzureServiceBusTransport), ServiceLifetime.Singleton));
+
+            builder.Services.AddOptions<AzureServiceBusConfig>()
+                .Configure(conf =>
+                {
+                    if (configure != null)
+                    {
+                        configure(conf);
+                    }
+                });
+
+            return builder;
         }
     }
 }

@@ -1,25 +1,26 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Threading;
-using Whitestone.Cambion.Configurations;
+using Moq;
 using Whitestone.Cambion.Interfaces;
-using Whitestone.Cambion.Serializer.JsonNet;
-using Whitestone.Cambion.Transport.Loopback;
 
 namespace Whitestone.Cambion.Test
 {
     [Order(3)]
     class CambionTests
     {
+        private Mock<ITransport> _transport;
+        private Mock<ISerializer> _serializer;
+
         private ICambion _cambion;
 
         [SetUp]
         public void Setup()
         {
-            _cambion = new CambionConfiguration()
-                .Serializer.UseJsonNet()
-                .Transport.UseLoopback()
-                .Create();
+            _transport = new Mock<ITransport>();
+            _serializer = new Mock<ISerializer>();
+
+            _cambion = new Cambion(_transport.Object, _serializer.Object);
         }
 
         [TearDown]

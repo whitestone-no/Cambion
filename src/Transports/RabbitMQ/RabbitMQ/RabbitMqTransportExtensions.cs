@@ -1,5 +1,6 @@
 ﻿using System;
-using Whitestone.Cambion.Configurations;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Whitestone.Cambion.Interfaces;
 
 namespace Whitestone.Cambion.Transport.RabbitMQ
@@ -7,20 +8,26 @@ namespace Whitestone.Cambion.Transport.RabbitMQ
     public static class RabbitMqTransportExtensions
     {
         // ReSharper disable once InconsistentNaming
-        public static ICambionConfiguration UseRabbitMQ(this TransportConfiguration transportConfiguration, string connectionString)
+        public static ICambionBuilder UseRabbitMQ(this ICambionBuilder builder, string connectionString)
         {
-            RabbitMqTransport transport = new RabbitMqTransport(connectionString);
-            return transportConfiguration.Transport(transport);
+            return builder.UseRabbitMQ(conf => conf.Connection.ConnectionString = new Uri(connectionString));
         }
 
         // ReSharper disable once InconsistentNaming
-        public static ICambionConfiguration UseRabbitMQ(this TransportConfiguration transportConfiguration, Action<RabbitMqConfig> configAction)
+        public static ICambionBuilder UseRabbitMQ(this ICambionBuilder builder, Action<RabbitMqConfig> configure)
         {
-            RabbitMqConfig config = new RabbitMqConfig();
-            configAction(config);
+            builder.Services.Replace(new ServiceDescriptor(typeof(ITransport), typeof(RabbitMqTransport), ServiceLifetime.Singleton));
 
-            RabbitMqTransport transport = new RabbitMqTransport(config);
-            return transportConfiguration.Transport(transport);
+            builder.Services.AddOptions<RabbitMqConfig>()
+                .Configure(conf =>
+                {
+                    if (configure != null)
+                    {
+                        configure(conf);
+                    }
+                });
+
+            return builder;
         }
 
     }

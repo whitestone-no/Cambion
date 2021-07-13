@@ -10,7 +10,7 @@ using EventHandler = Whitestone.Cambion.Types.EventHandler;
 
 namespace Whitestone.Cambion
 {
-    internal class Cambion : ICambion
+    public class Cambion : ICambion
     {
         private readonly ITransport _transport;
         private readonly ISerializer _serializer;
@@ -27,8 +27,6 @@ namespace Whitestone.Cambion
         {
             _transport = transport;
             _serializer = serializer;
-
-            _transport.Serializer = _serializer;
 
             Validate();
 

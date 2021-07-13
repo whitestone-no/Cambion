@@ -11,6 +11,11 @@ namespace Whitestone.Cambion.Transport.Loopback
 
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
+        public LoopbackTransport(ISerializer serializer)
+        {
+            Serializer = serializer;
+        }
+
         public void Start() { }
         public void Stop() { }
 

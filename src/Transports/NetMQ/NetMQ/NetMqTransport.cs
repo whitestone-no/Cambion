@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.NetworkInformation;
 using System.Threading;
+using Microsoft.Extensions.Options;
 using NetMQ;
 using NetMQ.Sockets;
 using Whitestone.Cambion.Events;
@@ -29,15 +30,16 @@ namespace Whitestone.Cambion.Transport.NetMQ
         private CancellationTokenSource _subscribeThreadCancellation;
         private CancellationTokenSource _pingThreadCancellation;
 
-
-        public NetMqTransport(string publishAddress, string subscribeAddress, bool useMessageHost)
+        public NetMqTransport(IOptions<NetMqConfig> config, ISerializer serializer)
         {
-            _publishAddress = publishAddress;
-            _subscribeAddress = subscribeAddress;
+            Serializer = serializer;
 
-            if (useMessageHost)
+            _publishAddress = config.Value.PublishAddress;
+            _subscribeAddress = config.Value.SubscribeAddress;
+
+            if (config.Value.UseMessageHost)
             {
-                _messageHost = new MessageHost(subscribeAddress, publishAddress);
+                _messageHost = new MessageHost(_subscribeAddress, _publishAddress);
             }
         }
 

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Moq;
 using NUnit.Framework;
-using Whitestone.Cambion.Serializer.JsonNet;
+using Whitestone.Cambion.Interfaces;
 using Whitestone.Cambion.Transport.RabbitMQ;
 using Whitestone.Cambion.Types;
 
@@ -11,7 +13,10 @@ namespace RabbitMQ.Test
     class RabbitMqTransportTests
     {
         private RabbitMqTransport _transport;
-        private RabbitMqTestConfig _config;
+
+        private Mock<ISerializer> _serializer;
+        private Mock<IOptions<RabbitMqConfig>> _options;
+        private RabbitMqConfig _config;
 
         [OneTimeSetUp]
         public void Setup()
@@ -21,12 +26,24 @@ namespace RabbitMQ.Test
                 .AddEnvironmentVariables("RABBITMQTEST_")
                 .Build();
 
-            _config = configBuilder.GetSection("RabbitMQ").Get<RabbitMqTestConfig>();
-
-            _transport = new RabbitMqTransport(_config.ConnectionString)
+            RabbitMqTestConfig testConfig = configBuilder.GetSection("RabbitMQ").Get<RabbitMqTestConfig>();
+            _config = new RabbitMqConfig
             {
-                Serializer = new JsonNetSerializer()
+                Connection =
+                {
+                    Hostname = testConfig.Hostname,
+                    Username = testConfig.Username,
+                    Password = testConfig.Password,
+                    VirtualHost = testConfig.VirtualHost
+                }
             };
+
+            _serializer = new Mock<ISerializer>();
+            _options = new Mock<IOptions<RabbitMqConfig>>();
+
+            _options.SetupGet(x => x.Value).Returns(_config);
+
+            _transport = new RabbitMqTransport(_options.Object, _serializer.Object);
             _transport.Start();
         }
 
@@ -86,21 +103,7 @@ namespace RabbitMQ.Test
         [Order(3)]
         public void Publish_HostWithCustomConfig_EventReceived()
         {
-            RabbitMqConfig config = new RabbitMqConfig
-            {
-                Connection =
-                {
-                    Hostname = _config.Hostname,
-                    Username = _config.Username,
-                    Password = _config.Password,
-                    VirtualHost = _config.VirtualHost
-                }
-            };
-            RabbitMqTransport transport = new RabbitMqTransport(config)
-            {
-                Serializer = new JsonNetSerializer()
-            };
-            transport.Start();
+            _transport.Start();
 
             ManualResetEvent mre = new ManualResetEvent(false);
 

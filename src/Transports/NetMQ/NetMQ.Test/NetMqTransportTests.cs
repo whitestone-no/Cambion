@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading;
+using Microsoft.Extensions.Options;
+using Moq;
 using NUnit.Framework;
-using Whitestone.Cambion.Serializer.JsonNet;
+using Whitestone.Cambion.Interfaces;
 using Whitestone.Cambion.Transport.NetMQ;
 using Whitestone.Cambion.Types;
 
@@ -11,11 +13,25 @@ namespace NetMQ.Test
     {
         private NetMqTransport _transportWithHost;
 
+        private Mock<ISerializer> _serializer;
+        private Mock<IOptions<NetMqConfig>> _options;
+        private NetMqConfig _config;
+
         [OneTimeSetUp]
         public void Setup()
         {
-            _transportWithHost = new NetMqTransport("tcp://localhost:9990", "tcp://localhost:9991", true);
-            _transportWithHost.Serializer = new JsonNetSerializer();
+            _serializer = new Mock<ISerializer>();
+            _options = new Mock<IOptions<NetMqConfig>>();
+            _config = new NetMqConfig
+            {
+                PublishAddress = "tcp://localhost:9990",
+                SubscribeAddress = "tcp://localhost:9991",
+                UseMessageHost = true
+            };
+
+            _options.SetupGet(x => x.Value).Returns(_config);
+
+            _transportWithHost = new NetMqTransport(_options.Object, _serializer.Object);
             _transportWithHost.Start();
         }
 
@@ -78,19 +94,15 @@ namespace NetMQ.Test
         [Test]
         public void PublishOnHost_ReceiveOnNonHost()
         {
-            NetMqTransport transportWithoutHost = new NetMqTransport("tcp://localhost:9990", "tcp://localhost:9991", false);
-            transportWithoutHost.Serializer = new JsonNetSerializer();
-            transportWithoutHost.Start();
-
             ManualResetEvent mre = new ManualResetEvent(false);
 
-            transportWithoutHost.MessageReceived += (sender, e) => { mre.Set(); };
+            _transportWithHost.MessageReceived += (sender, e) => { mre.Set(); };
 
             _transportWithHost.Publish(new MessageWrapper());
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
 
-            transportWithoutHost.Stop();
+            _transportWithHost.Stop();
 
             Assert.True(eventFired);
         }
