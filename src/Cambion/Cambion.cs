@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.IO;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using Whitestone.Cambion.Interfaces;
 using Whitestone.Cambion.Types;
 using EventHandler = Whitestone.Cambion.Types.EventHandler;
@@ -14,6 +15,7 @@ namespace Whitestone.Cambion
     {
         private readonly ITransport _transport;
         private readonly ISerializer _serializer;
+        private readonly ILogger<Cambion> _logger;
 
         private readonly Dictionary<Type, List<EventHandler>> _eventHandlers = new Dictionary<Type, List<EventHandler>>();
         private readonly Dictionary<SynchronizedHandlerKey, SynchronizedHandler> _synchronizedHandlers = new Dictionary<SynchronizedHandlerKey, SynchronizedHandler>();
@@ -23,10 +25,11 @@ namespace Whitestone.Cambion
 
         public event EventHandler<ErrorEventArgs> UnhandledException;
 
-        public Cambion(ITransport transport, ISerializer serializer)
+        public Cambion(ITransport transport, ISerializer serializer, ILogger<Cambion> logger)
         {
             _transport = transport;
             _serializer = serializer;
+            _logger = logger;
 
             Validate();
 
