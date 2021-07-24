@@ -217,6 +217,15 @@ namespace Whitestone.Cambion
 
             byte[] wrapperBytes = _serializer.Serialize(wrapper);
 
+            if (_logger.IsEnabled(LogLevel.Trace))
+            {
+                _logger.LogTrace("Publishing event {eventType} with data {data}", typeof(TEvent).FullName, Convert.ToBase64String(wrapperBytes));
+            }
+            else
+            {
+                _logger.LogDebug("Publishing event {eventType}", typeof(TEvent).FullName);
+            }
+
             _transport.Publish(wrapperBytes);
         }
 
@@ -250,6 +259,15 @@ namespace Whitestone.Cambion
 
             byte[] wrapperBytes = _serializer.Serialize(wrapper);
 
+            if (_logger.IsEnabled(LogLevel.Trace))
+            {
+                _logger.LogTrace("Publishing synchronized {eventType} with data {data}", typeof(TRequest).FullName, Convert.ToBase64String(wrapperBytes));
+            }
+            else
+            {
+                _logger.LogDebug("Publishing synchronized {eventType}", typeof(TRequest).FullName);
+            }
+
             _transport.Publish(wrapperBytes);
 
             if (mre.WaitOne(timeout))
@@ -276,6 +294,11 @@ namespace Whitestone.Cambion
         {
             try
             {
+                if (_logger.IsEnabled(LogLevel.Trace))
+                {
+                    _logger.LogTrace("Received message with data {data}", Convert.ToBase64String(e.MessageBytes));
+                }
+
                 MessageWrapper wrapper = _serializer.Deserialize(e.MessageBytes);
 
                 if (wrapper.MessageType == MessageType.Event)
