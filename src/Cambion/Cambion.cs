@@ -219,11 +219,11 @@ namespace Whitestone.Cambion
 
             if (_logger.IsEnabled(LogLevel.Trace))
             {
-                _logger.LogTrace("Publishing event {eventType} with data {data}", typeof(TEvent).FullName, Convert.ToBase64String(wrapperBytes));
+                _logger.LogTrace("Publishing event {eventType} to Transport with data {data}", typeof(TEvent).FullName, Convert.ToBase64String(wrapperBytes));
             }
             else
             {
-                _logger.LogDebug("Publishing event {eventType}", typeof(TEvent).FullName);
+                _logger.LogDebug("Publishing event {eventType} to Transport", typeof(TEvent).FullName);
             }
 
             _transport.Publish(wrapperBytes);
@@ -261,11 +261,11 @@ namespace Whitestone.Cambion
 
             if (_logger.IsEnabled(LogLevel.Trace))
             {
-                _logger.LogTrace("Publishing synchronized {eventType} with data {data}", typeof(TRequest).FullName, Convert.ToBase64String(wrapperBytes));
+                _logger.LogTrace("Publishing synchronized {eventType} to Transport with data {data}", typeof(TRequest).FullName, Convert.ToBase64String(wrapperBytes));
             }
             else
             {
-                _logger.LogDebug("Publishing synchronized {eventType}", typeof(TRequest).FullName);
+                _logger.LogDebug("Publishing synchronized {eventType} to Transport", typeof(TRequest).FullName);
             }
 
             _transport.Publish(wrapperBytes);
@@ -296,7 +296,7 @@ namespace Whitestone.Cambion
             {
                 if (_logger.IsEnabled(LogLevel.Trace))
                 {
-                    _logger.LogTrace("Received message with data {data}", Convert.ToBase64String(e.MessageBytes));
+                    _logger.LogTrace("Received message from Transport with data {data}", Convert.ToBase64String(e.MessageBytes));
                 }
 
                 MessageWrapper wrapper = _serializer.Deserialize(e.MessageBytes);
@@ -369,6 +369,15 @@ namespace Whitestone.Cambion
                                 };
 
                                 byte[] replyWrapperBytes = _serializer.Serialize(replyWrapper);
+
+                                if (_logger.IsEnabled(LogLevel.Trace))
+                                {
+                                    _logger.LogTrace("Publishing synchronized reply {eventType} to Transport with data {data}", result.GetType().FullName, Convert.ToBase64String(replyWrapperBytes));
+                                }
+                                else
+                                {
+                                    _logger.LogDebug("Publishing synchronized reply {eventType} to Transport", result.GetType().FullName);
+                                }
 
                                 _transport.Publish(replyWrapperBytes);
                             }
