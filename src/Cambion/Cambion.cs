@@ -33,6 +33,8 @@ namespace Whitestone.Cambion
 
             Validate();
 
+            _logger.LogInformation("Starting Transport {transport}", _transport.GetType().FullName);
+
             _transport.MessageReceived += Transport_MessageReceived;
             _transport.Start();
         }
@@ -47,6 +49,8 @@ namespace Whitestone.Cambion
 
         public void Reinitialize()
         {
+            _logger.LogInformation("Reinitializing Transport {transport}", _transport.GetType().FullName);
+
             Validate();
 
             _transport.MessageReceived -= Transport_MessageReceived;
@@ -432,6 +436,8 @@ namespace Whitestone.Cambion
             if (disposing)
             {
                 // Dispose managed resources.
+                _logger.LogInformation("Stopping Transport {transport}", _transport.GetType().FullName);
+
                 _transport.MessageReceived -= Transport_MessageReceived;
                 _transport.Stop();
             }
