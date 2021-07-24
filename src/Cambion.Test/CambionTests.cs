@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Whitestone.Cambion.Interfaces;
 
@@ -11,6 +12,7 @@ namespace Whitestone.Cambion.Test
     {
         private Mock<ITransport> _transport;
         private Mock<ISerializer> _serializer;
+        private Mock<ILogger<Cambion>> _logger;
 
         private ICambion _cambion;
 
@@ -19,8 +21,9 @@ namespace Whitestone.Cambion.Test
         {
             _transport = new Mock<ITransport>();
             _serializer = new Mock<ISerializer>();
+            _logger = new Mock<ILogger<Cambion>>();
 
-            _cambion = new Cambion(_transport.Object, _serializer.Object);
+            _cambion = new Cambion(_transport.Object, _serializer.Object, _logger.Object);
         }
 
         [TearDown]
