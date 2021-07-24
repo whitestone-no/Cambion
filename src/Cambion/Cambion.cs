@@ -66,7 +66,8 @@ namespace Whitestone.Cambion
             }
 
             // Look for, and save, any IEventHandler implementations
-            IEnumerable<Type> eventInterfaces = handler.GetType().GetInterfaces()
+            Type handlerType = handler.GetType();
+            IEnumerable<Type> eventInterfaces = handlerType.GetInterfaces()
                 .Where(x => typeof(IEventHandler).IsAssignableFrom(x) && x.IsGenericType);
 
             lock (_eventHandlers)
@@ -91,12 +92,14 @@ namespace Whitestone.Cambion
                         {
                             _eventHandlers[type].Add(eventHandler);
                         }
+
+                        _logger.LogInformation("Registered {handlerType} as event handler for <{handler}>", handlerType.FullName, type.FullName);
                     }
                 }
             }
 
             // Look for, and save, any ISynchronizedHandler implementations
-            IEnumerable<Type> synchronizedInterfaces = handler.GetType().GetInterfaces()
+            IEnumerable<Type> synchronizedInterfaces = handlerType.GetInterfaces()
                 .Where(x => typeof(ISynchronizedHandler).IsAssignableFrom(x) && x.IsGenericType);
 
             lock (_synchronizedHandlers)
@@ -125,6 +128,8 @@ namespace Whitestone.Cambion
 
                             _synchronizedHandlers[key] = synchronizedHandler;
                         }
+
+                        _logger.LogInformation("Registered {handlerType} as synchronized handler for <{request}, {response}>", handlerType.FullName, requestType.FullName, responseType.FullName);
                     }
                 }
             }
@@ -143,7 +148,7 @@ namespace Whitestone.Cambion
             {
                 throw new ArgumentException("Can't use static methods in callbacks.", nameof(callback));
             }
-
+            
             Type type = typeof(TEvent);
 
             EventHandler eventHandler = new EventHandler(callback);
@@ -160,6 +165,8 @@ namespace Whitestone.Cambion
                     _eventHandlers[type].Add(eventHandler);
                 }
             }
+
+            _logger.LogInformation("Added {handlerType} as event handler for <{handler}>", callback.Target.GetType().FullName, type.FullName);
         }
 
         public void AddSynchronizedHandler<TRequest, TResponse>(Func<TRequest, TResponse> callback)
@@ -176,7 +183,10 @@ namespace Whitestone.Cambion
                 throw new ArgumentException("Can't use static methods in callbacks.", nameof(callback));
             }
 
-            SynchronizedHandlerKey key = new SynchronizedHandlerKey(typeof(TRequest), typeof(TResponse));
+            Type requestType = typeof(TRequest);
+            Type responseType = typeof(TResponse);
+
+            SynchronizedHandlerKey key = new SynchronizedHandlerKey(requestType, responseType);
 
             SynchronizedHandler synchronizedHandler = new SynchronizedHandler(callback);
 
@@ -185,11 +195,13 @@ namespace Whitestone.Cambion
             {
                 if (_synchronizedHandlers.ContainsKey(key))
                 {
-                    throw new ArgumentException($"A SynchronizedHandler already exists for request type {typeof(TRequest)} and response type {typeof(TResponse)}", nameof(callback));
+                    throw new ArgumentException($"A SynchronizedHandler already exists for request type {requestType} and response type {responseType}", nameof(callback));
                 }
 
                 _synchronizedHandlers[key] = synchronizedHandler;
             }
+
+            _logger.LogInformation("Added {handlerType} as synchronized handler for <{request}, {response}>", callback.Target.GetType().FullName, requestType.FullName, responseType.FullName);
         }
 
         public void PublishEvent<TEvent>(TEvent data)
