@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -9,8 +10,6 @@ namespace Whitestone.Cambion.Transport.RabbitMQ
 {
     public class RabbitMqTransport : ITransport
     {
-        public ISerializer Serializer { get; set; }
-
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         private readonly RabbitMqConfig _config;
@@ -22,7 +21,7 @@ namespace Whitestone.Cambion.Transport.RabbitMQ
             _config = config.Value;
         }
 
-        public void Start()
+        public Task StartAsync()
         {
             _config.AssertIsValid();
 
@@ -52,12 +51,16 @@ namespace Whitestone.Cambion.Transport.RabbitMQ
             EventingBasicConsumer consumer = new EventingBasicConsumer(_channel);
             consumer.Received += QueueDataReceived;
             _channel.BasicConsume(_config.Queue.Name, true, consumer);
+
+            return Task.CompletedTask;
         }
 
-        public void Stop()
+        public Task StopAsync()
         {
             _channel.Close();
             _conn.Close();
+
+            return Task.CompletedTask;
         }
 
         public void Publish(byte[] messagebytes)

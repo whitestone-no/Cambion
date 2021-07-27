@@ -26,12 +26,7 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
             _config = config.Value;
         }
 
-        public void Start()
-        {
-            AsyncAwaitHelper.RunSync(StartAsync);
-        }
-
-        private async Task StartAsync()
+        public async Task StartAsync()
         {
             _config.AssertIsValid();
 
@@ -71,12 +66,7 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
             _subscriptionClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
         }
 
-        public void Stop()
-        {
-            AsyncAwaitHelper.RunSync(StopAsync);
-        }
-
-        private async Task StopAsync()
+        public async Task StopAsync()
         {
             await _subscriptionClient.CloseAsync();
             if (_config.Subscription.AutoDelete)

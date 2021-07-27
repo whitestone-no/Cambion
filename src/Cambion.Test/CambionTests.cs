@@ -26,12 +26,6 @@ namespace Whitestone.Cambion.Test
             _cambion = new Cambion(_transport.Object, _serializer.Object, _logger.Object);
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            _cambion.Dispose();
-        }
-
 
         [Test]
         public void Register_NullValue_ThrowsArgumentNullException()

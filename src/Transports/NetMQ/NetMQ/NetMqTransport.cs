@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.NetworkInformation;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using NetMQ;
 using NetMQ.Sockets;
@@ -38,7 +39,7 @@ namespace Whitestone.Cambion.Transport.NetMQ
             }
         }
 
-        public void Start()
+        public Task StartAsync()
         {
             _messageHost?.Start();
 
@@ -63,9 +64,11 @@ namespace Whitestone.Cambion.Transport.NetMQ
             {
                 Thread.Sleep(50);
             }
+
+            return Task.CompletedTask;
         }
 
-        public void Stop()
+        public Task StopAsync()
         {
             _subscribeThreadCancellation.Cancel();
             _pingThreadCancellation.Cancel();
@@ -89,6 +92,8 @@ namespace Whitestone.Cambion.Transport.NetMQ
             _subscribeSocket?.Dispose();
 
             _messageHost?.Stop();
+
+            return Task.CompletedTask;
         }
 
         public void Publish(byte[] messsageBytes)

@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Whitestone.Cambion.Events;
-using Whitestone.Cambion.Types;
 
 namespace Whitestone.Cambion.Interfaces
 {
     public interface ITransport
     {
-        void Start();
-        void Stop();
+        Task StartAsync();
+        Task StopAsync();
 
         void Publish(byte[] messageBytes);
 

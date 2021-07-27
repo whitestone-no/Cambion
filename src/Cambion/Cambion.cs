@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Whitestone.Cambion.Interfaces;
 using Whitestone.Cambion.Types;
@@ -21,8 +22,6 @@ namespace Whitestone.Cambion
         private readonly Dictionary<SynchronizedHandlerKey, SynchronizedHandler> _synchronizedHandlers = new Dictionary<SynchronizedHandlerKey, SynchronizedHandler>();
         private readonly Dictionary<Guid, SynchronizedDataPackage> _synchronizationPackages = new Dictionary<Guid, SynchronizedDataPackage>();
 
-        private bool _disposed;
-
         public event EventHandler<ErrorEventArgs> UnhandledException;
 
         public Cambion(ITransport transport, ISerializer serializer, ILogger<Cambion> logger)
@@ -32,11 +31,6 @@ namespace Whitestone.Cambion
             _logger = logger;
 
             Validate();
-
-            _logger.LogInformation("Starting Transport {transport}", _transport.GetType().FullName);
-
-            _transport.MessageReceived += Transport_MessageReceived;
-            _transport.Start();
         }
 
         private void Validate()
@@ -47,17 +41,17 @@ namespace Whitestone.Cambion
                 throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing serializer"));
         }
 
-        public void Reinitialize()
+        public async Task ReinitializeAsync()
         {
             _logger.LogInformation("Reinitializing Transport {transport}", _transport.GetType().FullName);
 
             Validate();
 
             _transport.MessageReceived -= Transport_MessageReceived;
-            _transport.Stop();
+            await _transport.StopAsync();
 
             _transport.MessageReceived += Transport_MessageReceived;
-            _transport.Start();
+            await _transport.StartAsync();
         }
 
         public void Register(object handler)
@@ -418,37 +412,20 @@ namespace Whitestone.Cambion
             eh?.Invoke(this, new ErrorEventArgs(ex));
         }
 
-        public void Dispose()
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            Dispose(true);
+            _logger.LogInformation("Starting Transport {transport}", _transport.GetType().FullName);
+
+            _transport.MessageReceived += Transport_MessageReceived;
+            await _transport.StartAsync();
         }
 
-        private void Dispose(bool disposing)
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
-            // Check to see if Dispose has already been called.
-            if (_disposed)
-            {
-                return;
-            }
+            _logger.LogInformation("Stopping Transport {transport}", _transport.GetType().FullName);
 
-            // If disposing equals true, dispose all managed
-            // and unmanaged resources.
-            if (disposing)
-            {
-                // Dispose managed resources.
-                _logger.LogInformation("Stopping Transport {transport}", _transport.GetType().FullName);
-
-                _transport.MessageReceived -= Transport_MessageReceived;
-                _transport.Stop();
-            }
-
-            // Note disposing has been done.
-            _disposed = true;
-        }
-
-        ~Cambion()
-        {
-            Dispose(false);
+            _transport.MessageReceived -= Transport_MessageReceived;
+            await _transport.StopAsync();
         }
     }
 }

@@ -42,13 +42,13 @@ namespace RabbitMQ.Test
             _options.SetupGet(x => x.Value).Returns(_config);
 
             _transport = new RabbitMqTransport(_options.Object);
-            _transport.Start();
+            _transport.StartAsync();
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            _transport.Stop();
+            _transport.StopAsync();
         }
 
         [Test]
@@ -100,7 +100,7 @@ namespace RabbitMQ.Test
         [Order(3)]
         public void Publish_HostWithCustomConfig_EventReceived()
         {
-            _transport.Start();
+            _transport.StartAsync();
 
             ManualResetEvent mre = new ManualResetEvent(false);
 
@@ -115,7 +115,7 @@ namespace RabbitMQ.Test
 
             Assert.True(eventFired);
 
-            _transport.Stop();
+            _transport.StopAsync();
         }
 
         [Test]

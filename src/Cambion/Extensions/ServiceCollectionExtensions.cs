@@ -16,6 +16,8 @@ namespace Whitestone.Cambion.Extensions
             services.AddSingleton<ITransport, LoopbackTransport>();
             services.AddSingleton<ISerializer, JsonNetSerializer>();
 
+            services.AddHostedService(svc => svc.GetRequiredService<ICambion>());
+
             return builder;
         }
     }

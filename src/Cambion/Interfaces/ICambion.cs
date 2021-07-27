@@ -1,18 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
 namespace Whitestone.Cambion.Interfaces
 {
     /// <summary>
     /// Main Cambion interface
     /// </summary>
-    /// <remarks>
-    /// Even though Cambion implements <see cref="System.IDisposable"/> it is designed
-    /// to only have one instance running at a time (per process). Therefore do
-    /// not use Cambion in <c>using</c> statements, but use only one instance
-    /// like you would <see cref="System.Net.Http.HttpClient"/>.
-    /// </remarks>
-    public interface ICambion : IDisposable
+    public interface ICambion : IHostedService
     {
         event EventHandler<ErrorEventArgs> UnhandledException;
 
@@ -20,7 +16,7 @@ namespace Whitestone.Cambion.Interfaces
         /// Restarts the <see cref="Whitestone.Cambion.Interfaces.ITransport"/> associated
         /// with this instance of Cambion.
         /// </summary>
-        void Reinitialize();
+        Task ReinitializeAsync();
 
         /// <summary>
         /// Use "interface subscription" to automatically add all <see cref="IEventHandler"/>

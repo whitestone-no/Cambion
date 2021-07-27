@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
 
@@ -8,8 +9,9 @@ namespace Whitestone.Cambion.Transport.Loopback
     {
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
-        public void Start() { }
-        public void Stop() { }
+        public Task StartAsync() => Task.CompletedTask;
+
+        public Task StopAsync() => Task.CompletedTask;
 
         public void Publish(byte[] messageBytes)
         {

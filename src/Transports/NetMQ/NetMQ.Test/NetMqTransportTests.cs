@@ -30,13 +30,13 @@ namespace NetMQ.Test
             _options.SetupGet(x => x.Value).Returns(_config);
 
             _transportWithHost = new NetMqTransport(_options.Object);
-            _transportWithHost.Start();
+            _transportWithHost.StartAsync();
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            _transportWithHost.Stop();
+            _transportWithHost.StopAsync();
         }
 
         [Test]
@@ -99,7 +99,7 @@ namespace NetMQ.Test
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
 
-            _transportWithHost.Stop();
+            _transportWithHost.StopAsync();
 
             Assert.True(eventFired);
         }
