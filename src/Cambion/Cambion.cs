@@ -56,8 +56,6 @@ namespace Whitestone.Cambion
 
         public void Register(object handler)
         {
-            Validate();
-
             if (handler == null)
             {
                 throw new ArgumentNullException(nameof(handler));
@@ -135,8 +133,6 @@ namespace Whitestone.Cambion
 
         public void AddEventHandler<TEvent>(Action<TEvent> callback)
         {
-            Validate();
-
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
@@ -169,8 +165,6 @@ namespace Whitestone.Cambion
 
         public void AddSynchronizedHandler<TRequest, TResponse>(Func<TRequest, TResponse> callback)
         {
-            Validate();
-
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
@@ -202,10 +196,8 @@ namespace Whitestone.Cambion
             _logger.LogInformation("Added {handlerType} as synchronized handler for <{request}, {response}>", callback.Target.GetType().FullName, requestType.FullName, responseType.FullName);
         }
 
-        public void PublishEvent<TEvent>(TEvent data)
+        public async Task PublishEventAsync<TEvent>(TEvent data)
         {
-            Validate();
-
             MessageWrapper wrapper = new MessageWrapper
             {
                 Data = data,
@@ -224,13 +216,11 @@ namespace Whitestone.Cambion
                 _logger.LogDebug("Publishing event {eventType} to Transport", typeof(TEvent).FullName);
             }
 
-            _transport.Publish(wrapperBytes);
+            await _transport.PublishAsync(wrapperBytes);
         }
 
-        public TResponse CallSynchronizedHandler<TRequest, TResponse>(TRequest request, int timeout = 10000)
+        public async Task<TResponse> CallSynchronizedHandlerAsync<TRequest, TResponse>(TRequest request, int timeout = 10000)
         {
-            Validate();
-
             Guid correlationId = Guid.NewGuid();
 
             ManualResetEvent mre = new ManualResetEvent(false);
@@ -266,7 +256,7 @@ namespace Whitestone.Cambion
                 _logger.LogDebug("Publishing synchronized {eventType} to Transport", typeof(TRequest).FullName);
             }
 
-            _transport.Publish(wrapperBytes);
+            await _transport.PublishAsync(wrapperBytes);
 
             if (mre.WaitOne(timeout))
             {
@@ -351,7 +341,7 @@ namespace Whitestone.Cambion
 
                     if (handler != null && handler.IsAlive)
                     {
-                        new Thread(() =>
+                        new Thread(async () =>
                         {
                             try
                             {
@@ -377,7 +367,7 @@ namespace Whitestone.Cambion
                                     _logger.LogDebug("Publishing synchronized reply {eventType} to Transport", result.GetType().FullName);
                                 }
 
-                                _transport.Publish(replyWrapperBytes);
+                                await _transport.PublishAsync(replyWrapperBytes);
                             }
                             catch (Exception ex)
                             {

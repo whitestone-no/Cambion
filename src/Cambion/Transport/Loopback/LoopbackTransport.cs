@@ -13,7 +13,7 @@ namespace Whitestone.Cambion.Transport.Loopback
 
         public Task StopAsync() => Task.CompletedTask;
 
-        public void Publish(byte[] messageBytes)
+        public Task PublishAsync(byte[] messageBytes)
         {
             if (messageBytes == null)
             {
@@ -21,6 +21,8 @@ namespace Whitestone.Cambion.Transport.Loopback
             }
 
             MessageReceived?.Invoke(this, new MessageReceivedEventArgs(messageBytes));
+
+            return Task.CompletedTask;
         }
     }
 }

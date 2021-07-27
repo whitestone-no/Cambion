@@ -42,7 +42,7 @@ namespace NetMQ.Test
         [Test]
         public void Publish_NullValue_ThrowsArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => { _transportWithHost.Publish(null); });
+            Assert.Throws<ArgumentNullException>(() => { _transportWithHost.PublishAsync(null); });
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace NetMQ.Test
                 mre.Set();
             };
 
-            _transportWithHost.Publish(new byte[0]);
+            _transportWithHost.PublishAsync(new byte[0]);
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
 
@@ -81,7 +81,7 @@ namespace NetMQ.Test
                 mre.Set();
             };
 
-            _transportWithHost.Publish(new byte[0]);
+            _transportWithHost.PublishAsync(new byte[0]);
 
             mre.WaitOne(new TimeSpan(0, 0, 5));
 
@@ -95,7 +95,7 @@ namespace NetMQ.Test
 
             _transportWithHost.MessageReceived += (sender, e) => { mre.Set(); };
 
-            _transportWithHost.Publish(new byte[0]);
+            _transportWithHost.PublishAsync(new byte[0]);
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
 

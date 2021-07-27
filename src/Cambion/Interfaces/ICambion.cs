@@ -41,7 +41,7 @@ namespace Whitestone.Cambion.Interfaces
         /// </summary>
         /// <typeparam name="TEvent">The object type to publish</typeparam>
         /// <param name="data">The data to publish</param>
-        void PublishEvent<TEvent>(TEvent data);
+        Task PublishEventAsync<TEvent>(TEvent data);
 
         /// <summary>
         /// Use "direct subscription" to manually add a synchronized subscriber
@@ -72,6 +72,6 @@ namespace Whitestone.Cambion.Interfaces
         /// <param name="timeout">How long to wait for a response, in milliseconds. Defaults to 10 seconds.</param>
         /// <returns>A <typeparamref name="TResponse"/> object.</returns>
         /// <remarks>If there is no response within <paramref name="timeout"/> period, a <see cref="System.TimeoutException"/> is thrown</remarks>
-        TResponse CallSynchronizedHandler<TRequest, TResponse>(TRequest request, int timeout = 10000);
+        Task<TResponse> CallSynchronizedHandlerAsync<TRequest, TResponse>(TRequest request, int timeout = 10000);
     }
 }

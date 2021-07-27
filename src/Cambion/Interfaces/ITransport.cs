@@ -9,7 +9,7 @@ namespace Whitestone.Cambion.Interfaces
         Task StartAsync();
         Task StopAsync();
 
-        void Publish(byte[] messageBytes);
+        Task PublishAsync(byte[] messageBytes);
 
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
     }

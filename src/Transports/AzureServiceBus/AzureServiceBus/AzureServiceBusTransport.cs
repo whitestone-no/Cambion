@@ -85,14 +85,14 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
             }
         }
 
-        public void Publish(byte[] messageBytes)
+        public async Task PublishAsync(byte[] messageBytes)
         {
             if (messageBytes == null)
             {
                 throw new ArgumentNullException(nameof(messageBytes));
             }
 
-            AsyncAwaitHelper.RunSync(() => _topicClient.SendAsync(new Message(messageBytes)));
+            await _topicClient.SendAsync(new Message(messageBytes));
         }
 
         private async Task CreateTopicIfNotExists()

@@ -62,7 +62,7 @@ namespace RabbitMQ.Test
                 mre.Set();
             };
 
-            _transport.Publish(new byte[0]);
+            _transport.PublishAsync(new byte[0]);
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
 
@@ -89,7 +89,7 @@ namespace RabbitMQ.Test
                 mre.Set();
             };
 
-            _transport.Publish(new byte[0]);
+            _transport.PublishAsync(new byte[0]);
 
             mre.WaitOne(new TimeSpan(0, 0, 5));
 
@@ -109,7 +109,7 @@ namespace RabbitMQ.Test
                 mre.Set();
             };
 
-            _transport.Publish(new byte[0]);
+            _transport.PublishAsync(new byte[0]);
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
 
@@ -122,7 +122,7 @@ namespace RabbitMQ.Test
         [Order(4)]
         public void Publish_NullValue_ThrowsArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => { _transport.Publish(null); });
+            Assert.Throws<ArgumentNullException>(() => { _transport.PublishAsync(null); });
         }
     }
 }

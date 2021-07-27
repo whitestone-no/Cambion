@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Whitestone.Cambion.Interfaces;
@@ -51,7 +52,7 @@ namespace Whitestone.Cambion.Test
             EventHandler obj = new EventHandler();
             _cambion.Register(obj);
 
-            _cambion.PublishEvent(new TestEvent(value));
+            _cambion.PublishEventAsync(new TestEvent(value));
 
             TestEvent @event = obj.GetEvent();
 
@@ -71,7 +72,7 @@ namespace Whitestone.Cambion.Test
                 mre.Set();
             });
 
-            _cambion.PublishEvent(new TestEvent(value));
+            _cambion.PublishEventAsync(new TestEvent(value));
 
             mre.WaitOne(new TimeSpan(0, 0, 5));
 
@@ -79,28 +80,26 @@ namespace Whitestone.Cambion.Test
         }
 
         [Test]
-        public void CallSynchronizedHandler_DefaultObjects_InterfaceSubscription()
+        public async Task CallSynchronizedHandler_DefaultObjects_InterfaceSubscription()
         {
             string value = Guid.NewGuid().ToString();
 
             SynchronizedHandler obj = new SynchronizedHandler(value);
             _cambion.Register(obj);
 
-            TestResponse response = _cambion.CallSynchronizedHandler<TestRequest, TestResponse>(new TestRequest());
+            TestResponse response = await _cambion.CallSynchronizedHandlerAsync<TestRequest, TestResponse>(new TestRequest());
 
             Assert.AreEqual(response.Value, value);
         }
 
         [Test]
-        public void CallSynchronizedHandler_DefaultObjects_DirectSubscription()
+        public async Task CallSynchronizedHandler_DefaultObjects_DirectSubscription()
         {
             string value = Guid.NewGuid().ToString();
 
-            SynchronizedHandler obj = new SynchronizedHandler(value);
-
             _cambion.AddSynchronizedHandler<TestRequest, TestResponse>(req => new TestResponse(value));
 
-            TestResponse response = _cambion.CallSynchronizedHandler<TestRequest, TestResponse>(new TestRequest());
+            TestResponse response = await _cambion.CallSynchronizedHandlerAsync<TestRequest, TestResponse>(new TestRequest());
 
             Assert.AreEqual(response.Value, value);
         }

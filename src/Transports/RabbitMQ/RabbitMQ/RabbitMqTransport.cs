@@ -63,7 +63,7 @@ namespace Whitestone.Cambion.Transport.RabbitMQ
             return Task.CompletedTask;
         }
 
-        public void Publish(byte[] messagebytes)
+        public Task PublishAsync(byte[] messagebytes)
         {
             if (messagebytes == null)
             {
@@ -74,6 +74,8 @@ namespace Whitestone.Cambion.Transport.RabbitMQ
             {
                 _channel.BasicPublish(_config.Exchange.Name, string.Empty, null, messagebytes);
             }
+
+            return Task.CompletedTask;
         }
 
         private void QueueDataReceived(object sender, BasicDeliverEventArgs e)

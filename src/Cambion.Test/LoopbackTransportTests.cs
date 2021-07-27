@@ -23,7 +23,7 @@ namespace Whitestone.Cambion.Test
         [Test]
         public void Publish_NullValue_ThrowsArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => { _transport.Publish(null); });
+            Assert.Throws<ArgumentNullException>(() => { _transport.PublishAsync(null); });
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace Whitestone.Cambion.Test
                 mre.Set();
             };
 
-            _transport.Publish(new byte[0]);
+            _transport.PublishAsync(new byte[0]);
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 1));
 
@@ -56,7 +56,7 @@ namespace Whitestone.Cambion.Test
 
             _transport.MessageReceived += handler;
 
-            _transport.Publish(new byte[0]);
+            _transport.PublishAsync(new byte[0]);
 
             Assert.True(mre.WaitOne(new TimeSpan(0, 0, 1)));
 

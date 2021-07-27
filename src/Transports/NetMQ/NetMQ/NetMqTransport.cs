@@ -96,7 +96,7 @@ namespace Whitestone.Cambion.Transport.NetMQ
             return Task.CompletedTask;
         }
 
-        public void Publish(byte[] messsageBytes)
+        public Task PublishAsync(byte[] messsageBytes)
         {
             if (messsageBytes == null)
             {
@@ -107,6 +107,8 @@ namespace Whitestone.Cambion.Transport.NetMQ
             {
                 _publishSocket.SendFrame(messsageBytes);
             }
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
