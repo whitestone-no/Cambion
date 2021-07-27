@@ -1,10 +1,11 @@
-﻿using Whitestone.Cambion.Types;
+﻿using System.Threading.Tasks;
+using Whitestone.Cambion.Types;
 
 namespace Whitestone.Cambion.Interfaces
 {
     public interface ISerializer
     {
-        byte[] Serialize(MessageWrapper messageBytes);
-        MessageWrapper Deserialize(byte[] serialized);
+        Task<byte[]> Serialize(MessageWrapper message);
+        Task<MessageWrapper> Deserialize(byte[] serialized);
     }
 }

@@ -205,7 +205,7 @@ namespace Whitestone.Cambion
                 MessageType = MessageType.Event
             };
 
-            byte[] wrapperBytes = _serializer.Serialize(wrapper);
+            byte[] wrapperBytes = await _serializer.Serialize(wrapper);
 
             if (_logger.IsEnabled(LogLevel.Trace))
             {
@@ -245,7 +245,7 @@ namespace Whitestone.Cambion
                 CorrelationId = correlationId
             };
 
-            byte[] wrapperBytes = _serializer.Serialize(wrapper);
+            byte[] wrapperBytes = await _serializer.Serialize(wrapper);
 
             if (_logger.IsEnabled(LogLevel.Trace))
             {
@@ -278,7 +278,7 @@ namespace Whitestone.Cambion
             throw new TimeoutException("Timeout waiting for synchronous call");
         }
 
-        private void Transport_MessageReceived(object sender, Events.MessageReceivedEventArgs e)
+        private async void Transport_MessageReceived(object sender, Events.MessageReceivedEventArgs e)
         {
             try
             {
@@ -287,7 +287,7 @@ namespace Whitestone.Cambion
                     _logger.LogTrace("Received message from Transport with data {data}", Convert.ToBase64String(e.MessageBytes));
                 }
 
-                MessageWrapper wrapper = _serializer.Deserialize(e.MessageBytes);
+                MessageWrapper wrapper = await _serializer.Deserialize(e.MessageBytes);
 
                 if (wrapper.MessageType == MessageType.Event)
                 {
@@ -356,7 +356,7 @@ namespace Whitestone.Cambion
                                     CorrelationId = wrapper.CorrelationId
                                 };
 
-                                byte[] replyWrapperBytes = _serializer.Serialize(replyWrapper);
+                                byte[] replyWrapperBytes = await _serializer.Serialize(replyWrapper);
 
                                 if (_logger.IsEnabled(LogLevel.Trace))
                                 {
