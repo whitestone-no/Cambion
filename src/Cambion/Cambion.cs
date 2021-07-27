@@ -89,7 +89,7 @@ namespace Whitestone.Cambion
                             _eventHandlers[type].Add(eventHandler);
                         }
 
-                        _logger.LogInformation("Registered {handlerType} as event handler for <{handler}>", handlerType.FullName, type.FullName);
+                        _logger.LogInformation("Registered <{handlerType}> as event handler for <{handler}>", handlerType.FullName, type.FullName);
                     }
                 }
             }
@@ -125,7 +125,7 @@ namespace Whitestone.Cambion
                             _synchronizedHandlers[key] = synchronizedHandler;
                         }
 
-                        _logger.LogInformation("Registered {handlerType} as synchronized handler for <{request}, {response}>", handlerType.FullName, requestType.FullName, responseType.FullName);
+                        _logger.LogInformation("Registered <{handlerType}> as synchronized handler for <{request}, {response}>", handlerType.FullName, requestType.FullName, responseType.FullName);
                     }
                 }
             }
@@ -160,7 +160,7 @@ namespace Whitestone.Cambion
                 }
             }
 
-            _logger.LogInformation("Added {handlerType} as event handler for <{handler}>", callback.Target.GetType().FullName, type.FullName);
+            _logger.LogInformation("Added <{handlerType}> as event handler for <{handler}>", callback.Target.GetType().FullName, type.FullName);
         }
 
         public void AddSynchronizedHandler<TRequest, TResponse>(Func<TRequest, TResponse> callback)
@@ -193,7 +193,7 @@ namespace Whitestone.Cambion
                 _synchronizedHandlers[key] = synchronizedHandler;
             }
 
-            _logger.LogInformation("Added {handlerType} as synchronized handler for <{request}, {response}>", callback.Target.GetType().FullName, requestType.FullName, responseType.FullName);
+            _logger.LogInformation("Added <{handlerType}> as synchronized handler for <{request}, {response}>", callback.Target.GetType().FullName, requestType.FullName, responseType.FullName);
         }
 
         public async Task PublishEventAsync<TEvent>(TEvent data)
@@ -209,11 +209,11 @@ namespace Whitestone.Cambion
 
             if (_logger.IsEnabled(LogLevel.Trace))
             {
-                _logger.LogTrace("Publishing event {eventType} to Transport with data {data}", typeof(TEvent).FullName, Convert.ToBase64String(wrapperBytes));
+                _logger.LogTrace("Publishing event <{eventType}> to Transport with data {data}", typeof(TEvent).FullName, Convert.ToBase64String(wrapperBytes));
             }
             else
             {
-                _logger.LogDebug("Publishing event {eventType} to Transport", typeof(TEvent).FullName);
+                _logger.LogDebug("Publishing event <{eventType}> to Transport", typeof(TEvent).FullName);
             }
 
             await _transport.PublishAsync(wrapperBytes);
@@ -249,11 +249,11 @@ namespace Whitestone.Cambion
 
             if (_logger.IsEnabled(LogLevel.Trace))
             {
-                _logger.LogTrace("Publishing synchronized {eventType} to Transport with data {data}", typeof(TRequest).FullName, Convert.ToBase64String(wrapperBytes));
+                _logger.LogTrace("Publishing synchronized <{eventType}> to Transport with data {data}", typeof(TRequest).FullName, Convert.ToBase64String(wrapperBytes));
             }
             else
             {
-                _logger.LogDebug("Publishing synchronized {eventType} to Transport", typeof(TRequest).FullName);
+                _logger.LogDebug("Publishing synchronized <{eventType}> to Transport", typeof(TRequest).FullName);
             }
 
             await _transport.PublishAsync(wrapperBytes);
@@ -360,11 +360,11 @@ namespace Whitestone.Cambion
 
                                 if (_logger.IsEnabled(LogLevel.Trace))
                                 {
-                                    _logger.LogTrace("Publishing synchronized reply {eventType} to Transport with data {data}", result.GetType().FullName, Convert.ToBase64String(replyWrapperBytes));
+                                    _logger.LogTrace("Publishing synchronized reply <{eventType}> to Transport with data {data}", result.GetType().FullName, Convert.ToBase64String(replyWrapperBytes));
                                 }
                                 else
                                 {
-                                    _logger.LogDebug("Publishing synchronized reply {eventType} to Transport", result.GetType().FullName);
+                                    _logger.LogDebug("Publishing synchronized reply <{eventType}> to Transport", result.GetType().FullName);
                                 }
 
                                 await _transport.PublishAsync(replyWrapperBytes);
@@ -404,7 +404,7 @@ namespace Whitestone.Cambion
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Starting Transport {transport}", _transport.GetType().FullName);
+            _logger.LogInformation("Starting Cambion with Transport <{transport}> and Serializer <{serializer}>", _transport.GetType().FullName, _serializer.GetType().FullName);
 
             _transport.MessageReceived += Transport_MessageReceived;
             await _transport.StartAsync();
@@ -412,7 +412,7 @@ namespace Whitestone.Cambion
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Stopping Transport {transport}", _transport.GetType().FullName);
+            _logger.LogInformation("Stopping Cambion");
 
             _transport.MessageReceived -= Transport_MessageReceived;
             await _transport.StopAsync();
