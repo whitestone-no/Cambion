@@ -398,6 +398,8 @@ namespace Whitestone.Cambion
 
         private void PublishUnhandledException(Exception ex)
         {
+            _logger.LogWarning(ex, "Background exception in a Cambion handler. Notifying subscribers to the UnhandledException event.");
+
             EventHandler<ErrorEventArgs> eh = UnhandledException;
             eh?.Invoke(this, new ErrorEventArgs(ex));
         }
