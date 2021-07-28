@@ -11,16 +11,23 @@ namespace Whitestone.Cambion.Serializer.MessagePack
     {
         public async Task<byte[]> Serialize(MessageWrapper message)
         {
-            MemoryStream ms = new MemoryStream();
-            await MessagePack_Serializer.Typeless.SerializeAsync(ms, message);
+            byte[] messageBytes;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                await MessagePack_Serializer.Typeless.SerializeAsync(ms, message).ConfigureAwait(false);
+                messageBytes = ms.ToArray();
+            }
 
-            return ms.ToArray();
+            return messageBytes;
         }
 
         public async Task<MessageWrapper> Deserialize(byte[] serialized)
         {
-            MemoryStream ms = new MemoryStream(serialized);
-            MessageWrapper message = await MessagePack_Serializer.Typeless.DeserializeAsync(ms) as MessageWrapper;
+            MessageWrapper message;
+            using (MemoryStream ms = new MemoryStream(serialized))
+            {
+                message = await MessagePack_Serializer.Typeless.DeserializeAsync(ms).ConfigureAwait(false) as MessageWrapper;
+            }
 
             return message;
         }

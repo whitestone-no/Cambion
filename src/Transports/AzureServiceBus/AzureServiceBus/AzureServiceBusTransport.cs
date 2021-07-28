@@ -45,15 +45,15 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
                     Uri serviceBusAudience = new Uri("https://servicebus.azure.net");
 
-                    AuthenticationResult authResult = await app.AcquireTokenForClient(new[] { $"{serviceBusAudience}/.default" }).ExecuteAsync();
+                    AuthenticationResult authResult = await app.AcquireTokenForClient(new[] { $"{serviceBusAudience}/.default" }).ExecuteAsync().ConfigureAwait(false);
                     return authResult.AccessToken;
                 }, $"https://login.windows.net/{_config.Autentication.TenantId}");
             }
 
             _managementClient = new ManagementClient(_config.Endpoint, _tokenProvider);
 
-            if (_config.Topic.AutoCreate) await CreateTopicIfNotExists();
-            if (_config.Subscription.AutoCreate) await CreateSubscriptionIfNotExists();
+            if (_config.Topic.AutoCreate) await CreateTopicIfNotExists().ConfigureAwait(false);
+            if (_config.Subscription.AutoCreate) await CreateSubscriptionIfNotExists().ConfigureAwait(false);
 
             _topicClient = new TopicClient(_config.Endpoint, _config.Topic.Name, _tokenProvider);
             _subscriptionClient = new SubscriptionClient(_config.Endpoint, _config.Topic.Name, _config.Subscription.Name, _tokenProvider);
@@ -68,19 +68,19 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
         public async Task StopAsync()
         {
-            await _subscriptionClient.CloseAsync();
+            await _subscriptionClient.CloseAsync().ConfigureAwait(false);
             if (_config.Subscription.AutoDelete)
             {
-                await _managementClient.DeleteSubscriptionAsync(_config.Topic.Name, _config.Subscription.Name);
+                await _managementClient.DeleteSubscriptionAsync(_config.Topic.Name, _config.Subscription.Name).ConfigureAwait(false);
             }
 
-            await _topicClient.CloseAsync();
+            await _topicClient.CloseAsync().ConfigureAwait(false);
             if (_config.Topic.AutoDelete)
             {
-                TopicRuntimeInfo topicInfo = await _managementClient.GetTopicRuntimeInfoAsync(_config.Topic.Name);
+                TopicRuntimeInfo topicInfo = await _managementClient.GetTopicRuntimeInfoAsync(_config.Topic.Name).ConfigureAwait(false);
                 if (topicInfo.SubscriptionCount < 1)
                 {
-                    await _managementClient.DeleteTopicAsync(_config.Topic.Name);
+                    await _managementClient.DeleteTopicAsync(_config.Topic.Name).ConfigureAwait(false);
                 }
             }
         }
@@ -92,12 +92,12 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
                 throw new ArgumentNullException(nameof(messageBytes));
             }
 
-            await _topicClient.SendAsync(new Message(messageBytes));
+            await _topicClient.SendAsync(new Message(messageBytes)).ConfigureAwait(false);
         }
 
         private async Task CreateTopicIfNotExists()
         {
-            bool topicExists = await _managementClient.TopicExistsAsync(_config.Topic.Name);
+            bool topicExists = await _managementClient.TopicExistsAsync(_config.Topic.Name).ConfigureAwait(false);
 
             if (!topicExists)
             {
@@ -111,13 +111,13 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
                     topic = _config.Topic.Details;
                     topic.Path = _config.Topic.Name;
                 }
-                await _managementClient.CreateTopicAsync(topic);
+                await _managementClient.CreateTopicAsync(topic).ConfigureAwait(false);
             }
         }
 
         private async Task CreateSubscriptionIfNotExists()
         {
-            bool subscriptionExists = await _managementClient.SubscriptionExistsAsync(_config.Topic.Name, _config.Subscription.Name);
+            bool subscriptionExists = await _managementClient.SubscriptionExistsAsync(_config.Topic.Name, _config.Subscription.Name).ConfigureAwait(false);
 
             if (!subscriptionExists)
             {
@@ -132,7 +132,7 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
                     subscription.TopicPath = _config.Topic.Name;
                     subscription.SubscriptionName = _config.Subscription.Name;
                 }
-                await _managementClient.CreateSubscriptionAsync(subscription);
+                await _managementClient.CreateSubscriptionAsync(subscription).ConfigureAwait(false);
             }
         }
 
@@ -145,7 +145,7 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
             // This can be done only if the subscriptionClient is created in ReceiveMode.PeekLock mode (which is the default).
             if (!token.IsCancellationRequested)
             {
-                await _subscriptionClient.CompleteAsync(message.SystemProperties.LockToken);
+                await _subscriptionClient.CompleteAsync(message.SystemProperties.LockToken).ConfigureAwait(false);
             }
         }
 

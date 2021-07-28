@@ -48,10 +48,10 @@ namespace Whitestone.Cambion
             Validate();
 
             _transport.MessageReceived -= Transport_MessageReceived;
-            await _transport.StopAsync();
+            await _transport.StopAsync().ConfigureAwait(false);
 
             _transport.MessageReceived += Transport_MessageReceived;
-            await _transport.StartAsync();
+            await _transport.StartAsync().ConfigureAwait(false);
         }
 
         public void Register(object handler)
@@ -205,7 +205,7 @@ namespace Whitestone.Cambion
                 MessageType = MessageType.Event
             };
 
-            byte[] wrapperBytes = await _serializer.Serialize(wrapper);
+            byte[] wrapperBytes = await _serializer.Serialize(wrapper).ConfigureAwait(false);
 
             if (_logger.IsEnabled(LogLevel.Trace))
             {
@@ -216,7 +216,7 @@ namespace Whitestone.Cambion
                 _logger.LogDebug("Publishing event <{eventType}> to Transport", typeof(TEvent).FullName);
             }
 
-            await _transport.PublishAsync(wrapperBytes);
+            await _transport.PublishAsync(wrapperBytes).ConfigureAwait(false);
         }
 
         public async Task<TResponse> CallSynchronizedHandlerAsync<TRequest, TResponse>(TRequest request, int timeout = 10000)
@@ -245,7 +245,7 @@ namespace Whitestone.Cambion
                 CorrelationId = correlationId
             };
 
-            byte[] wrapperBytes = await _serializer.Serialize(wrapper);
+            byte[] wrapperBytes = await _serializer.Serialize(wrapper).ConfigureAwait(false);
 
             if (_logger.IsEnabled(LogLevel.Trace))
             {
@@ -256,7 +256,7 @@ namespace Whitestone.Cambion
                 _logger.LogDebug("Publishing synchronized <{eventType}> to Transport", typeof(TRequest).FullName);
             }
 
-            await _transport.PublishAsync(wrapperBytes);
+            await _transport.PublishAsync(wrapperBytes).ConfigureAwait(false);
 
             if (mre.WaitOne(timeout))
             {
@@ -287,7 +287,7 @@ namespace Whitestone.Cambion
                     _logger.LogTrace("Received message from Transport with data {data}", Convert.ToBase64String(e.MessageBytes));
                 }
 
-                MessageWrapper wrapper = await _serializer.Deserialize(e.MessageBytes);
+                MessageWrapper wrapper = await _serializer.Deserialize(e.MessageBytes).ConfigureAwait(false);
 
                 if (wrapper.MessageType == MessageType.Event)
                 {
@@ -356,7 +356,7 @@ namespace Whitestone.Cambion
                                     CorrelationId = wrapper.CorrelationId
                                 };
 
-                                byte[] replyWrapperBytes = await _serializer.Serialize(replyWrapper);
+                                byte[] replyWrapperBytes = await _serializer.Serialize(replyWrapper).ConfigureAwait(false);
 
                                 if (_logger.IsEnabled(LogLevel.Trace))
                                 {
@@ -367,7 +367,7 @@ namespace Whitestone.Cambion
                                     _logger.LogDebug("Publishing synchronized reply <{eventType}> to Transport", result.GetType().FullName);
                                 }
 
-                                await _transport.PublishAsync(replyWrapperBytes);
+                                await _transport.PublishAsync(replyWrapperBytes).ConfigureAwait(false);
                             }
                             catch (Exception ex)
                             {
@@ -407,7 +407,7 @@ namespace Whitestone.Cambion
             _logger.LogInformation("Starting Cambion with Transport <{transport}> and Serializer <{serializer}>", _transport.GetType().FullName, _serializer.GetType().FullName);
 
             _transport.MessageReceived += Transport_MessageReceived;
-            await _transport.StartAsync();
+            await _transport.StartAsync().ConfigureAwait(false);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
@@ -415,7 +415,7 @@ namespace Whitestone.Cambion
             _logger.LogInformation("Stopping Cambion");
 
             _transport.MessageReceived -= Transport_MessageReceived;
-            await _transport.StopAsync();
+            await _transport.StopAsync().ConfigureAwait(false);
         }
     }
 }
