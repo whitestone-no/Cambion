@@ -298,7 +298,7 @@ namespace Whitestone.Cambion
                         {
                             try
                             {
-                                new Thread(() =>
+                                _ = Task.Run(() =>
                                 {
                                     try
                                     {
@@ -311,7 +311,7 @@ namespace Whitestone.Cambion
                                     {
                                         PublishUnhandledException(ex);
                                     }
-                                }).Start();
+                                });
                             }
                             catch (Exception ex)
                             {
@@ -341,7 +341,7 @@ namespace Whitestone.Cambion
 
                     if (handler != null && handler.IsAlive)
                     {
-                        new Thread(async () =>
+                        _ = Task.Run(async () =>
                         {
                             try
                             {
@@ -373,7 +373,7 @@ namespace Whitestone.Cambion
                             {
                                 PublishUnhandledException(ex);
                             }
-                        }).Start();
+                        });
                     }
                 }
                 else if (wrapper.MessageType == MessageType.SynchronizedResponse)

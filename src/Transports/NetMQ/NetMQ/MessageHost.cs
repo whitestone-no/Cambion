@@ -41,7 +41,7 @@ namespace Whitestone.Cambion.Transport.NetMQ
                     // This method is blocking, so important to set the ManualResetEvent before this.
                     _proxy.Start();
                 }
-            });
+            }, TaskCreationOptions.LongRunning);
 
             // Wait until the message host is actually started before returning
             mre.WaitOne(-1);

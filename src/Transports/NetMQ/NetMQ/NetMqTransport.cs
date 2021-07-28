@@ -22,9 +22,9 @@ namespace Whitestone.Cambion.Transport.NetMQ
         private PublisherSocket _publishSocket;
         private SubscriberSocket _subscribeSocket;
 
-        private Thread _subscribeThread;
+        private Task _subscribeThread;
         private bool _subscribeThreadRunning;
-        private Thread _pingThread;
+        private Task _pingThread;
         private CancellationTokenSource _subscribeThreadCancellation;
         private CancellationTokenSource _pingThreadCancellation;
 
@@ -39,7 +39,7 @@ namespace Whitestone.Cambion.Transport.NetMQ
             }
         }
 
-        public Task StartAsync()
+        public async Task StartAsync()
         {
             _messageHost?.Start();
 
@@ -52,20 +52,15 @@ namespace Whitestone.Cambion.Transport.NetMQ
             _subscribeThreadCancellation = new CancellationTokenSource();
             _pingThreadCancellation = new CancellationTokenSource();
 
-            _subscribeThread = new Thread(SubscribeThread) { IsBackground = true };
-            _subscribeThread.Start();
-
-            _pingThread = new Thread(PingThread) { IsBackground = true };
-            _pingThread.Start();
+            _subscribeThread = Task.Factory.StartNew(SubscribeThread, TaskCreationOptions.LongRunning);
+            _pingThread = Task.Factory.StartNew(PingThread, TaskCreationOptions.LongRunning);
 
             // Wait until the subscribe thread has actually subscribed before continuing.
             // For some reason a "reset event" doesn't work here.
             while (!_subscribeThreadRunning)
             {
-                Thread.Sleep(50);
+                await Task.Delay(50);
             }
-
-            return Task.CompletedTask;
         }
 
         public Task StopAsync()
@@ -73,8 +68,8 @@ namespace Whitestone.Cambion.Transport.NetMQ
             _subscribeThreadCancellation.Cancel();
             _pingThreadCancellation.Cancel();
 
-            _subscribeThread.Join();
-            _pingThread.Join();
+            _subscribeThread.Wait();
+            _pingThread.Wait();
 
             _subscribeThreadCancellation.Dispose();
             _pingThreadCancellation.Dispose();
@@ -122,7 +117,7 @@ namespace Whitestone.Cambion.Transport.NetMQ
         /// respond we will need to reconnect to it again when it starts
         /// responding.
         /// </remarks>
-        private void PingThread()
+        private async Task PingThread()
         {
             Uri uri = new Uri(_subscribeAddress);
             bool needsReinitialization = false;
@@ -154,25 +149,24 @@ namespace Whitestone.Cambion.Transport.NetMQ
                     _subscribeSocket.Disconnect(_subscribeAddress);
                     _subscribeSocket.Dispose();
 
-                    _subscribeThread.Join();
+                    _subscribeThread.Wait();
 
                     _subscribeThreadCancellation = new CancellationTokenSource();
-                    _subscribeThread = new Thread(SubscribeThread) { IsBackground = true };
-                    _subscribeThread.Start();
+                    _subscribeThread = Task.Factory.StartNew(SubscribeThread, TaskCreationOptions.LongRunning);
 
                     while (!_subscribeThreadRunning)
                     {
-                        Thread.Sleep(50);
+                        await Task.Delay(50);
                     }
 
                     needsReinitialization = false;
                 }
 
-                Thread.Sleep(5000);
+                await Task.Delay(5000);
             }
         }
 
-        private void SubscribeThread()
+        private Task SubscribeThread()
         {
             // Place subscribe socket initialization inside thread to make all subscribe calls happen on the same thread
             // Trying to prevent "Cannot close an uninitialised Msg" exceptions
@@ -197,6 +191,8 @@ namespace Whitestone.Cambion.Transport.NetMQ
             }
 
             _subscribeThreadRunning = false;
+
+            return Task.CompletedTask;
         }
     }
 }
