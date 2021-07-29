@@ -79,7 +79,9 @@ stages:
       displayName: 'Perform tests'
       inputs:
         command: 'test'
-        projects: '**/*.Test.csproj'
+        projects: |
+          **/*.UnitTests.csproj
+          **/*.IntegrationTests.csproj
         arguments: '-c Debug'
       env:
         RABBITMQTEST_RABBITMQ__CONNECTIONSTRING: $(RabbitMq.Test.ConnectionString)
@@ -93,7 +95,8 @@ stages:
         command: 'custom'
         projects: |
           **/*.csproj
-          !**/*.Test.csproj
+          !**/*.UnitTests.csproj
+          !**/*.IntegrationTests.csproj
         custom: 'pack'
         arguments: "/p:PackageVersion=$(cambionSemVerFull) /p:Version=$(cambionSemVer) /p:InformationalVersion=$(cambionSemVerFull) -o $(Build.ArtifactStagingDirectory) -c Release"
     - task: PublishPipelineArtifact@1
