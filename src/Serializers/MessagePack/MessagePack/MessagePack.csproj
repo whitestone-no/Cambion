@@ -8,7 +8,7 @@
     <Authors>Whitestone</Authors>
     <Product>Whitestone Cambion</Product>
     <Description>MessagePack serializer for Whitestone Cambion</Description>
-    <Copyright>Copyright © 2020</Copyright>
+    <Copyright>Copyright © 2021</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://cambion.whitestone.no/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/whitestone-no/Cambion</RepositoryUrl>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.2.*" />
+    <PackageReference Include="MessagePack" Version="2.2.60" />
   </ItemGroup>
 
   <ItemGroup>

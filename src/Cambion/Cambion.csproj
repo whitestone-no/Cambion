@@ -4,11 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Whitestone.Cambion</AssemblyName>
     <RootNamespace>Whitestone.Cambion</RootNamespace>
-    <Version>0.0.1</Version>
+    <Version>1.1.0-preview</Version>
     <Authors>Whitestone</Authors>
     <Product>Whitestone Cambion</Product>
     <Description>Cambion is a light-weight open-source service bus for .NET with a set of convenience functions for synchronous and asynchronous event handling.</Description>
-    <Copyright>Copyright © 2020</Copyright>
+    <Copyright>Copyright © 2021</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://cambion.whitestone.no/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/whitestone-no/Cambion</RepositoryUrl>
@@ -28,10 +28,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.*" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.*" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.*" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.*" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 
 </Project>
