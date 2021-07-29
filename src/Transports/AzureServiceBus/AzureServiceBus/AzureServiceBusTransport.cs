@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Management;
 using Microsoft.Azure.ServiceBus.Primitives;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Whitestone.Cambion.Events;
@@ -16,13 +17,15 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         private readonly AzureServiceBusConfig _config;
+        private readonly ILogger<AzureServiceBusTransport> _logger;
         private TopicClient _topicClient;
         private SubscriptionClient _subscriptionClient;
         private ManagementClient _managementClient;
         private ITokenProvider _tokenProvider;
 
-        public AzureServiceBusTransport(IOptions<AzureServiceBusConfig> config)
+        public AzureServiceBusTransport(IOptions<AzureServiceBusConfig> config, ILogger<AzureServiceBusTransport> logger)
         {
+            _logger = logger;
             _config = config.Value;
         }
 
@@ -151,13 +154,7 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
         private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
-            ExceptionReceivedContext context = exceptionReceivedEventArgs.ExceptionReceivedContext;
-
-            Console.Error.WriteLine($"Message handler encountered an exception {exceptionReceivedEventArgs.Exception}.");
-            Console.Error.WriteLine("Exception context for troubleshooting:");
-            Console.Error.WriteLine($"- Endpoint: {context.Endpoint}");
-            Console.Error.WriteLine($"- Entity Path: {context.EntityPath}");
-            Console.Error.WriteLine($"- Executing Action: {context.Action}");
+            _logger.LogError(exceptionReceivedEventArgs.Exception, "Unhandled exception in AzureServiceBusTransport");
 
             return Task.CompletedTask;
         }
