@@ -1,15 +1,14 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Whitestone.Cambion.Interfaces;
+using Xunit;
 
 namespace Whitestone.Cambion.Test
 {
-    [Order(3)]
-    class CambionTests
+    public class CambionTests
     {
         private Mock<ITransport> _transport;
         private Mock<ISerializer> _serializer;
@@ -17,8 +16,7 @@ namespace Whitestone.Cambion.Test
 
         private ICambion _cambion;
 
-        [SetUp]
-        public void Setup()
+        public CambionTests()
         {
             _transport = new Mock<ITransport>();
             _serializer = new Mock<ISerializer>();
@@ -28,13 +26,13 @@ namespace Whitestone.Cambion.Test
         }
 
 
-        [Test]
+        [Fact]
         public void Register_NullValue_ThrowsArgumentNullException()
         {
             Assert.Throws<ArgumentNullException>(() => { _cambion.Register(null); });
         }
 
-        [Test]
+        [Fact]
         public void Register_TwoOfSameObject_ThrowsArgumentException()
         {
             TwoOfSameObjectTest obj = new TwoOfSameObjectTest();
@@ -44,7 +42,7 @@ namespace Whitestone.Cambion.Test
             Assert.Throws<ArgumentException>(() => _cambion.Register(obj));
         }
 
-        [Test]
+        [Fact]
         public void CallEventHandler_DefaultObjects_InterfaceSubscription()
         {
             string value = Guid.NewGuid().ToString();
@@ -56,10 +54,10 @@ namespace Whitestone.Cambion.Test
 
             TestEvent @event = obj.GetEvent();
 
-            Assert.AreEqual(@event.Value, value);
+            Assert.Equal(@event.Value, value);
         }
 
-        [Test]
+        [Fact]
         public void CallEventHandler_DefaultObjects_DirectSubscription()
         {
             ManualResetEvent mre = new ManualResetEvent(false);
@@ -76,10 +74,10 @@ namespace Whitestone.Cambion.Test
 
             mre.WaitOne(new TimeSpan(0, 0, 5));
 
-            Assert.AreEqual(response, value);
+            Assert.Equal(response, value);
         }
 
-        [Test]
+        [Fact]
         public async Task CallSynchronizedHandler_DefaultObjects_InterfaceSubscription()
         {
             string value = Guid.NewGuid().ToString();
@@ -89,10 +87,10 @@ namespace Whitestone.Cambion.Test
 
             TestResponse response = await _cambion.CallSynchronizedHandlerAsync<TestRequest, TestResponse>(new TestRequest());
 
-            Assert.AreEqual(response.Value, value);
+            Assert.Equal(response.Value, value);
         }
 
-        [Test]
+        [Fact]
         public async Task CallSynchronizedHandler_DefaultObjects_DirectSubscription()
         {
             string value = Guid.NewGuid().ToString();
@@ -101,7 +99,7 @@ namespace Whitestone.Cambion.Test
 
             TestResponse response = await _cambion.CallSynchronizedHandlerAsync<TestRequest, TestResponse>(new TestRequest());
 
-            Assert.AreEqual(response.Value, value);
+            Assert.Equal(response.Value, value);
         }
     }
 

@@ -2,28 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
     <RootNamespace>Whitestone.Cambion.Test</RootNamespace>
-
     <AssemblyName>Whitestone.Cambion.Test</AssemblyName>
-
     <Version>1.1.0</Version>
-
     <Authors>Whitestone</Authors>
-
     <Product>Whitestone Cambion</Product>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="nunit" Version="3.12.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
   </ItemGroup>
 
   <ItemGroup>
