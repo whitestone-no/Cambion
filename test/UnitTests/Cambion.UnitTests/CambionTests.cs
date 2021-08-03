@@ -332,15 +332,17 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            TestResponse Handler(TestRequest e) => new TestResponse(RandomValue.String());
+            // ReSharper disable once ConvertToLocalFunction
+            // because these are static, and can't use static methods as synchronized handlers
+            Func<TestRequest, TestResponse> handler = request => new TestResponse(RandomValue.String());
 
             Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
 
-            sut.AddSynchronizedHandler((Func<TestRequest, TestResponse>) Handler);
+            sut.AddSynchronizedHandler(handler);
 
             // Act
 
-            ArgumentException actualException = Assert.Throws<ArgumentException>(() => sut.AddSynchronizedHandler((Func<TestRequest, TestResponse>) Handler));
+            ArgumentException actualException = Assert.Throws<ArgumentException>(() => sut.AddSynchronizedHandler(handler));
 
             // Assert
 
