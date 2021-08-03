@@ -11,10 +11,17 @@ namespace Whitestone.Cambion.Serializer.JsonNet
     {
         public Task<MessageWrapper> DeserializeAsync(byte[] messageBytes)
         {
-            string json = Encoding.ASCII.GetString(messageBytes);
-            MessageWrapper wrapper = JsonConvert.DeserializeObject<MessageWrapper>(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+            try
+            {
+                string json = Encoding.ASCII.GetString(messageBytes);
+                MessageWrapper wrapper = JsonConvert.DeserializeObject<MessageWrapper>(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
-            return Task.FromResult(wrapper);
+                return Task.FromResult(wrapper);
+            }
+            catch
+            {
+                return Task.FromResult<MessageWrapper>(null);
+            }
         }
 
         public Task<byte[]> SerializeAsync(MessageWrapper message)

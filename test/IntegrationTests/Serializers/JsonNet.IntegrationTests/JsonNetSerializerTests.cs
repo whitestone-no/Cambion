@@ -60,5 +60,15 @@ namespace Whitestone.Cambion.IntegrationTests.Serializers.JsonNet
 
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public async Task DeserializeAsync_InvalidObject_Success()
+        {
+            byte[] data = Convert.FromBase64String("kxcSA03r");
+
+            MessageWrapper actual = await _serializer.DeserializeAsync(data);
+
+            Assert.Null(actual);
+        }
     }
 }
