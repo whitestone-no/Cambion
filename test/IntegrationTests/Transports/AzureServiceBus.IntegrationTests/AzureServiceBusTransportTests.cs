@@ -6,11 +6,11 @@ using Xunit;
 
 namespace Whitestone.Cambion.IntegrationTests.Transports.AzureServiceBus
 {
-    public class AzureServiceBusTests : IClassFixture<AzureServiceBusFixture>
+    public class AzureServiceBusTransportTests : IClassFixture<AzureServiceBusFixture>
     {
         private readonly AzureServiceBusFixture _fixture;
 
-        public AzureServiceBusTests(AzureServiceBusFixture fixture)
+        public AzureServiceBusTransportTests(AzureServiceBusFixture fixture)
         {
             _fixture = fixture;
         }
