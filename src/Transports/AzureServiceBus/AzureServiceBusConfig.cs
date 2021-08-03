@@ -13,8 +13,8 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
         public abstract class AzureServiceBusEntity
         {
             public string Name { get; set; }
-            public bool AutoCreate { get; set; } = false;
-            public bool AutoDelete { get; set; } = false;
+            public bool AutoCreate { get; set; }
+            public bool AutoDelete { get; set; }
         }
         
         public class AzureServiceBusAuthentication

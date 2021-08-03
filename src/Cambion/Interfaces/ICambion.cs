@@ -57,7 +57,7 @@ namespace Whitestone.Cambion.Interfaces
         /// both <typeparamref name="TRequest"/> and <typeparamref name="TResponse"/>.
         /// If multiple synchronized handlers with identical <typeparamref name="TRequest"/>
         /// and <typeparamref name="TResponse"/> are added, only the response from one
-        /// of them will be received by whoever calls <see cref="Whitestone.Cambion.Cambion.CallSynchronizedHandler{TRequest, TResponse}(TRequest, int)"/>,
+        /// of them will be received by whoever calls <see cref="Whitestone.Cambion.Cambion.CallSynchronizedHandlerAsync{TRequest, TResponse}(TRequest, int)"/>,
         /// and you will never know which handler has responded.
         /// Only applicable when running multiple instances of Cambion, as attempting to add the same
         /// synchronized subscriber twice in the same Cambion instance causes a <see cref="System.ArgumentException"/>. <seealso cref="Register"/></remarks>

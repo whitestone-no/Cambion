@@ -4,6 +4,6 @@
     {
         public string PublishAddress { get; set; }
         public string SubscribeAddress { get; set; }
-        public bool UseMessageHost { get; set; } = false;
+        public bool UseMessageHost { get; set; }
     }
 }

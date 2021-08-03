@@ -48,7 +48,7 @@ namespace Whitestone.Cambion.IntegrationTests.Transports.AzureServiceBus
             options.SetupGet(x => x.Value).Returns(config);
 
             Transport = new AzureServiceBusTransport(options.Object, logger.Object);
-            Transport.StartAsync().GetAwaiter().GetResult(); ;
+            Transport.StartAsync().GetAwaiter().GetResult();
         }
 
         public void Dispose()

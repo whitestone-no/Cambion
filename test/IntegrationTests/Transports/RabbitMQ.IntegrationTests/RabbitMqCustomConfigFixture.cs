@@ -34,8 +34,7 @@ namespace Whitestone.Cambion.IntegrationTests.Transports.RabbitMQ
             options.SetupGet(x => x.Value).Returns(config);
 
             Transport = new RabbitMqTransport(options.Object);
-            Transport.StartAsync().GetAwaiter().GetResult(); ;
-
+            Transport.StartAsync().GetAwaiter().GetResult();
         }
 
         public void Dispose()
