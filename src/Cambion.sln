@@ -56,6 +56,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQ.IntegrationTests",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureServiceBus.IntegrationTests", "..\test\IntegrationTests\Transports\AzureServiceBus.IntegrationTests\AzureServiceBus.IntegrationTests.csproj", "{49F3F239-BF41-4EE1-BE13-9EDE17F7FDE9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loopback.IntegrationTests", "..\test\IntegrationTests\Transports\Loopback.IntegrationTests\Loopback.IntegrationTests.csproj", "{71EF772C-8F99-40F2-A038-FAA79580C226}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -98,6 +100,10 @@ Global
 		{49F3F239-BF41-4EE1-BE13-9EDE17F7FDE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49F3F239-BF41-4EE1-BE13-9EDE17F7FDE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49F3F239-BF41-4EE1-BE13-9EDE17F7FDE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71EF772C-8F99-40F2-A038-FAA79580C226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71EF772C-8F99-40F2-A038-FAA79580C226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71EF772C-8F99-40F2-A038-FAA79580C226}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71EF772C-8F99-40F2-A038-FAA79580C226}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -118,6 +124,7 @@ Global
 		{228BCD79-EB30-4116-999E-3E42DDFD05D0} = {93EC304F-5BE3-4BB7-94CB-F4D20E7E4AE1}
 		{3F94B158-2C8F-4B16-A380-701252D2A7C2} = {93EC304F-5BE3-4BB7-94CB-F4D20E7E4AE1}
 		{49F3F239-BF41-4EE1-BE13-9EDE17F7FDE9} = {93EC304F-5BE3-4BB7-94CB-F4D20E7E4AE1}
+		{71EF772C-8F99-40F2-A038-FAA79580C226} = {93EC304F-5BE3-4BB7-94CB-F4D20E7E4AE1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8080ED3-04FB-4E21-B63F-55B5AAB135B2}
