@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Whitestone.Cambion.Interfaces;
 using Whitestone.Cambion.Types;
@@ -11,6 +12,11 @@ namespace Whitestone.Cambion.Serializer.MessagePack
     {
         public async Task<byte[]> SerializeAsync(MessageWrapper message)
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             byte[] messageBytes;
             using (MemoryStream ms = new MemoryStream())
             {
