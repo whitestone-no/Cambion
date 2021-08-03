@@ -28,19 +28,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Transports", "Transports", "{06522A04-9918-4471-98CC-92ADCEF38482}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetMQ", "NetMQ", "{E5E45472-F88D-4BF5-A8E8-4B8D72DC2D8D}"
-	ProjectSection(SolutionItems) = preProject
-		Transports\NetMQ\README.md = Transports\NetMQ\README.md
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RabbitMQ", "RabbitMQ", "{B45FA162-5250-4178-ABDD-2AD5D2F4AC73}"
-	ProjectSection(SolutionItems) = preProject
-		Transports\RabbitMQ\README.md = Transports\RabbitMQ\README.md
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureServiceBus", "AzureServiceBus", "{D3356E16-CA57-474E-B4C0-4CF41EAFF773}"
-	ProjectSection(SolutionItems) = preProject
-		Transports\AzureServiceBus\README.md = Transports\AzureServiceBus\README.md
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureServiceBus", "Transports\AzureServiceBus\AzureServiceBus.csproj", "{16B44D4D-C03E-45AF-879E-255211779FDA}"
 EndProject
@@ -63,6 +54,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonNet.IntegrationTests", "..\test\IntegrationTests\Serializers\JsonNet.IntegrationTests\JsonNet.IntegrationTests.csproj", "{EBF5211B-50B4-4D49-B772-1BC6AEAF836D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagePack.IntegrationTests", "..\test\IntegrationTests\Serializers\MessagePack.IntegrationTests\MessagePack.IntegrationTests.csproj", "{F10FF786-1651-4D94-B57B-D763F38F0C4D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cambion.IntegrationTests", "..\test\IntegrationTests\Cambion\Cambion.IntegrationTests.csproj", "{89EF6EFD-59D0-4E46-829E-63BC564F9866}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -118,6 +111,10 @@ Global
 		{F10FF786-1651-4D94-B57B-D763F38F0C4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F10FF786-1651-4D94-B57B-D763F38F0C4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F10FF786-1651-4D94-B57B-D763F38F0C4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89EF6EFD-59D0-4E46-829E-63BC564F9866}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89EF6EFD-59D0-4E46-829E-63BC564F9866}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89EF6EFD-59D0-4E46-829E-63BC564F9866}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89EF6EFD-59D0-4E46-829E-63BC564F9866}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,6 +139,7 @@ Global
 		{3E8E3865-E3DD-425C-85FA-DC7D1B29C0EC} = {4535CEFC-DB84-4EC1-8040-DC78A523A4A8}
 		{EBF5211B-50B4-4D49-B772-1BC6AEAF836D} = {3E8E3865-E3DD-425C-85FA-DC7D1B29C0EC}
 		{F10FF786-1651-4D94-B57B-D763F38F0C4D} = {3E8E3865-E3DD-425C-85FA-DC7D1B29C0EC}
+		{89EF6EFD-59D0-4E46-829E-63BC564F9866} = {4535CEFC-DB84-4EC1-8040-DC78A523A4A8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8080ED3-04FB-4E21-B63F-55B5AAB135B2}
