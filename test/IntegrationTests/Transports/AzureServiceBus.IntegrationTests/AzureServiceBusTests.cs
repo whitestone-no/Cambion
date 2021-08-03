@@ -6,11 +6,11 @@ using Xunit;
 
 namespace Whitestone.Cambion.IntegrationTests.Transports.AzureServiceBus
 {
-    public class RabbittMqTransportCustomConfigTests : IClassFixture<AzureServiceBusFixture>
+    public class AzureServiceBusTests : IClassFixture<AzureServiceBusFixture>
     {
         private readonly AzureServiceBusFixture _fixture;
 
-        public RabbittMqTransportCustomConfigTests(AzureServiceBusFixture fixture)
+        public AzureServiceBusTests(AzureServiceBusFixture fixture)
         {
             _fixture = fixture;
         }
