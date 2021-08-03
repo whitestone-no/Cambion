@@ -3,6 +3,10 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
+// ReSharper disable EventNeverSubscribedTo.Global
+// ReSharper disable UnusedMemberInSuper.Global
+// because ReSharper doesn't understand that this interface is used in the Dependency Injection container
+
 namespace Whitestone.Cambion.Interfaces
 {
     /// <summary>
