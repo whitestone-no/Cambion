@@ -6,6 +6,9 @@ using Xunit;
 
 namespace Whitestone.Cambion.IntegrationTests.Transports.RabbitMQ
 {
+    // Use a collection to not run these tests in parallel with RabbittMqTransportConnectionStringConfigTests
+    // as these will interfere with eachother
+    [Collection("RabbitMQ Integration Tests")]
     public class RabbittMqTransportCustomConfigTests : IClassFixture<RabbitMqCustomConfigFixture>
     {
         private readonly RabbitMqCustomConfigFixture _fixture;
