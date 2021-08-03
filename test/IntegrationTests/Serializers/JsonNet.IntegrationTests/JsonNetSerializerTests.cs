@@ -6,11 +6,11 @@ using Xunit;
 
 namespace Whitestone.Cambion.IntegrationTests.Serializers.JsonNet
 {
-    public class LoopbackTransportTests
+    public class JsonNetSerializerTests
     {
         private readonly JsonNetSerializer _serializer;
 
-        public LoopbackTransportTests()
+        public JsonNetSerializerTests()
         {
             _serializer = new JsonNetSerializer();
         }
