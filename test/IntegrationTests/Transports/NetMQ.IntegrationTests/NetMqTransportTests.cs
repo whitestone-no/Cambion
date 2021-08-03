@@ -1,107 +1,97 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Moq;
-using NUnit.Framework;
-using Whitestone.Cambion.Interfaces;
+using RandomTestValues;
 using Whitestone.Cambion.Transport.NetMQ;
-using Whitestone.Cambion.Types;
+using Xunit;
 
-namespace NetMQ.Test
+namespace Whitestone.Cambion.IntegrationTests.Transports.NetMQ
 {
-    class NetMqTransportTests
+    public class NetMqTransportTests : IClassFixture<NetMqHostFixture>
     {
-        private NetMqTransport _transportWithHost;
-        
-        private Mock<IOptions<NetMqConfig>> _options;
-        private NetMqConfig _config;
+        private readonly NetMqHostFixture _fixture;
 
-        [OneTimeSetUp]
-        public void Setup()
+        public NetMqTransportTests(NetMqHostFixture fixture)
         {
-            _options = new Mock<IOptions<NetMqConfig>>();
-            _config = new NetMqConfig
+            _fixture = fixture;
+        }
+
+        [Fact]
+        public async Task Publish_NullValue_ThrowsArgumentNullException()
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await _fixture.Transport.PublishAsync(null); });
+        }
+
+        [Fact]
+        public async Task PublishAsync_SameDataReceived_Success()
+        {
+            // Arrange
+
+            ManualResetEvent mre = new ManualResetEvent(false);
+            byte[] expectedBytes = RandomValue.Array<byte>();
+
+            byte[] actualBytes = null;
+            _fixture.Transport.MessageReceived += (sender, e) =>
+            {
+                actualBytes = e.MessageBytes;
+                mre.Set();
+            };
+
+            // Act
+
+            await _fixture.Transport.PublishAsync(expectedBytes);
+
+            // Assert
+
+            bool eventFired = mre.WaitOne(TimeSpan.FromSeconds(5));
+
+            Assert.True(eventFired);
+            Assert.Equal(expectedBytes, actualBytes);
+        }
+
+        [Fact]
+        public async Task PublishOnHost_ReceiveOnNonHost_Success()
+        {
+            // Arrange
+
+            NetMqConfig config = new NetMqConfig
             {
                 PublishAddress = "tcp://localhost:9990",
                 SubscribeAddress = "tcp://localhost:9991",
-                UseMessageHost = true
+                UseMessageHost = false
             };
 
-            _options.SetupGet(x => x.Value).Returns(_config);
+            Mock<IOptions<NetMqConfig>> options = new Mock<IOptions<NetMqConfig>>();
+            options.SetupGet(x => x.Value).Returns(config);
 
-            _transportWithHost = new NetMqTransport(_options.Object);
-            _transportWithHost.StartAsync();
-        }
+            NetMqTransport transport = new NetMqTransport(options.Object);
 
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            _transportWithHost.StopAsync();
-        }
+            await transport.StartAsync();
 
-        [Test]
-        public void Publish_NullValue_ThrowsArgumentNullException()
-        {
-            Assert.Throws<ArgumentNullException>(() => { _transportWithHost.PublishAsync(null); });
-        }
+            byte[] expectedBytes = RandomValue.Array<byte>();
 
-        [Test]
-        public void Publish_DefaultObject_EventReceived()
-        {
             ManualResetEvent mre = new ManualResetEvent(false);
-
-            _transportWithHost.MessageReceived += (sender, e) =>
+            byte[] actualBytes = null;
+            _fixture.Transport.MessageReceived += (sender, e) =>
             {
+                actualBytes = e.MessageBytes;
                 mre.Set();
             };
 
-            _transportWithHost.PublishAsync(new byte[0]);
+            // Act
+
+            await _fixture.Transport.PublishAsync(expectedBytes);
+
+            // Assert
 
             bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
 
             Assert.True(eventFired);
-        }
+            Assert.Equal(expectedBytes, actualBytes);
 
-        [Test]
-        public void Publish_TestObject_SameDataReceived()
-        {
-            ManualResetEvent mre = new ManualResetEvent(false);
-            MessageWrapper mwOut = new MessageWrapper
-            {
-                CorrelationId = Guid.NewGuid(),
-                Data = 47,
-                DataType = typeof(int),
-                MessageType = MessageType.Event,
-                ResponseType = typeof(DateTime)
-            };
-            MessageWrapper mwIn = null;
-
-            _transportWithHost.MessageReceived += (sender, e) =>
-            {
-                mre.Set();
-            };
-
-            _transportWithHost.PublishAsync(new byte[0]);
-
-            mre.WaitOne(new TimeSpan(0, 0, 5));
-
-            Assert.AreEqual(mwOut, mwIn);
-        }
-
-        [Test]
-        public void PublishOnHost_ReceiveOnNonHost()
-        {
-            ManualResetEvent mre = new ManualResetEvent(false);
-
-            _transportWithHost.MessageReceived += (sender, e) => { mre.Set(); };
-
-            _transportWithHost.PublishAsync(new byte[0]);
-
-            bool eventFired = mre.WaitOne(new TimeSpan(0, 0, 5));
-
-            _transportWithHost.StopAsync();
-
-            Assert.True(eventFired);
+            await transport.StopAsync();
         }
     }
 }
