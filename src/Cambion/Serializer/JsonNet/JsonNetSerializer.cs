@@ -9,7 +9,7 @@ namespace Whitestone.Cambion.Serializer.JsonNet
 {
     public class JsonNetSerializer : ISerializer
     {
-        public Task<MessageWrapper> Deserialize(byte[] messageBytes)
+        public Task<MessageWrapper> DeserializeAsync(byte[] messageBytes)
         {
             string json = Encoding.ASCII.GetString(messageBytes);
             MessageWrapper wrapper = JsonConvert.DeserializeObject<MessageWrapper>(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
@@ -17,7 +17,7 @@ namespace Whitestone.Cambion.Serializer.JsonNet
             return Task.FromResult(wrapper);
         }
 
-        public Task<byte[]> Serialize(MessageWrapper message)
+        public Task<byte[]> SerializeAsync(MessageWrapper message)
         {
             if (message == null)
             {

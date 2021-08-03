@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
-    <RootNamespace>Whitestone.Cambion.Test</RootNamespace>
-    <AssemblyName>Whitestone.Cambion.Test</AssemblyName>
+    <RootNamespace>Whitestone.Cambion.UnitTests.Cambion</RootNamespace>
+    <AssemblyName>Whitestone.Cambion.UnitTests.Cambion</AssemblyName>
     <Version>1.1.0</Version>
     <Authors>Whitestone</Authors>
     <Product>Whitestone Cambion</Product>
@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+    <PackageReference Include="RandomTestValues" Version="2.0.5.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
@@ -21,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cambion\Cambion.csproj" />
+    <ProjectReference Include="..\..\..\src\Cambion\Cambion.csproj" />
   </ItemGroup>
 
 </Project>

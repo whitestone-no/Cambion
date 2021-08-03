@@ -9,7 +9,7 @@ namespace Whitestone.Cambion.Serializer.MessagePack
 {
     public class MessagePackSerializer : ISerializer
     {
-        public async Task<byte[]> Serialize(MessageWrapper message)
+        public async Task<byte[]> SerializeAsync(MessageWrapper message)
         {
             byte[] messageBytes;
             using (MemoryStream ms = new MemoryStream())
@@ -21,7 +21,7 @@ namespace Whitestone.Cambion.Serializer.MessagePack
             return messageBytes;
         }
 
-        public async Task<MessageWrapper> Deserialize(byte[] serialized)
+        public async Task<MessageWrapper> DeserializeAsync(byte[] serialized)
         {
             MessageWrapper message;
             using (MemoryStream ms = new MemoryStream(serialized))

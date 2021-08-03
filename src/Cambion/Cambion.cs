@@ -20,7 +20,9 @@ namespace Whitestone.Cambion
 
         private readonly Dictionary<Type, List<EventHandler>> _eventHandlers = new Dictionary<Type, List<EventHandler>>();
         private readonly Dictionary<SynchronizedHandlerKey, SynchronizedHandler> _synchronizedHandlers = new Dictionary<SynchronizedHandlerKey, SynchronizedHandler>();
-        private readonly Dictionary<Guid, SynchronizedDataPackage> _synchronizationPackages = new Dictionary<Guid, SynchronizedDataPackage>();
+        // ReSharper disable once InconsistentNaming
+        // Variable is internal only so that it is available to the unit test project. Don't need to change the variable naming for this.
+        internal readonly Dictionary<Guid, SynchronizedDataPackage> _synchronizationPackages = new Dictionary<Guid, SynchronizedDataPackage>();
 
         public event EventHandler<ErrorEventArgs> UnhandledException;
 
@@ -39,13 +41,13 @@ namespace Whitestone.Cambion
                 throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing transport"));
             if (_serializer == null)
                 throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing serializer"));
+            if (_logger == null)
+                throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing logger"));
         }
 
         public async Task ReinitializeAsync()
         {
             _logger.LogInformation("Reinitializing Transport {transport}", _transport.GetType().FullName);
-
-            Validate();
 
             _transport.MessageReceived -= Transport_MessageReceived;
             await _transport.StopAsync().ConfigureAwait(false);
@@ -205,7 +207,7 @@ namespace Whitestone.Cambion
                 MessageType = MessageType.Event
             };
 
-            byte[] wrapperBytes = await _serializer.Serialize(wrapper).ConfigureAwait(false);
+            byte[] wrapperBytes = await _serializer.SerializeAsync(wrapper).ConfigureAwait(false);
 
             if (_logger.IsEnabled(LogLevel.Trace))
             {
@@ -245,7 +247,7 @@ namespace Whitestone.Cambion
                 CorrelationId = correlationId
             };
 
-            byte[] wrapperBytes = await _serializer.Serialize(wrapper).ConfigureAwait(false);
+            byte[] wrapperBytes = await _serializer.SerializeAsync(wrapper).ConfigureAwait(false);
 
             if (_logger.IsEnabled(LogLevel.Trace))
             {
@@ -278,7 +280,8 @@ namespace Whitestone.Cambion
             throw new TimeoutException("Timeout waiting for synchronous call");
         }
 
-        private async void Transport_MessageReceived(object sender, Events.MessageReceivedEventArgs e)
+        // Method could be private but is made internal so that unit tests can access and test it.
+        internal async void Transport_MessageReceived(object sender, Events.MessageReceivedEventArgs e)
         {
             try
             {
@@ -287,7 +290,7 @@ namespace Whitestone.Cambion
                     _logger.LogTrace("Received message from Transport with data {data}", Convert.ToBase64String(e.MessageBytes));
                 }
 
-                MessageWrapper wrapper = await _serializer.Deserialize(e.MessageBytes).ConfigureAwait(false);
+                MessageWrapper wrapper = await _serializer.DeserializeAsync(e.MessageBytes).ConfigureAwait(false);
 
                 if (wrapper.MessageType == MessageType.Event)
                 {
@@ -356,7 +359,7 @@ namespace Whitestone.Cambion
                                     CorrelationId = wrapper.CorrelationId
                                 };
 
-                                byte[] replyWrapperBytes = await _serializer.Serialize(replyWrapper).ConfigureAwait(false);
+                                byte[] replyWrapperBytes = await _serializer.SerializeAsync(replyWrapper).ConfigureAwait(false);
 
                                 if (_logger.IsEnabled(LogLevel.Trace))
                                 {

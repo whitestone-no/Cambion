@@ -30,11 +30,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\..\img\Cambion_Logo_128.png" Pack="true" Visible="false" PackagePath="" />
+    <None Include="..\..\..\img\Cambion_Logo_128.png" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Cambion\Cambion.csproj" />
+    <ProjectReference Include="..\..\Cambion\Cambion.csproj" />
   </ItemGroup>
 
 </Project>
