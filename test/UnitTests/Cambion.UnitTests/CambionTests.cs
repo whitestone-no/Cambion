@@ -202,6 +202,26 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             Assert.Equal($"A SynchronizedHandler already exists for request type {typeof(TestRequest).FullName} and response type {typeof(TestResponse).FullName} (Parameter 'delegate')", actualException.Message);
         }
 
+        [Fact]
+        public void Register_TwoOfSameHandlers_ThrowsArgumentException()
+        {
+            // Arrange
+
+            TwoOfSameObjectTest obj1 = new TwoOfSameObjectTest();
+            TwoOfSameObjectTest obj2 = new TwoOfSameObjectTest();
+
+            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+
+            // Act
+
+            sut.Register(obj1);
+
+            ArgumentException actualException = Assert.Throws<ArgumentException>(() => sut.Register(obj2));
+
+            // Assert
+            Assert.Equal($"A SynchronizedHandler already exists for request type {typeof(TestRequest).FullName} and response type {typeof(TestResponse).FullName} (Parameter 'delegate')", actualException.Message);
+        }
+
         #endregion
 
         #region AddEventHandler()
@@ -701,9 +721,9 @@ namespace Whitestone.Cambion.UnitTests.Cambion
                 x => x.Log(
                     It.Is<LogLevel>(y => y == LogLevel.Debug),
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString() == $"Publishing synchronized reply <{typeof(TestResponse).FullName}> to Transport"),
+                    It.Is<It.IsAnyType>((v, type) => v.ToString() == $"Publishing synchronized reply <{typeof(TestResponse).FullName}> to Transport"),
                     It.IsAny<Exception>(),
-                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, type) => true)),
                 Times.Once);
         }
 
@@ -776,18 +796,18 @@ namespace Whitestone.Cambion.UnitTests.Cambion
                 x => x.Log(
                     It.Is<LogLevel>(y => y == LogLevel.Trace),
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString() == $"Received message from Transport with data {Convert.ToBase64String(expectedRequestWrapperBytes)}"),
+                    It.Is<It.IsAnyType>((v, type) => v.ToString() == $"Received message from Transport with data {Convert.ToBase64String(expectedRequestWrapperBytes)}"),
                     It.IsAny<Exception>(),
-                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, type) => true)),
                 Times.Once);
 
             _logger.Verify(
                 x => x.Log(
                     It.Is<LogLevel>(y => y == LogLevel.Trace),
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString() == $"Publishing synchronized reply <{typeof(TestResponse).FullName}> to Transport with data {Convert.ToBase64String(expectedResponseWrapperBytes)}"),
+                    It.Is<It.IsAnyType>((v, type) => v.ToString() == $"Publishing synchronized reply <{typeof(TestResponse).FullName}> to Transport with data {Convert.ToBase64String(expectedResponseWrapperBytes)}"),
                     It.IsAny<Exception>(),
-                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, type) => true)),
                 Times.Once);
         }
 
@@ -835,7 +855,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         }
 
         [Fact]
-        public async Task Transport_MessageReceived_SynchronizedResponse_Success()
+        public void Transport_MessageReceived_SynchronizedResponse_Success()
         {
             // Arrange
 
