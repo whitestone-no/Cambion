@@ -52,6 +52,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Transports", "Transports", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetMQ.IntegrationTests", "..\test\IntegrationTests\Transports\NetMQ.IntegrationTests\NetMQ.IntegrationTests.csproj", "{228BCD79-EB30-4116-999E-3E42DDFD05D0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQ.IntegrationTests", "..\test\IntegrationTests\Transports\RabbitMQ.IntegrationTests\RabbitMQ.IntegrationTests.csproj", "{3F94B158-2C8F-4B16-A380-701252D2A7C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +88,10 @@ Global
 		{228BCD79-EB30-4116-999E-3E42DDFD05D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{228BCD79-EB30-4116-999E-3E42DDFD05D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{228BCD79-EB30-4116-999E-3E42DDFD05D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F94B158-2C8F-4B16-A380-701252D2A7C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F94B158-2C8F-4B16-A380-701252D2A7C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F94B158-2C8F-4B16-A380-701252D2A7C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F94B158-2C8F-4B16-A380-701252D2A7C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +110,7 @@ Global
 		{25002AD8-1A6A-4C97-A4E9-5B2103649B08} = {B45FA162-5250-4178-ABDD-2AD5D2F4AC73}
 		{93EC304F-5BE3-4BB7-94CB-F4D20E7E4AE1} = {4535CEFC-DB84-4EC1-8040-DC78A523A4A8}
 		{228BCD79-EB30-4116-999E-3E42DDFD05D0} = {93EC304F-5BE3-4BB7-94CB-F4D20E7E4AE1}
+		{3F94B158-2C8F-4B16-A380-701252D2A7C2} = {93EC304F-5BE3-4BB7-94CB-F4D20E7E4AE1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8080ED3-04FB-4E21-B63F-55B5AAB135B2}

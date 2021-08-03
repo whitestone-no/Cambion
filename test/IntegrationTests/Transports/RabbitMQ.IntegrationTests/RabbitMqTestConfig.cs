@@ -1,4 +1,4 @@
-﻿namespace RabbitMQ.Test
+﻿namespace Whitestone.Cambion.IntegrationTests.Transports.RabbitMQ
 {
     internal class RabbitMqTestConfig
     {
