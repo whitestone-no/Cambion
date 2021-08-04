@@ -21,19 +21,21 @@ Usage
 Seeing as Cambion uses a pub/sub pattern for its inner workings, you will need an existing Azure Service Bus that supports Topics and Subscriptions.
 Setting up this in Azure is well `documented <https://docs.microsoft.com/en-us/azure/service-bus-messaging/>`_ by Microsoft and is not covered in this documentation.
 
-The Azure Service Bus transport is set up using an extension method for ``ICambionConfiguration.Transport``. This extension method takes an
+The Azure Service Bus transport is set up using an extension method for ``ICambionBuilder``. This extension method takes an
 ``Action<AzureServiceBusConfig>`` as the input parameter. The most basic values for this configuration are also minimum required values:
 
 ::
 
-    ICambion cambion = new CambionConfiguration()
-        .Transport.UseAzureServiceBus(conf =>
-        {
-            conf.Endpoint = "sb://service-bus-namespace.servicebus.windows.net/";
-            conf.Topic.Name = "cambion";
-            conf.Subscription.Name = "cambion-sub-1";
-        })
-    .Create();
+    public void ConfigureServices(IServiceCollection services)
+	{
+	    services.AddCambion()
+		    .UseAzureServiceBusTransport(conf =>
+            {
+                conf.Endpoint = "sb://service-bus-namespace.servicebus.windows.net/";
+                conf.Topic.Name = "cambion";
+                conf.Subscription.Name = "cambion-sub-1";
+            });
+	}
 
 Authentication
 ==============

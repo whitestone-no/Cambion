@@ -12,10 +12,10 @@ Publish an event using the following functionality:
 
 ::
 
-    cambion.PublishEvent(new TEvent());
+    await cambion.PublishEventAsync(new TEvent());
 
 All the examples regarding events described in :ref:`Subscribing<refSubscribing>` use the ``TEvent`` type during subscription,
-so this call to ``PublishEvent()`` will cause the callbacks for all those subscriptions to be called.
+so this call to ``PublishEventAsync()`` will cause the callbacks for all those subscriptions to be called.
 
 .. note:: Note that you do not need to specify the type as a generic, even though the method signature has it. This will be handled by the compiler.
 
@@ -28,9 +28,9 @@ Publish a synchronized using the following functionality:
 
 ::
 
-    TResponse response = cambion.CallSynchronizedHandler<TRequest, TResponse>(new TRequest());
+    TResponse response = await cambion.CallSynchronizedHandlerAsync<TRequest, TResponse>(new TRequest());
 
-All the examples regarding synchronized described above use the `TRequest` and `TResponse` types during subscription, so this call to `CallSynchronizedHandler` will cause the callbacks for all those subscriptions to be called.
+All the examples regarding synchronized described above use the `TRequest` and `TResponse` types during subscription, so this call to `CallSynchronizedHandlerAsync()` will cause the callbacks for all those subscriptions to be called.
 
 .. note:: Note that you are here required to specify the types as generics for the method signature.
 

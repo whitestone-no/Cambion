@@ -25,6 +25,7 @@ The framework is easily extensible to add support for other transports and seria
    basics/instantiation
    basics/subscribing
    basics/consuming
+   basics/exceptionhandling
 
 .. toctree::
    :hidden:
@@ -42,3 +43,4 @@ The framework is easily extensible to add support for other transports and seria
 
    serializers/introduction
    serializers/jsonnet
+   serializers/messagepack

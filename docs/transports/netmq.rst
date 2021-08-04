@@ -26,20 +26,27 @@ Host
 In order for Cambion to send and receive data using NetMQ, one of the Cambion instances needs to work as a MessageHost.
 The other Cambion instances will then connect to the MessageHost as clients.
 
+The Azure Service Bus transport is set up using an extension method for ``ICambionBuilder``. This extension method takes an
+``Action<NetMqConfig>`` as the input parameter.
+
 .. note:: The MessageHost will work as a normal client in addition to being the host without any additional configuration
 
 Initialize the NetMQ backend as normal, but set the optional parameter ``useMessageHost`` parameter in the ``UseNetMQ`` extension to ``true``:
 
 ::
 
-    ICambion cambion = new CambionConfiguration()
-        .Transport.UseNetMQ(
-            publishAddress: "tcp://localhost:9999",
-            subscribeAddress: "tcp://localhost:9998",
-            useMessageHost: true)
-        .Create();
+    public void ConfigureServices(IServiceCollection services)
+	{
+	    services.AddCambion()
+		    .UseNetMqTransport(conf =>
+			{
+                conf.PublishAddress = "tcp://localhost:9999";
+                conf.SubscribeAddress = "tcp://localhost:9998";
+                conf.UseMessageHost = true;
+			});
+	}
 
 Clients
 ^^^^^^^
 
-Clients will use the same configuration as above, but will set ``useMessageHost`` to ``false`` (or omit it, as it defaults to ``false``)
+Clients will use the same configuration as above, but will set ``UseMessageHost`` to ``false`` (or omit it, as it defaults to ``false``)

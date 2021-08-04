@@ -17,26 +17,31 @@ As with other transports, the ``RabbitMQ`` transport for Cambion is also availab
 Usage
 =====
 
-The RabbitMQ transport can be set up using one of the two provided extension methods. The easiest of these uses the standard single line URI:
+The RabbitMQ transport can be set up using one of the two provided extension methods to ``ICambionBuilder``. The easiest of these uses the standard single line URI:
 
 ::
 
-    ICambion cambion = new CambionConfiguration()
-        .Transport.UseRabbitMQ("amqp://username:password@hostname/vhost")
-        .Create();
+    public void ConfigureServices(IServiceCollection services)
+	{
+	    services.AddCambion()
+		    .UseRabbitMqTransport("amqp://username:password@hostname/vhost");
+	}
 
-When you need more control over the RabbitMQ setup you should use the extension method that overrides the default configuration:
+When you need more control over the RabbitMQ setup you should use the extension method that overrides the default configuration with a ``RabbitMqConfig``:
 
 ::
 
-    ICambion cambion = new CambionConfiguration()
-        .Transport.UseRabbitMQ(conf => {
-			conf.Connection.Hostname = "hostname";
-            conf.Connection.Username = "username";
-            conf.Connection.Password = "password";
-            conf.Connection.VirtualHost = "vhost";
-		})
-        .Create();
+    public void ConfigureServices(IServiceCollection services)
+	{
+	    services.AddCambion()
+		    .UseRabbitMqTransport(conf => {
+    			conf.Connection.Hostname = "hostname";
+                conf.Connection.Username = "username";
+                conf.Connection.Password = "password";
+                conf.Connection.VirtualHost = "vhost";
+		    });
+	}
+
 
 Additional settings
 ===================
@@ -92,15 +97,17 @@ To use a non-durable exchange named "Cambion", with a non-exclusive and non-dura
 
 ::
 
-    ICambion cambion = new CambionConfiguration()
-        .Transport.UseRabbitMQ(conf => {
-			conf.Connection.Hostname = "hostname";
-            conf.Connection.Username = "username";
-            conf.Connection.Password = "password";
-            conf.Exchange.Name = "Cambion";
-			conf.Exchange.Durable = false;
-			conf.Queue.Name = "CambionQueue";
-			conf.Queue.Exclusive = false;
-			conf.Queue.Durable = false;
-		})
-        .Create();
+    public void ConfigureServices(IServiceCollection services)
+	{
+	    services.AddCambion()
+		    .UseRabbitMqTransport(conf => {
+                conf.Connection.Hostname = "hostname";
+                conf.Connection.Username = "username";
+                conf.Connection.Password = "password";
+                conf.Exchange.Name = "Cambion";
+			    conf.Exchange.Durable = false;
+		        conf.Queue.Name = "CambionQueue";
+	    	    conf.Queue.Exclusive = false;
+    		    conf.Queue.Durable = false;
+		    });
+	}
