@@ -83,8 +83,7 @@ stages:
         projects: |
           **/*.UnitTests.csproj
           **/*.IntegrationTests.csproj
-        arguments: '-c Debug --collect:"Code Coverage"'
-        publishTestResults: true
+        arguments: '-c Debug'
       env:
         RABBITMQTEST_RABBITMQ__CONNECTIONSTRING: $(RabbitMq.Test.ConnectionString)
         RABBITMQTEST_RABBITMQ__HOSTNAME: $(RabbitMq.Test.Hostname)
