@@ -4,12 +4,20 @@ trigger:
     - refs/heads/release/*
     - refs/tags/v*
 
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily midnight build
+  branches:
+    include:
+    - master
+  always: true
+
 variables:
   cambionArtifactName: 'CambionBuildArtifacts'
 
 pool:
   name: 'Whitestone'
-  
+
 stages:
 - stage: 'Build'
   displayName: 'Build'
