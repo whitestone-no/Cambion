@@ -83,7 +83,7 @@ stages:
         projects: |
           **/*.UnitTests.csproj
           **/*.IntegrationTests.csproj
-        arguments: '-c Debug --collect "Code coverage"'
+        arguments: '-c Debug /p:CollectCoverage=true'
         publishTestResults: true
       env:
         RABBITMQTEST_RABBITMQ__CONNECTIONSTRING: $(RabbitMq.Test.ConnectionString)
