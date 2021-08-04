@@ -10,9 +10,9 @@ Inside this method you simply tell it to use Cambion:
 ::
 
     public void ConfigureServices(IServiceCollection services)
-	{
-	    services.AddCambion();
-	}
+    {
+        services.AddCambion();
+    }
 
 The previous example will initialize Cambion as a hosted service with a default Transport and Serializer.
 
@@ -23,14 +23,14 @@ Finally, you can now inject Cambion into your code:
 ::
 
     public class YourUsageClass
-	{
-	    private readonly ICambion _cambion;
-	
-	    public YourUsageClass(ICambion cambion)
-		{
-		    _cambion = cambion,
-		}
-	}
+    {
+        private readonly ICambion _cambion;
+
+        public YourUsageClass(ICambion cambion)
+        {
+            _cambion = cambion,
+        }
+    }
 
 Hosted Service
 ==============
