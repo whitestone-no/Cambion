@@ -15,6 +15,7 @@ stages:
   displayName: 'Build'
   variables:
   - group: 'RabbitMQ Test Parameters'
+  - group: 'Azure Service Bus Test Parameters'
   jobs:
   - job: 'GitVersion'
     displayName: 'GitVersion'
@@ -89,6 +90,12 @@ stages:
         RABBITMQTEST_RABBITMQ__USERNAME: $(RabbitMq.Test.Username)
         RABBITMQTEST_RABBITMQ__PASSWORD: $(RabbitMq.Test.Password)
         RABBITMQTEST_RABBITMQ__VIRTUALHOST: $(RabbitMq.Test.VirtualHost)
+        AZURESERVICEBUSTEST__AZURESERVICEBUS__ENDPOINT: $(AzureServiceBus.Test.Endpoint)
+        AZURESERVICEBUSTEST__AZURESERVICEBUS__TOPICNAME: $(AzureServiceBus.Test.TopicName)
+        AZURESERVICEBUSTEST__AZURESERVICEBUS__SUBSCRIPTIONNAME: $(AzureServiceBus.Test.SubscriptionName)
+        AZURESERVICEBUSTEST__AZURESERVICEBUS__TENANTID: $(AzureServiceBus.Test.TenantId)
+        AZURESERVICEBUSTEST__AZURESERVICEBUS__CLIENTID: $(AzureServiceBus.Test.ClientId)
+        AZURESERVICEBUSTEST__AZURESERVICEBUS__CLIENTSECRET: $(AzureServiceBus.Test.ClientSecret)
     - task: DotNetCoreCLI@2
       displayName: 'Build and pack projects for NuGet'
       inputs:
