@@ -10,14 +10,14 @@ Simply inject Cambion into the class where you want to handle these exceptions, 
 ::
 
     public class YourExceptionHandler
-	{
-	    public YourExceptionHandler(ICambion cambion)
-		{
-		    cambion.UnhandledException += HandleException;
-		}
-		
-		private void HandleException(object sender, System.IO.ErrorEventArgs e)
+    {
+        public YourExceptionHandler(ICambion cambion)
+        {
+            cambion.UnhandledException += HandleException;
+        }
+
+        private void HandleException(object sender, System.IO.ErrorEventArgs e)
         {
             // Handle exceptions here using e.GetException() to get the offending exception
         }
-	}
+    }

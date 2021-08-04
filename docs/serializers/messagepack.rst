@@ -22,7 +22,7 @@ The MessagePack serializer can be set up using an extension method to ``ICambion
 ::
 
     public void ConfigureServices(IServiceCollection services)
-	{
-	    services.AddCambion()
-		    .UseMessagePackSerializer();
-	}
+    {
+        services.AddCambion()
+            .UseMessagePackSerializer();
+    }

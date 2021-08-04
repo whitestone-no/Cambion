@@ -27,15 +27,15 @@ The Azure Service Bus transport is set up using an extension method for ``ICambi
 ::
 
     public void ConfigureServices(IServiceCollection services)
-	{
-	    services.AddCambion()
-		    .UseAzureServiceBusTransport(conf =>
+    {
+        services.AddCambion()
+            .UseAzureServiceBusTransport(conf =>
             {
                 conf.Endpoint = "sb://service-bus-namespace.servicebus.windows.net/";
                 conf.Topic.Name = "cambion";
                 conf.Subscription.Name = "cambion-sub-1";
             });
-	}
+    }
 
 Authentication
 ==============

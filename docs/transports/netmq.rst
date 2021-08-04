@@ -36,15 +36,15 @@ Initialize the NetMQ backend as normal, but set the optional parameter ``useMess
 ::
 
     public void ConfigureServices(IServiceCollection services)
-	{
-	    services.AddCambion()
-		    .UseNetMqTransport(conf =>
-			{
+    {
+        services.AddCambion()
+            .UseNetMqTransport(conf =>
+            {
                 conf.PublishAddress = "tcp://localhost:9999";
                 conf.SubscribeAddress = "tcp://localhost:9998";
                 conf.UseMessageHost = true;
-			});
-	}
+            });
+    }
 
 Clients
 ^^^^^^^

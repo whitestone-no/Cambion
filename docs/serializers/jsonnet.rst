@@ -8,7 +8,7 @@ Should you want be verbose about it you can still manually define that it should
 ::
 
     public void ConfigureServices(IServiceCollection services)
-	{
-	    services.AddCambion()
-		    .UseJsonNetSerializer();
-	}
+    {
+        services.AddCambion()
+            .UseJsonNetSerializer();
+    }

@@ -22,25 +22,25 @@ The RabbitMQ transport can be set up using one of the two provided extension met
 ::
 
     public void ConfigureServices(IServiceCollection services)
-	{
-	    services.AddCambion()
-		    .UseRabbitMqTransport("amqp://username:password@hostname/vhost");
-	}
+    {
+        services.AddCambion()
+            .UseRabbitMqTransport("amqp://username:password@hostname/vhost");
+    }
 
 When you need more control over the RabbitMQ setup you should use the extension method that overrides the default configuration with a ``RabbitMqConfig``:
 
 ::
 
     public void ConfigureServices(IServiceCollection services)
-	{
-	    services.AddCambion()
-		    .UseRabbitMqTransport(conf => {
-    			conf.Connection.Hostname = "hostname";
+    {
+        services.AddCambion()
+            .UseRabbitMqTransport(conf => {
+                conf.Connection.Hostname = "hostname";
                 conf.Connection.Username = "username";
                 conf.Connection.Password = "password";
                 conf.Connection.VirtualHost = "vhost";
-		    });
-	}
+            });
+    }
 
 
 Additional settings
@@ -98,16 +98,16 @@ To use a non-durable exchange named "Cambion", with a non-exclusive and non-dura
 ::
 
     public void ConfigureServices(IServiceCollection services)
-	{
-	    services.AddCambion()
-		    .UseRabbitMqTransport(conf => {
+    {
+        services.AddCambion()
+            .UseRabbitMqTransport(conf => {
                 conf.Connection.Hostname = "hostname";
                 conf.Connection.Username = "username";
                 conf.Connection.Password = "password";
                 conf.Exchange.Name = "Cambion";
-			    conf.Exchange.Durable = false;
-		        conf.Queue.Name = "CambionQueue";
-	    	    conf.Queue.Exclusive = false;
-    		    conf.Queue.Durable = false;
-		    });
-	}
+                conf.Exchange.Durable = false;
+                conf.Queue.Name = "CambionQueue";
+                conf.Queue.Exclusive = false;
+                conf.Queue.Durable = false;
+            });
+    }
