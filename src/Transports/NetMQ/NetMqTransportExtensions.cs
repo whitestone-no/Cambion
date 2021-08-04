@@ -8,7 +8,7 @@ namespace Whitestone.Cambion.Transport.NetMQ
     public static class NetMqTransportExtensions
     {
         // ReSharper disable once InconsistentNaming
-        public static ICambionBuilder UseNetMQ(this ICambionBuilder builder, Action<NetMqConfig> configure)
+        public static ICambionBuilder UseNetMqTransport(this ICambionBuilder builder, Action<NetMqConfig> configure)
         {
             builder.Services.Replace(new ServiceDescriptor(typeof(ITransport), typeof(NetMqTransport), ServiceLifetime.Singleton));
 
