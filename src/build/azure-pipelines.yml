@@ -84,6 +84,7 @@ stages:
           **/*.UnitTests.csproj
           **/*.IntegrationTests.csproj
         arguments: '-c Debug'
+        publishTestResults: true
       env:
         RABBITMQTEST_RABBITMQ__CONNECTIONSTRING: $(RabbitMq.Test.ConnectionString)
         RABBITMQTEST_RABBITMQ__HOSTNAME: $(RabbitMq.Test.Hostname)
