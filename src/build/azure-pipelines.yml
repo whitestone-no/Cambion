@@ -59,6 +59,14 @@ stages:
           Write-Host "##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)"
       condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/v')
     - task: PowerShell@2
+      displayName: 'Set semver variables (Nightly)'
+      inputs:
+        targetType: 'Inline'
+        script: |
+          Write-Host "##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)"
+          Write-Host "##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)-Nightly_$(Date:yyyyMMdd)$(Rev:.r)"
+      condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/master')
+    - task: PowerShell@2
       displayName: 'Update build number'
       inputs:
         targetType: 'Inline'
