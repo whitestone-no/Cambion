@@ -64,7 +64,7 @@ stages:
         targetType: 'Inline'
         script: |
           Write-Host "##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)"
-          Write-Host "##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)-nightly"
+          Write-Host "##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)-Nightly.$(Build.BuildId)"
       condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/master')
     - task: PowerShell@2
       displayName: 'Update build number'
