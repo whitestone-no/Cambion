@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Azure.ServiceBus.Management;
+using Azure.Messaging.ServiceBus.Administration;
 
 namespace Whitestone.Cambion.Transport.AzureSericeBus
 {
@@ -26,12 +26,12 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
         public class AzureServiceBusTopic : AzureServiceBusEntity
         {
-            public TopicDescription Details { get; } = new TopicDescription("cambion");
+            public CreateTopicOptions Details { get; } = new CreateTopicOptions("cambion");
         }
 
         public class AzureServiceBusSubscription : AzureServiceBusEntity
         {
-            public SubscriptionDescription Details { get; } = new SubscriptionDescription("cambion", "cambion-sub");
+            public CreateSubscriptionOptions Details { get; } = new CreateSubscriptionOptions("cambion", "cambion-sub");
         }
 
         internal void AssertIsValid()

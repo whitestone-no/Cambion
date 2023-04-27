@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBus;
-using Microsoft.Azure.ServiceBus.Management;
-using Microsoft.Azure.ServiceBus.Primitives;
+using Azure;
+using Azure.Core;
+using Azure.Identity;
+using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client;
 using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
 
@@ -18,10 +18,11 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
         private readonly AzureServiceBusConfig _config;
         private readonly ILogger<AzureServiceBusTransport> _logger;
-        private TopicClient _topicClient;
-        private SubscriptionClient _subscriptionClient;
-        private ManagementClient _managementClient;
-        private ITokenProvider _tokenProvider;
+        private ServiceBusSender _senderClient;
+        private ServiceBusProcessor _processorClient;
+        private ServiceBusAdministrationClient _managementClient;
+        private ServiceBusClient _client;
+        private TokenCredential _tokenCredentials;
 
         public AzureServiceBusTransport(IOptions<AzureServiceBusConfig> config, ILogger<AzureServiceBusTransport> logger)
         {
@@ -35,53 +36,47 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
             if (_config.UseManagedIdentity())
             {
-                _tokenProvider = TokenProvider.CreateManagedIdentityTokenProvider();
+                _tokenCredentials = new ManagedIdentityCredential();
             }
             else
             {
-                _tokenProvider = TokenProvider.CreateAzureActiveDirectoryTokenProvider(async (audience, authority, state) =>
-                {
-                    IConfidentialClientApplication app = ConfidentialClientApplicationBuilder.Create(_config.Autentication.ClientId)
-                        .WithAuthority(authority)
-                        .WithClientSecret(_config.Autentication.ClientSecret)
-                        .Build();
-
-                    Uri serviceBusAudience = new Uri("https://servicebus.azure.net");
-
-                    AuthenticationResult authResult = await app.AcquireTokenForClient(new[] { $"{serviceBusAudience}/.default" }).ExecuteAsync().ConfigureAwait(false);
-                    return authResult.AccessToken;
-                }, $"https://login.windows.net/{_config.Autentication.TenantId}");
+                _tokenCredentials = new ClientSecretCredential(_config.Autentication.TenantId, _config.Autentication.ClientId, _config.Autentication.ClientSecret);
             }
 
-            _managementClient = new ManagementClient(_config.Endpoint, _tokenProvider);
+            _managementClient = new ServiceBusAdministrationClient(_config.Endpoint, _tokenCredentials);
+            _client = new ServiceBusClient(_config.Endpoint, _tokenCredentials);
 
             if (_config.Topic.AutoCreate) await CreateTopicIfNotExists().ConfigureAwait(false);
             if (_config.Subscription.AutoCreate) await CreateSubscriptionIfNotExists().ConfigureAwait(false);
 
-            _topicClient = new TopicClient(_config.Endpoint, _config.Topic.Name, _tokenProvider);
-            _subscriptionClient = new SubscriptionClient(_config.Endpoint, _config.Topic.Name, _config.Subscription.Name, _tokenProvider);
+            _senderClient = _client.CreateSender(_config.Topic.Name);
 
-            MessageHandlerOptions messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
+            var options = new ServiceBusProcessorOptions
             {
                 MaxConcurrentCalls = 1,
-                AutoComplete = false
+                AutoCompleteMessages = false
             };
-            _subscriptionClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
+
+            _processorClient = _client.CreateProcessor(_config.Topic.Name, _config.Subscription.Name, options);
+            _processorClient.ProcessMessageAsync += MessageHandler;
+            _processorClient.ProcessErrorAsync += ExceptionReceivedHandler;
+
+            await _processorClient.StartProcessingAsync().ConfigureAwait(false);
         }
 
         public async Task StopAsync()
         {
-            await _subscriptionClient.CloseAsync().ConfigureAwait(false);
+            await _processorClient.StopProcessingAsync().ConfigureAwait(false);
+            await _processorClient.CloseAsync().ConfigureAwait(false);
             if (_config.Subscription.AutoDelete)
             {
                 await _managementClient.DeleteSubscriptionAsync(_config.Topic.Name, _config.Subscription.Name).ConfigureAwait(false);
             }
 
-            await _topicClient.CloseAsync().ConfigureAwait(false);
             if (_config.Topic.AutoDelete)
             {
-                TopicRuntimeInfo topicInfo = await _managementClient.GetTopicRuntimeInfoAsync(_config.Topic.Name).ConfigureAwait(false);
-                if (topicInfo.SubscriptionCount < 1)
+                Response<TopicRuntimeProperties> topicInfo = await _managementClient.GetTopicRuntimePropertiesAsync(_config.Topic.Name).ConfigureAwait(false);
+                if (topicInfo.Value.SubscriptionCount < 1)
                 {
                     await _managementClient.DeleteTopicAsync(_config.Topic.Name).ConfigureAwait(false);
                 }
@@ -95,7 +90,7 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
                 throw new ArgumentNullException(nameof(messageBytes));
             }
 
-            await _topicClient.SendAsync(new Message(messageBytes)).ConfigureAwait(false);
+            await _senderClient.SendMessageAsync(new ServiceBusMessage(BinaryData.FromBytes(messageBytes))).ConfigureAwait(false);
         }
 
         private async Task CreateTopicIfNotExists()
@@ -104,17 +99,17 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
             if (!topicExists)
             {
-                TopicDescription topic;
+                CreateTopicOptions topicOptions;
                 if (_config.Topic.Details == null)
                 {
-                    topic = new TopicDescription(_config.Topic.Name);
+                    topicOptions = new CreateTopicOptions(_config.Topic.Name);
                 }
                 else
                 {
-                    topic = _config.Topic.Details;
-                    topic.Path = _config.Topic.Name;
+                    topicOptions = _config.Topic.Details;
+                    topicOptions.Name = _config.Topic.Name;
                 }
-                await _managementClient.CreateTopicAsync(topic).ConfigureAwait(false);
+                await _managementClient.CreateTopicAsync(topicOptions).ConfigureAwait(false);
             }
         }
 
@@ -124,37 +119,35 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 
             if (!subscriptionExists)
             {
-                SubscriptionDescription subscription;
+                CreateSubscriptionOptions subscriptionOptions;
                 if (_config.Subscription.Details == null)
                 {
-                    subscription = new SubscriptionDescription(_config.Topic.Name, _config.Subscription.Name);
+                    subscriptionOptions = new CreateSubscriptionOptions(_config.Topic.Name, _config.Subscription.Name);
                 }
                 else
                 {
-                    subscription = _config.Subscription.Details;
-                    subscription.TopicPath = _config.Topic.Name;
-                    subscription.SubscriptionName = _config.Subscription.Name;
+                    subscriptionOptions = _config.Subscription.Details;
+                    subscriptionOptions.TopicName = _config.Topic.Name;
+                    subscriptionOptions.SubscriptionName = _config.Subscription.Name;
                 }
-                await _managementClient.CreateSubscriptionAsync(subscription).ConfigureAwait(false);
+                await _managementClient.CreateSubscriptionAsync(subscriptionOptions).ConfigureAwait(false);
             }
         }
 
-        private async Task ProcessMessagesAsync(Message message, CancellationToken token)
+        private async Task MessageHandler(ProcessMessageEventArgs args)
+
         {
             // Process the message.
-            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(message.Body));
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(args.Message.Body.ToArray()));
 
             // Complete the message so that it is not received again.
             // This can be done only if the subscriptionClient is created in ReceiveMode.PeekLock mode (which is the default).
-            if (!token.IsCancellationRequested)
-            {
-                await _subscriptionClient.CompleteAsync(message.SystemProperties.LockToken).ConfigureAwait(false);
-            }
+            await args.CompleteMessageAsync(args.Message);
         }
 
-        private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
+        private Task ExceptionReceivedHandler(ProcessErrorEventArgs args)
         {
-            _logger.LogError(exceptionReceivedEventArgs.Exception, "Unhandled exception in AzureServiceBusTransport");
+            _logger.LogError(args.Exception, "Unhandled exception in AzureServiceBusTransport");
 
             return Task.CompletedTask;
         }
