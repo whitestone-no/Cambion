@@ -31,7 +31,7 @@ The Azure Service Bus transport is set up using an extension method for ``ICambi
         services.AddCambion()
             .UseAzureServiceBusTransport(conf =>
             {
-                conf.Endpoint = "sb://service-bus-namespace.servicebus.windows.net/";
+                conf.Endpoint = "service-bus-namespace.servicebus.windows.net";
                 conf.Topic.Name = "cambion";
                 conf.Subscription.Name = "cambion-sub-1";
             });
@@ -43,7 +43,7 @@ Authentication
 Microsoft recommends using Azure AD for authentication towards their services. Because of this, the Azure Service Bus transport for Cambion does not support
 Shared Access Signatures (SAS).
 
-The default authentication used by this transport is Azure Managed Identity. You can also use Azure Active Directory App Registrations.
+The default authentication used by this transport is Azure Managed Identity. You can also use Azure Active Directory App Registrations (Client Secret).
 
 When the ``AzureServiceBusConfig.Authentication`` configuration setting is ``null`` or any of its sub settings are ``null`` or empty (as it is by default) Cambion
 will use Managed Identity to connect to the Azure Service Bus. If you want to use an App Registration instead, fill in appropriate values for all the sub settings.
@@ -97,8 +97,8 @@ The Details Property
 ^^^^^^^^^^^^^^^^^^^^
 
 The ``Details`` property of the ``AzureServiceBusConfig`` is a Microsoft class with options used for creating a topic or a subscription.
-Please refer to Microsoft's documentation (`TopicDescription <https://docs.microsoft.com/en-us/dotnet/api/microsoft.servicebus.messaging.topicdescription>`_
-/ `SubscriptionDescription <https://docs.microsoft.com/en-us/dotnet/api/microsoft.servicebus.messaging.subscriptiondescription>`_) for
-the meaning of each property.
+Please refer to Microsoft's documentation (`CreateTopicOptions <https://learn.microsoft.com/en-us/dotnet/api/azure.messaging.servicebus.administration.createtopicoptions?view=azure-dotnet>`_
+/ `CreateSubscriptionOptions <https://learn.microsoft.com/en-us/dotnet/api/azure.messaging.servicebus.administration.createsubscriptionoptions>`_) for
+the meaning of each property in these classes.
 
 .. note:: The ``Name`` property on the ``TopicDescription`` / ``SubscriptionDescription`` will *always* be overwritten by the transport with the value from the ``AzureServiceBusConfig.Topic.Name`` / `AzureServiceBusConfig.Topic.Name`` properties, so any values you set here will be ignored!
