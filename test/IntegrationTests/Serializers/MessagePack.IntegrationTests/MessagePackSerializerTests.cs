@@ -26,7 +26,7 @@ namespace Whitestone.Cambion.IntegrationTests.Serializers.MessagePack
         {
             const string expectedBase64 = "yAFAZNlyV2hpdGVzdG9uZS5DYW1iaW9uLlR5cGVzLk1lc3NhZ2VXcmFwcGVyLCBXaGl0ZXN0b25lLkNhbWJpb24sIFZlcnNpb249MS4xLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1udWxshaREYXRh0gAAAAGoRGF0YVR5cGXZZ1N5c3RlbS5JbnQzMiwgU3lzdGVtLlByaXZhdGUuQ29yZUxpYiwgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTdjZWM4NWQ3YmVhNzc5OGWsUmVzcG9uc2VUeXBlwKtNZXNzYWdlVHlwZQCtQ29ycmVsYXRpb25JZNkkMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAw";
 
-            MessageWrapper messageWrapper = new MessageWrapper
+            var messageWrapper = new MessageWrapper
             {
                 CorrelationId = Guid.Empty,
                 Data = 1,

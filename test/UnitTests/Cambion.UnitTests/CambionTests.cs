@@ -354,7 +354,9 @@ namespace Whitestone.Cambion.UnitTests.Cambion
 
             // ReSharper disable once ConvertToLocalFunction
             // because these are static, and can't use static methods as synchronized handlers
+#pragma warning disable IDE0039 // Use local function
             Func<TestRequest, TestResponse> handler = request => new TestResponse(RandomValue.String());
+#pragma warning restore IDE0039 // Use local function
 
             Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
 
@@ -978,10 +980,12 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             return new TestResponse(_value);
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         public static TestResponse HandleSynchronizedStatic(TestRequest input)
         {
             return null;
         }
+#pragma warning restore IDE0060 // Remove unused parameter
     }
 
     class EventHandler : IEventHandler<TestEvent>
@@ -1001,6 +1005,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             return _eventValue;
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         public static void HandleEventStatic(TestEvent input) { }
+#pragma warning restore IDE0060 // Remove unused parameter
     }
 }
