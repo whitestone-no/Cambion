@@ -49,7 +49,6 @@ stages:
         script: |
           Write-Host "##vso[task.setvariable variable=cambionSemVer]$(GitVersion.MajorMinorPatch)"
           Write-Host "##vso[task.setvariable variable=cambionSemVerFull]$(GitVersion.MajorMinorPatch)-$(GitVersion.PreReleaseLabel)-$(GitVersion.BuildMetaData)"
-      condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')
     - task: PowerShell@2
       displayName: 'Set semver variables (Release)'
       inputs:

@@ -14,10 +14,7 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
             builder.Services.AddOptions<AzureServiceBusConfig>()
                 .Configure(conf =>
                 {
-                    if (configure != null)
-                    {
-                        configure(conf);
-                    }
+                    configure?.Invoke(conf);
                 });
 
             return builder;

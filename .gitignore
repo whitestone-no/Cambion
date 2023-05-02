@@ -8,3 +8,4 @@ obj
 packages
 *.user
 /Graphics
+/test/TesterApplication
