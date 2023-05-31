@@ -1,8 +1,10 @@
 ﻿using System;
 using Azure.Messaging.ServiceBus.Administration;
+using Whitestone.Cambion.Attributes;
 
 namespace Whitestone.Cambion.Transport.AzureSericeBus
 {
+    [CambionConfiguration]
     public class AzureServiceBusConfig
     {
         public string Endpoint { get; set; }

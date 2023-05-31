@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.202
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{76023130-A775-440A-9440-1F33AC8ECDD2}"
 	ProjectSection(SolutionItems) = preProject
@@ -48,6 +48,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQ", "Transports\RabbitMQ\RabbitMQ.csproj", "{A8E5EFE5-A13D-421F-887F-557C87171CE9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagePack", "Serializers\MessagePack\MessagePack.csproj", "{6B837D21-B148-4897-8751-85C9782B2EBB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{9C980302-7254-47EE-A2CF-FE4E671FE843}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configuration", "Extensions\Configuration\Configuration.csproj", "{B2D4590B-0C36-4459-BE28-FA074E627B0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,6 +111,10 @@ Global
 		{6B837D21-B148-4897-8751-85C9782B2EBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B837D21-B148-4897-8751-85C9782B2EBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B837D21-B148-4897-8751-85C9782B2EBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2D4590B-0C36-4459-BE28-FA074E627B0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2D4590B-0C36-4459-BE28-FA074E627B0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2D4590B-0C36-4459-BE28-FA074E627B0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2D4590B-0C36-4459-BE28-FA074E627B0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -128,6 +136,7 @@ Global
 		{3E63F281-BC49-4F95-9A8C-55EA1F5ABAA1} = {06522A04-9918-4471-98CC-92ADCEF38482}
 		{A8E5EFE5-A13D-421F-887F-557C87171CE9} = {06522A04-9918-4471-98CC-92ADCEF38482}
 		{6B837D21-B148-4897-8751-85C9782B2EBB} = {63604660-C99A-4273-B37E-906B4F750AF1}
+		{B2D4590B-0C36-4459-BE28-FA074E627B0E} = {9C980302-7254-47EE-A2CF-FE4E671FE843}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8080ED3-04FB-4E21-B63F-55B5AAB135B2}

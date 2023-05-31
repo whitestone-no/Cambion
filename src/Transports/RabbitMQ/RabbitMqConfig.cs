@@ -1,8 +1,10 @@
 ﻿using System;
 using RabbitMQ.Client;
+using Whitestone.Cambion.Attributes;
 
 namespace Whitestone.Cambion.Transport.RabbitMQ
 {
+    [CambionConfiguration]
     public class RabbitMqConfig
     {
         public RabbitMqConnection Connection { get; set; } = new RabbitMqConnection();
