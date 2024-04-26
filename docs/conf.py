@@ -4,6 +4,10 @@ project = 'Cambion'
 copyright = str(time.localtime().tm_year) + ', Whitestone.'
 author = 'Whitestone'
 
+extensions = [
+    'sphinx_rtd_theme',
+]
+
 source_suffix = ['.rst']
 master_doc = 'index'
 
