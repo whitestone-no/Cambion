@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Whitestone.Cambion.Serializer.JsonNet;
 using Whitestone.Cambion.Types;
@@ -8,12 +9,7 @@ namespace Whitestone.Cambion.IntegrationTests.Serializers.JsonNet
 {
     public class JsonNetSerializerTests
     {
-        private readonly JsonNetSerializer _serializer;
-
-        public JsonNetSerializerTests()
-        {
-            _serializer = new JsonNetSerializer();
-        }
+        private readonly JsonNetSerializer _serializer = new();
 
         [Fact]
         public async Task SerializeAsync_NullMessage_ThrowsArgumentException()
@@ -70,5 +66,66 @@ namespace Whitestone.Cambion.IntegrationTests.Serializers.JsonNet
 
             Assert.Null(actual);
         }
+
+        [Fact]
+        public async Task SerializeAsync_And_DeserializeAsync_ComplexObject_ReturnsIdentical()
+        {
+            ComplexObject expectedObj = new()
+            {
+                InnerList =
+                [
+                    new SimpleObject
+                    {
+                        IntValue = 1,
+                        StringValue = "One"
+                    },
+                    new SimpleObject
+                    {
+                        IntValue = 2,
+                        StringValue = "Two"
+                    }
+                ],
+                InnerObject = new SimpleObject
+                {
+                    IntValue = 3,
+                    StringValue = "Three"
+                }
+            };
+            MessageWrapper expected = new()
+            {
+                CorrelationId = Guid.Empty,
+                Data = expectedObj,
+                DataType = typeof(ComplexObject),
+                MessageType = MessageType.Event,
+                ResponseType = null
+            };
+
+            byte[] result = await _serializer.SerializeAsync(expected);
+
+            MessageWrapper actual = await _serializer.DeserializeAsync(result);
+
+            Assert.IsType<ComplexObject>(actual.Data);
+
+            var actualObj = (ComplexObject)actual.Data;
+            Assert.Equal(expectedObj.InnerObject.IntValue, actualObj.InnerObject.IntValue);
+            Assert.Equal(expectedObj.InnerObject.StringValue, actualObj.InnerObject.StringValue);
+            Assert.Equal(expectedObj.InnerList.Count, actualObj.InnerList.Count);
+            Assert.Equal(expectedObj.InnerList[0].IntValue, actualObj.InnerList[0].IntValue);
+            Assert.Equal(expectedObj.InnerList[0].StringValue, actualObj.InnerList[0].StringValue);
+            Assert.Equal(expectedObj.InnerList[1].IntValue, actualObj.InnerList[1].IntValue);
+            Assert.Equal(expectedObj.InnerList[1].StringValue, actualObj.InnerList[1].StringValue);
+        }
+    }
+
+    public class ComplexObject
+    {
+        public SimpleObject InnerObject { get; set; }
+        public List<SimpleObject> InnerList { get; set; }
+    }
+
+    public class SimpleObject
+    {
+        public string StringValue { get; set; }
+        public int IntValue { get; set; }
     }
 }
