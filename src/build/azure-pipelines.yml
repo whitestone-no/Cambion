@@ -32,10 +32,10 @@ stages:
       cambionSemVerFull: ''
     steps:
     - task: UseDotNet@2
-      displayName: 'Use .NET Core Runtime 3.1.x'
+      displayName: 'Use .NET Core Runtime 8.x'
       inputs:
         packageType: 'runtime'
-        version: '3.1.x'
+        version: '8.x'
     - task: gitversion/setup@0
       displayName: 'Setup GitVersion 5.x'
       inputs:
@@ -87,10 +87,10 @@ stages:
       cambionSemVerFull: $[dependencies.GitVersion.outputs['outputVars.cambionSemVerFull']]
     steps:
     - task: UseDotNet@2
-      displayName: 'Use .NET Core SDK 3.1.x'
+      displayName: 'Use .NET Core SDK 8.x'
       inputs:
         packageType: 'sdk'
-        version: '3.1.x'
+        version: '8.x'
     - task: DotNetCoreCLI@2
       displayName: 'Perform tests'
       inputs:

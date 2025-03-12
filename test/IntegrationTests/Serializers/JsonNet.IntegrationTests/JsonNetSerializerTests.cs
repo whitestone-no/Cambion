@@ -24,7 +24,7 @@ namespace Whitestone.Cambion.IntegrationTests.Serializers.JsonNet
         [Fact]
         public async Task SerializeAsync_DefaultObject_Success()
         {
-            const string expectedBase64 = "eyIkdHlwZSI6IldoaXRlc3RvbmUuQ2FtYmlvbi5UeXBlcy5NZXNzYWdlV3JhcHBlciwgV2hpdGVzdG9uZS5DYW1iaW9uIiwiRGF0YSI6MSwiRGF0YVR5cGUiOiJTeXN0ZW0uSW50MzIsIFN5c3RlbS5Qcml2YXRlLkNvcmVMaWIsIFZlcnNpb249NC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03Y2VjODVkN2JlYTc3OThlIiwiUmVzcG9uc2VUeXBlIjpudWxsLCJNZXNzYWdlVHlwZSI6MCwiQ29ycmVsYXRpb25JZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCJ9";
+            const string expectedBase64 = "eyIkdHlwZSI6IldoaXRlc3RvbmUuQ2FtYmlvbi5UeXBlcy5NZXNzYWdlV3JhcHBlciwgV2hpdGVzdG9uZS5DYW1iaW9uIiwiRGF0YSI6MSwiRGF0YVR5cGUiOiJTeXN0ZW0uSW50MzIsIFN5c3RlbS5Qcml2YXRlLkNvcmVMaWIsIFZlcnNpb249OC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03Y2VjODVkN2JlYTc3OThlIiwiUmVzcG9uc2VUeXBlIjpudWxsLCJNZXNzYWdlVHlwZSI6MCwiQ29ycmVsYXRpb25JZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCJ9";
 
             var messageWrapper = new MessageWrapper
             {
