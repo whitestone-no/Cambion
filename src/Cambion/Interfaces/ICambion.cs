@@ -41,6 +41,16 @@ namespace Whitestone.Cambion.Interfaces
         void AddEventHandler<TEvent>(Action<TEvent> callback);
 
         /// <summary>
+        /// Use "direct subscription" to manually add an event subscriber to
+        /// handle events that provide a <typeparamref name="TEvent"/> object.
+        /// </summary>
+        /// <typeparam name="TEvent">The event type to subscribe to.</typeparam>
+        /// <param name="callback">The function that will be called when an event
+        /// of the specific type is received.
+        /// This function must return a <see cref="System.Threading.Tasks.Task"/>, thereby enabling async/await.</param>
+        void AddAsyncEventHandler<TEvent>(Func<TEvent, Task> callback);
+
+        /// <summary>
         /// Publish an event with a <typeparamref name="TEvent"/> object to all subscribers of this type.
         /// </summary>
         /// <typeparam name="TEvent">The object type to publish</typeparam>
@@ -66,6 +76,27 @@ namespace Whitestone.Cambion.Interfaces
         /// Only applicable when running multiple instances of Cambion, as attempting to add the same
         /// synchronized subscriber twice in the same Cambion instance causes a <see cref="System.ArgumentException"/>. <seealso cref="Register"/></remarks>
         void AddSynchronizedHandler<TRequest, TResponse>(Func<TRequest, TResponse> callback);
+
+        /// <summary>
+        /// Use "direct subscription" to manually add a synchronized subscriber
+        /// to handle synchronized messages that provide a <typeparamref name="TRequest"/>
+        /// object as a request and a <typeparamref name="TResponse"/> object as the response.
+        /// </summary>
+        /// <typeparam name="TRequest">The synchronized request type to subscribe to.</typeparam>
+        /// <typeparam name="TResponse">The synchronized response type to subscribe to.</typeparam>
+        /// <param name="callback">The function that will be called when a synchronized is received.
+        /// This function must return a <see cref="System.Threading.Tasks.Task"/>, thereby enabling async/await.</param>
+        /// <remarks>The <typeparamref name="TRequest"/> and <typeparamref name="TResponse"/>
+        /// types are unique identifiers. Multiple synchronizers can handle the same
+        /// <typeparamref name="TRequest"/>, but there should be only one that provides
+        /// both <typeparamref name="TRequest"/> and <typeparamref name="TResponse"/>.
+        /// If multiple synchronized handlers with identical <typeparamref name="TRequest"/>
+        /// and <typeparamref name="TResponse"/> are added, only the response from one
+        /// of them will be received by whoever calls <see cref="Whitestone.Cambion.Cambion.CallSynchronizedHandlerAsync{TRequest, TResponse}(TRequest, int)"/>,
+        /// and you will never know which handler has responded.
+        /// Only applicable when running multiple instances of Cambion, as attempting to add the same
+        /// synchronized subscriber twice in the same Cambion instance causes a <see cref="System.ArgumentException"/>. <seealso cref="Register"/></remarks>
+        void AddAsyncSynchronizedHandler<TRequest, TResponse>(Func<TRequest, Task<TResponse>> callback);
 
         /// <summary>
         /// Call a synchronized handler subscribed using the specific <typeparamref name="TRequest"/> and <typeparamref name="TResponse"/>.
