@@ -22,10 +22,15 @@ namespace Whitestone.Cambion.Types
         public bool Invoke(object data)
         {
             if (!IsAlive)
-                return false;
-
-            if (_reference.Target != null)
             {
+                return false;
+            }
+
+            if (_reference.Target == null)
+            {
+                return false;
+            }
+
                 _method.DynamicInvoke(_reference.Target, data);
             }
 

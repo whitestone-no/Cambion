@@ -185,7 +185,7 @@ namespace Whitestone.Cambion
             
             Type type = typeof(TEvent);
 
-            EventHandler eventHandler = new EventHandler(callback);
+            EventHandler eventHandler = new(callback);
 
             lock (_eventHandlers)
             {
@@ -375,7 +375,12 @@ namespace Whitestone.Cambion
                                 {
                                     try
                                     {
-                                        if (!handler.Invoke(wrapper.Data))
+                                        if (handler.Invoke(wrapper.Data))
+                                        {
+                                            return;
+                                        }
+
+                                        lock (_eventHandlers)
                                         {
                                             _eventHandlers[wrapper.DataType].Remove(handler);
                                         }
