@@ -7,7 +7,7 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
 {
     public static class AzureServiceBusTransportExtensions
     {
-        public static ICambionBuilder UseAzureServiceBusTransport(this ICambionBuilder builder, Action<AzureServiceBusConfig> configure)
+        public static ICambionSerializerBuilder UseAzureServiceBusTransport(this ICambionTransportBuilder builder, Action<AzureServiceBusConfig> configure)
         {
             builder.Services.Replace(new ServiceDescriptor(typeof(ITransport), typeof(AzureServiceBusTransport), ServiceLifetime.Singleton));
 
@@ -17,7 +17,7 @@ namespace Whitestone.Cambion.Transport.AzureSericeBus
                     configure?.Invoke(conf);
                 });
 
-            return builder;
+            return (ICambionSerializerBuilder)builder;
         }
     }
 }

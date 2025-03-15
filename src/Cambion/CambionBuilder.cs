@@ -4,7 +4,7 @@ using Whitestone.Cambion.Interfaces;
 
 namespace Whitestone.Cambion
 {
-    public class CambionBuilder : ICambionBuilder
+    public class CambionBuilder : ICambionSerializerBuilder, ICambionTransportBuilder
     {
         public IServiceCollection Services { get; }
 

@@ -8,26 +8,20 @@ namespace Whitestone.Cambion.Transport.RabbitMQ
     public static class RabbitMqTransportExtensions
     {
         // ReSharper disable once InconsistentNaming
-        public static ICambionBuilder UseRabbitMqTransport(this ICambionBuilder builder, string connectionString)
+        public static ICambionSerializerBuilder UseRabbitMqTransport(this ICambionTransportBuilder builder, string connectionString)
         {
             return builder.UseRabbitMqTransport(conf => conf.Connection.ConnectionString = new Uri(connectionString));
         }
 
         // ReSharper disable once InconsistentNaming
-        public static ICambionBuilder UseRabbitMqTransport(this ICambionBuilder builder, Action<RabbitMqConfig> configure)
+        public static ICambionSerializerBuilder UseRabbitMqTransport(this ICambionTransportBuilder builder, Action<RabbitMqConfig> configure)
         {
             builder.Services.Replace(new ServiceDescriptor(typeof(ITransport), typeof(RabbitMqTransport), ServiceLifetime.Singleton));
 
             builder.Services.AddOptions<RabbitMqConfig>()
-                .Configure(conf =>
-                {
-                    if (configure != null)
-                    {
-                        configure(conf);
-                    }
-                });
+                .Configure(conf => { configure?.Invoke(conf); });
 
-            return builder;
+            return (ICambionSerializerBuilder)builder;
         }
 
     }

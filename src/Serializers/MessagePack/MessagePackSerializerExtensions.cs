@@ -6,11 +6,9 @@ namespace Whitestone.Cambion.Serializer.MessagePack
 {
     public static class MessagePackSerializerExtensions
     {
-        public static ICambionBuilder UseMessagePackSerializer(this ICambionBuilder builder)
+        public static void WithMessagePackSerializer(this ICambionSerializerBuilder builder)
         {
             builder.Services.Replace(new ServiceDescriptor(typeof(ISerializer), typeof(MessagePackSerializer), ServiceLifetime.Singleton));
-
-            return builder;
         }
     }
 }

@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Whitestone.Cambion.Serializer.JsonNet</AssemblyName>
+    <RootNamespace>Whitestone.Cambion.Serializer.JsonNet</RootNamespace>
+    <Version>1.1.0-preview</Version>
+    <Authors>Whitestone</Authors>
+    <Product>Whitestone Cambion</Product>
+    <Description>Json.NET serializer for Whitestone Cambion</Description>
+    <Copyright>Copyright © 2021</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://cambion.whitestone.no/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/whitestone-no/Cambion</RepositoryUrl>
+    <PackageIconUrl>https://cambion.whitestone.no/images/Cambion_Logo_128.png</PackageIconUrl>
+    <PackageIcon>Cambion_Logo_128.png</PackageIcon>
+    <PackageTags>messaging servicebus esb enterprice-service-bus cambion event-aggregator json jsonnet</PackageTags>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\img\Cambion_Logo_128.png" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Cambion\Cambion.csproj" />
+  </ItemGroup>
+
+</Project>

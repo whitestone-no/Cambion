@@ -5,9 +5,9 @@ namespace Whitestone.Cambion.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static ICambionBuilder AddCambion(this IServiceCollection services)
+        public static ICambionTransportBuilder AddCambion(this IServiceCollection services)
         {
-            ICambionBuilder builder = new CambionBuilder(services);
+            ICambionTransportBuilder builder = new CambionBuilder(services);
 
             services.AddSingleton<ICambion, Cambion>();
 

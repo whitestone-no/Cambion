@@ -6,11 +6,9 @@ namespace Whitestone.Cambion.Serializer.JsonNet
 {
     public static class JsonNetSerializerExtensions
     {
-        public static ICambionBuilder UseJsonNetSerializer(this ICambionBuilder builder)
+        public static void WithJsonNetSerializer(this ICambionSerializerBuilder builder)
         {
             builder.Services.Replace(new ServiceDescriptor(typeof(ISerializer), typeof(JsonNetSerializer), ServiceLifetime.Singleton));
-
-            return builder;
         }
     }
 }
