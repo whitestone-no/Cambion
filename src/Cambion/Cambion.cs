@@ -5,7 +5,9 @@ using System.Reflection;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Whitestone.Cambion.Events;
 using Whitestone.Cambion.Interfaces;
 using Whitestone.Cambion.Types;
 using EventHandler = Whitestone.Cambion.Types.EventHandler;
@@ -18,6 +20,7 @@ namespace Whitestone.Cambion
         private readonly ISerializer _serializer;
         private readonly ILogger<Cambion> _logger;
 
+        private readonly bool _useLoopback;
         private readonly Dictionary<Type, List<EventHandler>> _eventHandlers = new();
         private readonly Dictionary<Type, List<AsyncEventHandler>> _asyncEventHandlers = new();
         private readonly Dictionary<SynchronizedHandlerKey, SynchronizedHandler> _synchronizedHandlers = new();
@@ -28,23 +31,39 @@ namespace Whitestone.Cambion
 
         public event EventHandler<ErrorEventArgs> UnhandledException;
 
-        public Cambion(ITransport transport, ISerializer serializer, ILogger<Cambion> logger)
+        public Cambion(IServiceProvider serviceProvider, ILogger<Cambion> logger)
         {
+            var transport = serviceProvider.GetService<ITransport>();
+            var serializer = serviceProvider.GetService<ISerializer>();
+
             _transport = transport;
             _serializer = serializer;
             _logger = logger;
 
             Validate();
+
+            _useLoopback = _transport == null || _serializer == null;
         }
 
         private void Validate()
         {
-            if (_transport == null)
-                throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing transport"));
-            if (_serializer == null)
-                throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing serializer"));
+            if (_transport == null || _serializer == null)
+            {
+                if (_transport == null)
+                {
+                    _logger.LogInformation("No transport found. Falling back to loopback implementation.");
+                }
+
+                if (_serializer == null)
+                {
+                    _logger.LogInformation("No serializer found. Falling back to loopback implementation.");
+                }
+            }
+
             if (_logger == null)
+            {
                 throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing logger"));
+            }
         }
 
         public async Task ReinitializeAsync()
@@ -338,12 +357,21 @@ namespace Whitestone.Cambion
 
         public async Task PublishEventAsync<TEvent>(TEvent data)
         {
-            MessageWrapper wrapper = new MessageWrapper
+            MessageWrapper wrapper = new()
             {
                 Data = data,
                 DataType = data.GetType(),
                 MessageType = MessageType.Event
             };
+
+            if (_useLoopback)
+            {
+                _ = Task.Run(() =>
+                {
+                    HandleMessage(wrapper);
+                });
+                return;
+            }
 
             byte[] wrapperBytes = await _serializer.SerializeAsync(wrapper).ConfigureAwait(false);
 
@@ -361,10 +389,10 @@ namespace Whitestone.Cambion
 
         public async Task<TResponse> CallSynchronizedHandlerAsync<TRequest, TResponse>(TRequest request, int timeout = 10000)
         {
-            Guid correlationId = Guid.NewGuid();
+            var correlationId = Guid.NewGuid();
 
-            ManualResetEvent mre = new ManualResetEvent(false);
-            SynchronizedDataPackage pkg = new SynchronizedDataPackage(mre);
+            ManualResetEvent mre = new(false);
+            SynchronizedDataPackage pkg = new(mre);
 
             lock (_synchronizationPackages)
             {
@@ -376,7 +404,7 @@ namespace Whitestone.Cambion
                 _synchronizationPackages[correlationId] = pkg;
             }
 
-            MessageWrapper wrapper = new MessageWrapper
+            MessageWrapper wrapper = new()
             {
                 MessageType = MessageType.SynchronizedRequest,
                 Data = request,
@@ -385,24 +413,34 @@ namespace Whitestone.Cambion
                 CorrelationId = correlationId
             };
 
-            byte[] wrapperBytes = await _serializer.SerializeAsync(wrapper).ConfigureAwait(false);
-
-            if (_logger.IsEnabled(LogLevel.Trace))
+            if (_useLoopback)
             {
-                _logger.LogTrace("Publishing synchronized <{eventType}> to Transport with data {data}", typeof(TRequest).FullName, Convert.ToBase64String(wrapperBytes));
+                _ = Task.Run(() =>
+                {
+                    HandleMessage(wrapper);
+                });
             }
             else
             {
-                _logger.LogDebug("Publishing synchronized <{eventType}> to Transport", typeof(TRequest).FullName);
-            }
+                byte[] wrapperBytes = await _serializer.SerializeAsync(wrapper).ConfigureAwait(false);
 
-            await _transport.PublishAsync(wrapperBytes).ConfigureAwait(false);
+                if (_logger.IsEnabled(LogLevel.Trace))
+                {
+                    _logger.LogTrace("Publishing synchronized <{eventType}> to Transport with data {data}", typeof(TRequest).FullName, Convert.ToBase64String(wrapperBytes));
+                }
+                else
+                {
+                    _logger.LogDebug("Publishing synchronized <{eventType}> to Transport", typeof(TRequest).FullName);
+                }
+
+                await _transport.PublishAsync(wrapperBytes).ConfigureAwait(false);
+            }
 
             if (mre.WaitOne(timeout))
             {
                 lock (_synchronizationPackages)
                 {
-                    TResponse result = (TResponse)_synchronizationPackages[correlationId].Data;
+                    var result = (TResponse)_synchronizationPackages[correlationId].Data;
 
                     _synchronizationPackages.Remove(correlationId);
 
@@ -419,7 +457,7 @@ namespace Whitestone.Cambion
         }
 
         // Method could be private but is made internal so that unit tests can access and test it.
-        internal async void Transport_MessageReceived(object sender, Events.MessageReceivedEventArgs e)
+        internal async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
         {
             try
             {
@@ -430,6 +468,18 @@ namespace Whitestone.Cambion
 
                 MessageWrapper wrapper = await _serializer.DeserializeAsync(e.MessageBytes).ConfigureAwait(false);
 
+                HandleMessage(wrapper);
+            }
+            catch (Exception ex)
+            {
+                PublishUnhandledException(ex);
+            }
+        }
+
+        private void HandleMessage(MessageWrapper wrapper)
+        {
+            try
+            {
                 if (wrapper.MessageType == MessageType.Event)
                 {
                     lock (_eventHandlers)
@@ -533,6 +583,15 @@ namespace Whitestone.Cambion
                                     CorrelationId = wrapper.CorrelationId
                                 };
 
+                                if (_useLoopback)
+                                {
+                                    _ = Task.Run(() =>
+                                    {
+                                        HandleMessage(replyWrapper);
+                                    });
+                                    return;
+                                }
+
                                 byte[] replyWrapperBytes = await _serializer.SerializeAsync(replyWrapper).ConfigureAwait(false);
 
                                 if (_logger.IsEnabled(LogLevel.Trace))
@@ -561,7 +620,7 @@ namespace Whitestone.Cambion
                     {
                         SynchronizedHandlerKey key = new(wrapper.DataType, wrapper.ResponseType);
 
-                        if (_synchronizedHandlers.TryGetValue(key, out SynchronizedHandler synchronizedHandler)) 
+                        if (_synchronizedHandlers.TryGetValue(key, out SynchronizedHandler synchronizedHandler))
                         {
                             handler = synchronizedHandler;
 
@@ -588,6 +647,15 @@ namespace Whitestone.Cambion
                                     ResponseType = wrapper.ResponseType,
                                     CorrelationId = wrapper.CorrelationId
                                 };
+
+                                if (_useLoopback)
+                                {
+                                    _ = Task.Run(() =>
+                                    {
+                                        HandleMessage(replyWrapper);
+                                    });
+                                    return;
+                                }
 
                                 byte[] replyWrapperBytes = await _serializer.SerializeAsync(replyWrapper).ConfigureAwait(false);
 
@@ -639,6 +707,12 @@ namespace Whitestone.Cambion
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            if (_useLoopback)
+            {
+                _logger.LogInformation("Starting Cambion with loopback");
+                return;
+            }
+
             _logger.LogInformation("Starting Cambion with Transport <{transport}> and Serializer <{serializer}>", _transport.GetType().FullName, _serializer.GetType().FullName);
 
             _transport.MessageReceived += Transport_MessageReceived;
@@ -648,6 +722,11 @@ namespace Whitestone.Cambion
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Stopping Cambion");
+
+            if (_useLoopback)
+            {
+                return;
+            }
 
             _transport.MessageReceived -= Transport_MessageReceived;
             await _transport.StopAsync().ConfigureAwait(false);

@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Whitestone.Cambion.Interfaces;
-using Whitestone.Cambion.Serializer.JsonNet;
-using Whitestone.Cambion.Transport.Loopback;
 
 namespace Whitestone.Cambion.Extensions
 {
@@ -12,9 +10,6 @@ namespace Whitestone.Cambion.Extensions
             ICambionBuilder builder = new CambionBuilder(services);
 
             services.AddSingleton<ICambion, Cambion>();
-
-            services.AddSingleton<ITransport, LoopbackTransport>();
-            services.AddSingleton<ISerializer, JsonNetSerializer>();
 
             services.AddHostedService(svc => svc.GetRequiredService<ICambion>());
 
