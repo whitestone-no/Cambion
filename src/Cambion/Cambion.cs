@@ -18,12 +18,13 @@ namespace Whitestone.Cambion
         private readonly ISerializer _serializer;
         private readonly ILogger<Cambion> _logger;
 
-        private readonly Dictionary<Type, List<EventHandler>> _eventHandlers = new Dictionary<Type, List<EventHandler>>();
-        private readonly Dictionary<Type, List<AsyncEventHandler>> _asyncEventHandlers = new Dictionary<Type, List<AsyncEventHandler>>();
-        private readonly Dictionary<SynchronizedHandlerKey, SynchronizedHandler> _synchronizedHandlers = new Dictionary<SynchronizedHandlerKey, SynchronizedHandler>();
+        private readonly Dictionary<Type, List<EventHandler>> _eventHandlers = new();
+        private readonly Dictionary<Type, List<AsyncEventHandler>> _asyncEventHandlers = new();
+        private readonly Dictionary<SynchronizedHandlerKey, SynchronizedHandler> _synchronizedHandlers = new();
+        private readonly Dictionary<AsyncSynchronizedHandlerKey, AsyncSynchronizedHandler> _asyncSynchronizedHandlers = new();
         // ReSharper disable once InconsistentNaming
         // Variable is internal only so that it is available to the unit test project. Don't need to change the variable naming for this.
-        internal readonly Dictionary<Guid, SynchronizedDataPackage> _synchronizationPackages = new Dictionary<Guid, SynchronizedDataPackage>();
+        internal readonly Dictionary<Guid, SynchronizedDataPackage> _synchronizationPackages = new();
 
         public event EventHandler<ErrorEventArgs> UnhandledException;
 
@@ -71,33 +72,33 @@ namespace Whitestone.Cambion
 
             lock (_eventHandlers)
             {
-                foreach (var @interface in eventInterfaces)
+                foreach (Type @interface in eventInterfaces)
                 {
                     Type type = @interface.GetGenericArguments()[0];
                     MethodInfo method = @interface.GetMethod("HandleEvent", new[] { type });
 
-                    if (method != null)
+                    if (method == null)
                     {
-                        Delegate @delegate = Delegate.CreateDelegate(typeof(Action<>).MakeGenericType(type), handler, method);
-
-                        EventHandler eventHandler = new EventHandler(@delegate);
-
-                        if (!_eventHandlers.ContainsKey(type))
-                        {
-                            _eventHandlers[type] = new List<EventHandler>();
-                        }
-
-                        if (!_eventHandlers[type].Contains(eventHandler))
-                        {
-                            _eventHandlers[type].Add(eventHandler);
-                        }
-
-                        _logger.LogInformation("Registered <{handlerType}> as event handler for <{handler}>", handlerType.FullName, type.FullName);
+                        continue;
                     }
+
+                    var @delegate = Delegate.CreateDelegate(typeof(Action<>).MakeGenericType(type), handler, method);
+
+                    EventHandler eventHandler = new(@delegate);
+
+                    if (!_eventHandlers.ContainsKey(type))
+                    {
+                        _eventHandlers[type] = new List<EventHandler>();
+                    }
+
+                    if (!_eventHandlers[type].Contains(eventHandler))
+                    {
+                        _eventHandlers[type].Add(eventHandler);
+                    }
+
+                    _logger.LogInformation("Registered <{handlerType}> as event handler for <{handler}>", handlerType.FullName, type.FullName);
                 }
             }
-
-
 
             // Look for, and save, any IAsyncEventHandler implementations
             Type asyncHandlerType = handler.GetType();
@@ -140,29 +141,30 @@ namespace Whitestone.Cambion
 
             lock (_synchronizedHandlers)
             {
-                foreach (var @interface in synchronizedInterfaces)
+                foreach (Type @interface in synchronizedInterfaces)
                 {
                     Type requestType = @interface.GetGenericArguments()[0];
                     Type responseType = @interface.GetGenericArguments()[1];
 
                     MethodInfo method = @interface.GetMethod("HandleSynchronized", new[] { requestType });
 
-                    if (method != null && method.ReturnType.IsAssignableFrom(responseType))
+                    if (method == null || !method.ReturnType.IsAssignableFrom(responseType))
                     {
-                        Delegate @delegate = Delegate.CreateDelegate(typeof(Func<,>).MakeGenericType(requestType, responseType), handler, method);
+                        continue;
+                    }
 
-                        SynchronizedHandlerKey key = new SynchronizedHandlerKey(requestType, responseType);
+                    Delegate @delegate = Delegate.CreateDelegate(typeof(Func<,>).MakeGenericType(requestType, responseType), handler, method);
 
-                        SynchronizedHandler synchronizedHandler = new SynchronizedHandler(@delegate);
+                    SynchronizedHandlerKey key = new(requestType, responseType);
 
-                        lock (_synchronizedHandlers)
-                        {
-                            if (_synchronizedHandlers.ContainsKey(key))
-                            {
-                                throw new ArgumentException($"A SynchronizedHandler already exists for request type {requestType} and response type {responseType}", nameof(@delegate));
-                            }
+                    SynchronizedHandler synchronizedHandler = new(@delegate);
 
-                            _synchronizedHandlers[key] = synchronizedHandler;
+                    if (_synchronizedHandlers.ContainsKey(key))
+                    {
+                        throw new ArgumentException($"A SynchronizedHandler already exists for request type {requestType} and response type {responseType}", nameof(@delegate));
+                    }
+
+                    _synchronizedHandlers[key] = synchronizedHandler;
 
                     _logger.LogInformation("Registered <{handlerType}> as synchronized handler for <{request}, {response}>", handlerType.FullName, requestType.FullName, responseType.FullName);
                 }
@@ -184,7 +186,7 @@ namespace Whitestone.Cambion
                     if (method == null || !method.ReturnType.IsAssignableFrom(typeof(Task<>).MakeGenericType(responseType)))
                     {
                         continue;
-                        }
+                    }
 
                     var @delegate = Delegate.CreateDelegate(typeof(Func<,>).MakeGenericType(requestType, typeof(Task<>).MakeGenericType(responseType)), handler, method);
 
@@ -215,7 +217,7 @@ namespace Whitestone.Cambion
             {
                 throw new ArgumentException("Can't use static methods in callbacks.", nameof(callback));
             }
-            
+
             Type type = typeof(TEvent);
 
             EventHandler eventHandler = new(callback);
@@ -557,11 +559,11 @@ namespace Whitestone.Cambion
 
                     lock (_synchronizedHandlers)
                     {
-                        SynchronizedHandlerKey key = new SynchronizedHandlerKey(wrapper.DataType, wrapper.ResponseType);
+                        SynchronizedHandlerKey key = new(wrapper.DataType, wrapper.ResponseType);
 
-                        if (_synchronizedHandlers.ContainsKey(key))
+                        if (_synchronizedHandlers.TryGetValue(key, out SynchronizedHandler synchronizedHandler)) 
                         {
-                            handler = _synchronizedHandlers[key];
+                            handler = synchronizedHandler;
 
                             if (!handler.IsAlive)
                             {
@@ -570,7 +572,7 @@ namespace Whitestone.Cambion
                         }
                     }
 
-                    if (handler != null && handler.IsAlive)
+                    if (handler is { IsAlive: true })
                     {
                         _ = Task.Run(async () =>
                         {
@@ -578,7 +580,7 @@ namespace Whitestone.Cambion
                             {
                                 object result = handler.Invoke(wrapper.Data);
 
-                                MessageWrapper replyWrapper = new MessageWrapper
+                                MessageWrapper replyWrapper = new()
                                 {
                                     MessageType = MessageType.SynchronizedResponse,
                                     Data = result,
@@ -611,13 +613,13 @@ namespace Whitestone.Cambion
                 {
                     lock (_synchronizationPackages)
                     {
-                        if (_synchronizationPackages.ContainsKey(wrapper.CorrelationId))
+                        if (!_synchronizationPackages.TryGetValue(wrapper.CorrelationId, out SynchronizedDataPackage pkg))
                         {
-                            SynchronizedDataPackage pkg = _synchronizationPackages[wrapper.CorrelationId];
-
-                            pkg.Data = wrapper.Data;
-                            pkg.ResetEvent.Set();
+                            return;
                         }
+
+                        pkg.Data = wrapper.Data;
+                        pkg.ResetEvent.Set();
                     }
                 }
             }

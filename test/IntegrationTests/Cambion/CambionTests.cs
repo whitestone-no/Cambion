@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using RandomTestValues;
@@ -19,7 +20,7 @@ namespace Whitestone.Cambion.IntegrationTests.Cambion
 
             _cambion = new Whitestone.Cambion.Cambion(new LoopbackTransport(), new JsonNetSerializer(), logger.Object);
             
-            _cambion.StartAsync(default).GetAwaiter().GetResult();
+            _cambion.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [Fact]
@@ -81,8 +82,8 @@ namespace Whitestone.Cambion.IntegrationTests.Cambion
         [Fact]
         public async Task InterfaceAsyncEventSubscription()
         {
-            TestEvent expectedEvent = new TestEvent(RandomValue.String());
-            TestAsyncEventSubscriber subscriber = new TestAsyncEventSubscriber();
+            TestEvent expectedEvent = new(RandomValue.String());
+            TestAsyncEventSubscriber subscriber = new();
 
             _cambion.Register(subscriber);
 
@@ -96,8 +97,9 @@ namespace Whitestone.Cambion.IntegrationTests.Cambion
         [Fact]
         public async Task MultipleDirectAndInterfaceSubscription()
         {
-            TestEvent expectedEvent = new TestEvent(RandomValue.String());
+            TestEvent expectedEvent = new(RandomValue.String());
 
+            // ReSharper disable InconsistentNaming
             TestEvent actualEvent1_1 = null;
             _cambion.AddEventHandler<TestEvent>(e =>
             {
@@ -128,6 +130,7 @@ namespace Whitestone.Cambion.IntegrationTests.Cambion
             TestEventSubscriber subscriber1_2 = new();
             TestAsyncEventSubscriber subscriber2_1 = new();
             TestAsyncEventSubscriber subscriber2_2 = new();
+            // ReSharper restore InconsistentNaming
 
             _cambion.Register(subscriber1_1);
             _cambion.Register(subscriber1_2);
@@ -187,17 +190,16 @@ namespace Whitestone.Cambion.IntegrationTests.Cambion
             Assert.Equal(expectedRequest.RequestValue, subscriber.ActualRequest.RequestValue);
             Assert.Equal(expectedResponse.ResponseValue, actualResponse.ResponseValue);
         }
-    }
 
         [Fact]
         public async Task DirectAsyncSynchronizedSubscription()
-    {
+        {
             TestRequest expectedRequest = new(RandomValue.String());
             TestResponse expectedResponse = new(RandomValue.String());
-        
+
             TestRequest actualRequest = null;
             _cambion.AddAsyncSynchronizedHandler<TestRequest, TestResponse>(async request =>
-        {
+            {
                 await Task.Delay(1);
                 actualRequest = request;
                 return expectedResponse;
@@ -210,14 +212,13 @@ namespace Whitestone.Cambion.IntegrationTests.Cambion
             Assert.Equal(expectedRequest.RequestValue, actualRequest.RequestValue);
             Assert.Equal(expectedResponse.ResponseValue, actualResponse.ResponseValue);
         }
-    }
 
         [Fact]
         public async Task InterfaceAsyncSynchronizedSubscription()
-    {
+        {
             TestRequest expectedRequest = new(RandomValue.String());
             TestResponse expectedResponse = new(RandomValue.String());
-        
+
             TestAsyncSynchronizedSubscriber subscriber = new(expectedResponse);
 
             _cambion.Register(subscriber);
@@ -231,14 +232,19 @@ namespace Whitestone.Cambion.IntegrationTests.Cambion
         }
     }
 
-    public class TestResponse
+    public class TestEvent(string eventValue)
     {
-        public string ResponseValue { get; }
+        public string EventValue { get; } = eventValue;
+    }
 
-        public TestResponse(string responseValue)
-        {
-            ResponseValue = responseValue;
-        }
+    public class TestRequest(string requestValue)
+    {
+        public string RequestValue { get; } = requestValue;
+    }
+
+    public class TestResponse(string responseValue)
+    {
+        public string ResponseValue { get; } = responseValue;
     }
 
     public class TestEventSubscriber : IEventHandler<TestEvent>
@@ -262,14 +268,20 @@ namespace Whitestone.Cambion.IntegrationTests.Cambion
         }
     }
 
-    public class TestSynchronizedSubscriber : ISynchronizedHandler<TestRequest, TestResponse>
+    public class TestSynchronizedSubscriber(TestResponse expectedResponse) : ISynchronizedHandler<TestRequest, TestResponse>
     {
         public TestRequest ActualRequest { get; private set; }
 
-        private readonly TestResponse _expectedResponse;
+        public TestResponse HandleSynchronized(TestRequest input)
+        {
+            ActualRequest = input;
+
+            return expectedResponse;
+        }
+    }
 
     public class TestAsyncSynchronizedSubscriber(TestResponse expectedResponse) : IAsyncSynchronizedHandler<TestRequest, TestResponse>
-        {
+    {
         public TestRequest ActualRequest { get; private set; }
 
         public async Task<TestResponse> HandleSynchronizedAsync(TestRequest input)

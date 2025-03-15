@@ -40,8 +40,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
 
             // Act
 
-            TypeInitializationException actualException = Assert.Throws<TypeInitializationException>(() =>
-                new Whitestone.Cambion.Cambion(null, _serializer.Object, _logger.Object));
+            var actualException = Assert.Throws<TypeInitializationException>(() => new Whitestone.Cambion.Cambion(null, _serializer.Object, _logger.Object));
 
             // Assert
 
@@ -57,7 +56,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
 
             // Act
 
-            TypeInitializationException actualException = Assert.Throws<TypeInitializationException>(() => new Whitestone.Cambion.Cambion(_transport.Object, null, _logger.Object));
+            var actualException = Assert.Throws<TypeInitializationException>(() => new Whitestone.Cambion.Cambion(_transport.Object, null, _logger.Object));
 
             // Assert
 
@@ -73,7 +72,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
 
             // Act
 
-            TypeInitializationException actualException = Assert.Throws<TypeInitializationException>(() => new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, null));
+            var actualException = Assert.Throws<TypeInitializationException>(() => new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, null));
 
             // Assert
 
@@ -91,7 +90,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
@@ -123,9 +122,9 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            EventHandler handler = new EventHandler();
+            EventHandler handler = new();
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
@@ -173,9 +172,9 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            SynchronizedHandler handler = new SynchronizedHandler(RandomValue.String());
+            SynchronizedHandler handler = new(RandomValue.String());
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
@@ -223,11 +222,11 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
-            ArgumentNullException actualException = Assert.Throws<ArgumentNullException>(() => sut.Register(null));
+            var actualException = Assert.Throws<ArgumentNullException>(() => sut.Register(null));
 
             // Assert
 
@@ -239,14 +238,14 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            TwoOfSameObjectTest obj = new TwoOfSameObjectTest();
+            TwoOfSameObjectTest obj = new();
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
             sut.Register(obj);
 
             // Act
 
-            ArgumentException actualException = Assert.Throws<ArgumentException>(() => sut.Register(obj));
+            var actualException = Assert.Throws<ArgumentException>(() => sut.Register(obj));
 
             // Assert
             Assert.Equal($"A SynchronizedHandler already exists for request type {typeof(TestRequest).FullName} and response type {typeof(TestResponse).FullName} (Parameter 'delegate')", actualException.Message);
@@ -257,16 +256,16 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            TwoOfSameObjectTest obj1 = new TwoOfSameObjectTest();
-            TwoOfSameObjectTest obj2 = new TwoOfSameObjectTest();
+            TwoOfSameObjectTest obj1 = new();
+            TwoOfSameObjectTest obj2 = new();
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
             sut.Register(obj1);
 
-            ArgumentException actualException = Assert.Throws<ArgumentException>(() => sut.Register(obj2));
+            var actualException = Assert.Throws<ArgumentException>(() => sut.Register(obj2));
 
             // Assert
             Assert.Equal($"A SynchronizedHandler already exists for request type {typeof(TestRequest).FullName} and response type {typeof(TestResponse).FullName} (Parameter 'delegate')", actualException.Message);
@@ -319,8 +318,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Action<TestEvent> handler = e => { };
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Action<TestEvent> handler = _ => { };
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
@@ -343,11 +342,11 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
-            ArgumentNullException actualException = Assert.Throws<ArgumentNullException>(() => sut.AddEventHandler((Action<TestEvent>)null));
+            var actualException = Assert.Throws<ArgumentNullException>(() => sut.AddEventHandler<TestEvent>(null));
 
             // Assert
 
@@ -359,11 +358,11 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
-            ArgumentException actualException = Assert.Throws<ArgumentException>(() => sut.AddEventHandler((Action<TestEvent>)EventHandler.HandleEventStatic));
+            var actualException = Assert.Throws<ArgumentException>(() => sut.AddEventHandler((Action<TestEvent>)EventHandler.HandleEventStatic));
 
             // Assert
 
@@ -380,7 +379,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Func<TestEvent, Task> handler = e => Task.CompletedTask;
+            Func<TestEvent, Task> handler = _ => Task.CompletedTask;
             Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
@@ -441,9 +440,9 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Func<TestRequest, TestResponse> handler = e => new TestResponse(RandomValue.String());
+            Func<TestRequest, TestResponse> handler = _ => new TestResponse(RandomValue.String());
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
@@ -466,11 +465,11 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
-            ArgumentNullException actualException = Assert.Throws<ArgumentNullException>(() => sut.AddSynchronizedHandler((Func<TestRequest, TestResponse>)null));
+            var actualException = Assert.Throws<ArgumentNullException>(() => sut.AddSynchronizedHandler<TestRequest, TestResponse>(null));
 
             // Assert
 
@@ -483,11 +482,11 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
-            ArgumentException actualException = Assert.Throws<ArgumentException>(() => sut.AddSynchronizedHandler((Func<TestRequest, TestResponse>)SynchronizedHandler.HandleSynchronizedStatic));
+            var actualException = Assert.Throws<ArgumentException>(() => sut.AddSynchronizedHandler((Func<TestRequest, TestResponse>)SynchronizedHandler.HandleSynchronizedStatic));
 
             // Assert
 
@@ -504,16 +503,16 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             // ReSharper disable once ConvertToLocalFunction
             // because these are static, and can't use static methods as synchronized handlers
 #pragma warning disable IDE0039 // Use local function
-            Func<TestRequest, TestResponse> handler = request => new TestResponse(RandomValue.String());
+            Func<TestRequest, TestResponse> handler = _ => new TestResponse(RandomValue.String());
 #pragma warning restore IDE0039 // Use local function
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             sut.AddSynchronizedHandler(handler);
 
             // Act
 
-            ArgumentException actualException = Assert.Throws<ArgumentException>(() => sut.AddSynchronizedHandler(handler));
+            var actualException = Assert.Throws<ArgumentException>(() => sut.AddSynchronizedHandler(handler));
 
             // Assert
 
@@ -619,7 +618,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            TestEvent expectedEvent = new TestEvent(RandomValue.String());
+            TestEvent expectedEvent = new(RandomValue.String());
             byte[] expectedBytes = RandomValue.Array<byte>();
 
             MessageWrapper actualMessageWrapper = null;
@@ -630,7 +629,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
                 })
                 .ReturnsAsync(expectedBytes);
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
@@ -658,7 +657,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            TestEvent expectedEvent = new TestEvent(RandomValue.String());
+            TestEvent expectedEvent = new(RandomValue.String());
             byte[] expectedBytes = RandomValue.Array<byte>();
 
             _serializer.Setup(x => x.SerializeAsync(It.IsAny<MessageWrapper>()))
@@ -667,7 +666,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             _logger.Setup(x => x.IsEnabled(It.Is<LogLevel>(y => y == LogLevel.Trace)))
                 .Returns(true);
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
@@ -693,11 +692,11 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         public async Task CallSynchronizedHandlerAsync_Success()
         {
             // Arrange
-            TestRequest expectedRequest = new TestRequest();
-            TestResponse expectedResponse = new TestResponse(RandomValue.String());
+            TestRequest expectedRequest = new();
+            TestResponse expectedResponse = new(RandomValue.String());
             byte[] expectedRequestBytes = RandomValue.Array<byte>();
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             MessageWrapper actualWrapper = null;
             _serializer.Setup(x => x.SerializeAsync(It.IsAny<MessageWrapper>()))
@@ -708,7 +707,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
                 .ReturnsAsync(expectedRequestBytes);
 
             _transport.Setup(x => x.PublishAsync(It.IsAny<byte[]>()))
-                .Callback<byte[]>(b =>
+                .Callback<byte[]>(_ =>
                 {
                     foreach ((Guid _, SynchronizedDataPackage pkg) in sut._synchronizationPackages)
                     {
@@ -744,11 +743,11 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         public async Task CallSynchronizedHandlerAsync_SuccessTraceLogging()
         {
             // Arrange
-            TestRequest expectedRequest = new TestRequest();
-            TestResponse expectedResponse = new TestResponse(RandomValue.String());
+            TestRequest expectedRequest = new();
+            TestResponse expectedResponse = new(RandomValue.String());
             byte[] expectedRequestBytes = RandomValue.Array<byte>();
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             MessageWrapper actualWrapper = null;
             _serializer.Setup(x => x.SerializeAsync(It.IsAny<MessageWrapper>()))
@@ -759,7 +758,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
                 .ReturnsAsync(expectedRequestBytes);
 
             _transport.Setup(x => x.PublishAsync(It.IsAny<byte[]>()))
-                .Callback<byte[]>(b =>
+                .Callback<byte[]>(_ =>
                 {
                     foreach ((Guid _, SynchronizedDataPackage pkg) in sut._synchronizationPackages)
                     {
@@ -799,13 +798,13 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            TestRequest expectedRequest = new TestRequest();
+            TestRequest expectedRequest = new();
             byte[] expectedBytes = RandomValue.Array<byte>();
 
             _serializer.Setup(x => x.SerializeAsync(It.IsAny<MessageWrapper>()))
                 .ReturnsAsync(expectedBytes);
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             // Act
 
@@ -827,7 +826,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
 
             byte[] expectedWrapperBytes = RandomValue.Array<byte>();
             string expectedValue = RandomValue.String();
-            MessageWrapper expectedWrapper = new MessageWrapper
+            MessageWrapper expectedWrapper = new()
             {
                 MessageType = MessageType.Event,
                 DataType = typeof(TestEvent),
@@ -837,8 +836,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             _serializer.Setup(x => x.DeserializeAsync(It.Is<byte[]>(y => y == expectedWrapperBytes)))
                 .ReturnsAsync(expectedWrapper);
 
-            Whitestone.Cambion.Cambion sut =
-                new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             string actualData = null;
             sut.AddEventHandler<TestEvent>(e => { actualData = e.Value; });
@@ -862,8 +860,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
 
             byte[] expectedWrapperBytes = RandomValue.Array<byte>();
             string expectedValue = RandomValue.String();
-            Exception expectedException = new Exception(RandomValue.String());
-            MessageWrapper expectedWrapper = new MessageWrapper
+            Exception expectedException = new(RandomValue.String());
+            MessageWrapper expectedWrapper = new()
             {
                 MessageType = MessageType.Event,
                 DataType = typeof(TestEvent),
@@ -873,15 +871,15 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             _serializer.Setup(x => x.DeserializeAsync(It.Is<byte[]>(y => y == expectedWrapperBytes)))
                 .ReturnsAsync(expectedWrapper);
 
-            Whitestone.Cambion.Cambion sut = new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             Exception actualException = null;
-            sut.UnhandledException += (sender, eventArgs) =>
+            sut.UnhandledException += (_, eventArgs) =>
             {
                 actualException = eventArgs.GetException();
             };
 
-            sut.AddEventHandler<TestEvent>(e => throw expectedException);
+            sut.AddEventHandler<TestEvent>(_ => throw expectedException);
 
             // Act
 
@@ -903,8 +901,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             byte[] expectedRequestWrapperBytes = RandomValue.Array<byte>();
             byte[] expectedResponseWrapperBytes = RandomValue.Array<byte>();
             string expectedValue = RandomValue.String();
-            TestRequest expectedRequest = new TestRequest();
-            MessageWrapper expectedRequestWrapper = new MessageWrapper
+            TestRequest expectedRequest = new();
+            MessageWrapper expectedRequestWrapper = new()
             {
                 MessageType = MessageType.SynchronizedRequest,
                 DataType = typeof(TestRequest),
@@ -924,8 +922,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
                 })
                 .ReturnsAsync(expectedResponseWrapperBytes);
 
-            Whitestone.Cambion.Cambion sut =
-                new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             TestRequest actualRequest = null;
             sut.AddSynchronizedHandler<TestRequest, TestResponse>(request =>
@@ -952,7 +949,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             Assert.Equal(expectedRequestWrapper.ResponseType, actualResponseWrapper.ResponseType);
 
             Assert.IsType<TestResponse>(actualResponseWrapper.Data);
-            TestResponse t = actualResponseWrapper.Data as TestResponse;
+            var t = actualResponseWrapper.Data as TestResponse;
             Assert.Equal(expectedValue, t.Value);
 
             _transport.Verify(x => x.PublishAsync(It.Is<byte[]>(y => y == expectedResponseWrapperBytes)), Times.Once);
@@ -975,8 +972,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             byte[] expectedRequestWrapperBytes = RandomValue.Array<byte>();
             byte[] expectedResponseWrapperBytes = RandomValue.Array<byte>();
             string expectedValue = RandomValue.String();
-            TestRequest expectedRequest = new TestRequest();
-            MessageWrapper expectedRequestWrapper = new MessageWrapper
+            TestRequest expectedRequest = new();
+            MessageWrapper expectedRequestWrapper = new()
             {
                 MessageType = MessageType.SynchronizedRequest,
                 DataType = typeof(TestRequest),
@@ -999,8 +996,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
                 })
                 .ReturnsAsync(expectedResponseWrapperBytes);
 
-            Whitestone.Cambion.Cambion sut =
-                new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             TestRequest actualRequest = null;
             sut.AddSynchronizedHandler<TestRequest, TestResponse>(request =>
@@ -1027,7 +1023,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             Assert.Equal(expectedRequestWrapper.ResponseType, actualResponseWrapper.ResponseType);
 
             Assert.IsType<TestResponse>(actualResponseWrapper.Data);
-            TestResponse t = actualResponseWrapper.Data as TestResponse;
+            var t = actualResponseWrapper.Data as TestResponse;
             Assert.Equal(expectedValue, t.Value);
 
             _transport.Verify(x => x.PublishAsync(It.Is<byte[]>(y => y == expectedResponseWrapperBytes)), Times.Once);
@@ -1057,9 +1053,9 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             // Arrange
 
             byte[] expectedRequestWrapperBytes = RandomValue.Array<byte>();
-            TestRequest expectedRequest = new TestRequest();
-            Exception expectedException = new Exception(RandomValue.String());
-            MessageWrapper expectedRequestWrapper = new MessageWrapper
+            TestRequest expectedRequest = new();
+            Exception expectedException = new(RandomValue.String());
+            MessageWrapper expectedRequestWrapper = new()
             {
                 MessageType = MessageType.SynchronizedRequest,
                 DataType = typeof(TestRequest),
@@ -1071,13 +1067,12 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             _serializer.Setup(x => x.DeserializeAsync(It.Is<byte[]>(y => y == expectedRequestWrapperBytes)))
                 .ReturnsAsync(expectedRequestWrapper);
 
-            Whitestone.Cambion.Cambion sut =
-                new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
-            sut.AddSynchronizedHandler<TestRequest, TestResponse>(request => throw expectedException);
+            sut.AddSynchronizedHandler<TestRequest, TestResponse>(_ => throw expectedException);
 
             Exception actualException = null;
-            sut.UnhandledException += (sender, eventArgs) =>
+            sut.UnhandledException += (_, eventArgs) =>
             {
                 actualException = eventArgs.GetException();
             };
@@ -1101,11 +1096,11 @@ namespace Whitestone.Cambion.UnitTests.Cambion
 
             byte[] expectedResponseWrapperBytes = RandomValue.Array<byte>();
             string expectedData = RandomValue.String();
-            Guid correlationId = Guid.NewGuid();
-            ManualResetEvent expectedResetEvent = new ManualResetEvent(false);
-            SynchronizedDataPackage expectedSyncPackage = new SynchronizedDataPackage(expectedResetEvent);
+            var correlationId = Guid.NewGuid();
+            ManualResetEvent expectedResetEvent = new(false);
+            SynchronizedDataPackage expectedSyncPackage = new(expectedResetEvent);
 
-            MessageWrapper expectedResponseWrapper = new MessageWrapper
+            MessageWrapper expectedResponseWrapper = new()
             {
                 MessageType = MessageType.SynchronizedResponse,
                 DataType = typeof(TestRequest),
@@ -1117,8 +1112,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             _serializer.Setup(x => x.DeserializeAsync(It.Is<byte[]>(y => y == expectedResponseWrapperBytes)))
                 .ReturnsAsync(expectedResponseWrapper);
 
-            Whitestone.Cambion.Cambion sut =
-                new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             sut._synchronizationPackages.Add(correlationId, expectedSyncPackage);
 
@@ -1145,17 +1139,16 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Exception expectedException = new Exception(RandomValue.String());
+            Exception expectedException = new(RandomValue.String());
             byte[] expectedWrapperBytes = RandomValue.Array<byte>();
 
             _serializer.Setup(x => x.DeserializeAsync(It.IsAny<byte[]>()))
                 .ThrowsAsync(expectedException);
 
-            Whitestone.Cambion.Cambion sut =
-                new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
 
             Exception actualException = null;
-            sut.UnhandledException += (sender, eventArgs) =>
+            sut.UnhandledException += (_, eventArgs) =>
             {
                 actualException = eventArgs.GetException();
             };
@@ -1174,29 +1167,19 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         #endregion
     }
 
-    class TestEvent
+    internal class TestEvent(string value)
     {
-        public string Value { get; }
-
-        public TestEvent(string value)
-        {
-            Value = value;
-        }
+        public string Value { get; } = value;
     }
 
-    class TestRequest { }
+    internal class TestRequest;
 
-    class TestResponse
+    internal class TestResponse(string value)
     {
-        public string Value { get; }
-
-        public TestResponse(string value)
-        {
-            Value = value;
-        }
+        public string Value { get; } = value;
     }
 
-    class TwoOfSameObjectTest : ISynchronizedHandler<TestRequest, TestResponse>
+    internal class TwoOfSameObjectTest : ISynchronizedHandler<TestRequest, TestResponse>
     {
         public TestResponse HandleSynchronized(TestRequest input)
         {
@@ -1210,11 +1193,13 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             return Task.FromResult(new TestResponse(null));
         }
-        }
+    }
 
+    internal class SynchronizedHandler(string value) : ISynchronizedHandler<TestRequest, TestResponse>
+    {
         public TestResponse HandleSynchronized(TestRequest input)
         {
-            return new TestResponse(_value);
+            return new TestResponse(value);
         }
 
 #pragma warning disable IDE0060 // Remove unused parameter
@@ -1242,14 +1227,12 @@ namespace Whitestone.Cambion.UnitTests.Cambion
 #pragma warning restore IDE0060 // Remove unused parameter
     }
 
-    class EventHandler : IEventHandler<TestEvent>
+    internal class EventHandler : IEventHandler<TestEvent>
     {
-        private readonly ManualResetEvent _mre = new ManualResetEvent(false);
-        private TestEvent _eventValue;
+        private readonly ManualResetEvent _mre = new(false);
 
         public void HandleEvent(TestEvent input)
         {
-            _eventValue = input;
             _mre.Set();
         }
 
@@ -1264,7 +1247,6 @@ namespace Whitestone.Cambion.UnitTests.Cambion
 
         public async Task HandleEventAsync(TestEvent input)
         {
-            _eventValue = input;
             await Task.Delay(1);
             _mre.Set();
         }
