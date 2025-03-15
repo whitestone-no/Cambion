@@ -144,6 +144,31 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         }
 
         [Fact]
+        public void Register_AsyncEventHandler_Success()
+        {
+            // Arrange
+
+            AsyncEventHandler handler = new();
+
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+
+            // Act
+
+            sut.Register(handler);
+
+            // Assert
+
+            _logger.Verify(
+                x => x.Log(
+                    It.Is<LogLevel>(y => y == LogLevel.Information),
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString() == $"Registered <{handler.GetType().FullName}> as async event handler for <{typeof(TestEvent).FullName}>"),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                Times.Once);
+        }
+
+        [Fact]
         public void Register_SynchronizedHandler_Success()
         {
             // Arrange
@@ -276,6 +301,67 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             // Act
 
             ArgumentException actualException = Assert.Throws<ArgumentException>(() => sut.AddEventHandler((Action<TestEvent>)EventHandler.HandleEventStatic));
+
+            // Assert
+
+            Assert.Equal("Can't use static methods in callbacks. (Parameter 'callback')", actualException.Message);
+            Assert.Equal("callback", actualException.ParamName);
+        }
+
+        #endregion
+
+        #region AddAsyncEventHandler()
+
+        [Fact]
+        public void AddAsyncEventHandler_Success()
+        {
+            // Arrange
+
+            Func<TestEvent, Task> handler = e => Task.CompletedTask;
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+
+            // Act
+
+            sut.AddAsyncEventHandler(handler);
+
+            // Assert
+
+            _logger.Verify(
+                x => x.Log(
+                    It.Is<LogLevel>(y => y == LogLevel.Information),
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString() == $"Added <{handler.Target.GetType().FullName}> as async event handler for <{typeof(TestEvent).FullName}>"),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                Times.Once);
+        }
+
+        [Fact]
+        public void AddAsyncEventHandler_NullInput_ThrowsException()
+        {
+            // Arrange
+
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+
+            // Act
+
+            var actualException = Assert.Throws<ArgumentNullException>(() => sut.AddAsyncEventHandler<TestEvent>(null));
+
+            // Assert
+
+            Assert.Equal("callback", actualException.ParamName);
+        }
+
+        [Fact]
+        public void AddAsyncEventHandler_StaticInput_ThrowsException()
+        {
+            // Arrange
+
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+
+            // Act
+
+            var actualException = Assert.Throws<ArgumentException>(() => sut.AddAsyncEventHandler((Func<TestEvent, Task>)AsyncEventHandler.HandleAsyncEventStatic));
 
             // Assert
 
@@ -999,14 +1085,28 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             _mre.Set();
         }
 
-        public TestEvent GetEvent()
+#pragma warning disable IDE0060 // Remove unused parameter
+        public static void HandleEventStatic(TestEvent input) { }
+#pragma warning restore IDE0060 // Remove unused parameter
+    }
+
+    class AsyncEventHandler : IAsyncEventHandler<TestEvent>
+    {
+        private readonly ManualResetEvent _mre = new ManualResetEvent(false);
+        private TestEvent _eventValue;
+
+        public async Task HandleEventAsync(TestEvent input)
         {
-            _mre.WaitOne(new TimeSpan(0, 0, 5));
-            return _eventValue;
+            _eventValue = input;
+            await Task.Delay(1);
+            _mre.Set();
         }
 
 #pragma warning disable IDE0060 // Remove unused parameter
-        public static void HandleEventStatic(TestEvent input) { }
+        public static Task HandleAsyncEventStatic(TestEvent input)
+        {
+            return Task.CompletedTask;
+        }
 #pragma warning restore IDE0060 // Remove unused parameter
     }
 }

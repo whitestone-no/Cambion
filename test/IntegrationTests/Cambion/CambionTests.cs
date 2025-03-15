@@ -43,6 +43,27 @@ namespace Whitestone.Cambion.IntegrationTests.Cambion
         }
 
         [Fact]
+        public async Task DirectAsyncEventSubscription()
+        {
+            TestEvent expectedEvent = new(RandomValue.String());
+
+            TestEvent actualEvent = null;
+            _cambion.AddAsyncEventHandler<TestEvent>(async e =>
+            {
+                actualEvent = e;
+                await Task.CompletedTask;
+            });
+
+            await _cambion.PublishEventAsync(expectedEvent);
+
+            // Allow some time for the event to propagate
+            await Task.Delay(1000);
+
+            // Compare the values. As these will actually be different instances of TestEvent they will not assert equal even though they are
+            Assert.Equal(expectedEvent.EventValue, actualEvent.EventValue);
+        }
+
+        [Fact]
         public async Task InterfaceEventSubscription()
         {
             TestEvent expectedEvent = new TestEvent(RandomValue.String());
@@ -58,36 +79,74 @@ namespace Whitestone.Cambion.IntegrationTests.Cambion
         }
 
         [Fact]
+        public async Task InterfaceAsyncEventSubscription()
+        {
+            TestEvent expectedEvent = new TestEvent(RandomValue.String());
+            TestAsyncEventSubscriber subscriber = new TestAsyncEventSubscriber();
+
+            _cambion.Register(subscriber);
+
+            await _cambion.PublishEventAsync(expectedEvent);
+
+            await Task.Delay(1000);
+
+            Assert.Equal(expectedEvent.EventValue, subscriber.ActualEvent.EventValue);
+        }
+
+        [Fact]
         public async Task MultipleDirectAndInterfaceSubscription()
         {
             TestEvent expectedEvent = new TestEvent(RandomValue.String());
 
-            TestEvent actualEvent1 = null;
+            TestEvent actualEvent1_1 = null;
             _cambion.AddEventHandler<TestEvent>(e =>
             {
-                actualEvent1 = e;
+                actualEvent1_1 = e;
             });
 
-            TestEvent actualEvent2 = null;
+            TestEvent actualEvent1_2 = null;
             _cambion.AddEventHandler<TestEvent>(e =>
             {
-                actualEvent2 = e;
+                actualEvent1_2 = e;
             });
 
-            TestEventSubscriber subscriber1 = new TestEventSubscriber();
-            TestEventSubscriber subscriber2 = new TestEventSubscriber();
+            TestEvent actualEvent2_1 = null;
+            _cambion.AddAsyncEventHandler<TestEvent>(async e =>
+            {
+                await Task.Delay(1);
+                actualEvent2_1 = e;
+            });
 
-            _cambion.Register(subscriber1);
-            _cambion.Register(subscriber2);
+            TestEvent actualEvent2_2 = null;
+            _cambion.AddAsyncEventHandler<TestEvent>(async e =>
+            {
+                await Task.Delay(1);
+                actualEvent2_2 = e;
+            });
+
+            TestEventSubscriber subscriber1_1 = new();
+            TestEventSubscriber subscriber1_2 = new();
+            TestAsyncEventSubscriber subscriber2_1 = new();
+            TestAsyncEventSubscriber subscriber2_2 = new();
+
+            _cambion.Register(subscriber1_1);
+            _cambion.Register(subscriber1_2);
+            _cambion.Register(subscriber2_1);
+            _cambion.Register(subscriber2_2);
 
             await _cambion.PublishEventAsync(expectedEvent);
 
             await Task.Delay(1000);
             
-            Assert.Equal(expectedEvent.EventValue, actualEvent1.EventValue);
-            Assert.Equal(expectedEvent.EventValue, actualEvent2.EventValue);
-            Assert.Equal(expectedEvent.EventValue, subscriber1.ActualEvent.EventValue);
-            Assert.Equal(expectedEvent.EventValue, subscriber2.ActualEvent.EventValue);
+            Assert.Equal(expectedEvent.EventValue, actualEvent1_1.EventValue);
+            Assert.Equal(expectedEvent.EventValue, actualEvent1_2.EventValue);
+            Assert.Equal(expectedEvent.EventValue, subscriber1_1.ActualEvent.EventValue);
+            Assert.Equal(expectedEvent.EventValue, subscriber1_2.ActualEvent.EventValue);
+
+            Assert.Equal(expectedEvent.EventValue, actualEvent2_1.EventValue);
+            Assert.Equal(expectedEvent.EventValue, actualEvent2_2.EventValue);
+            Assert.Equal(expectedEvent.EventValue, subscriber2_1.ActualEvent.EventValue);
+            Assert.Equal(expectedEvent.EventValue, subscriber2_2.ActualEvent.EventValue);
         }
 
         [Fact]
@@ -167,6 +226,17 @@ namespace Whitestone.Cambion.IntegrationTests.Cambion
         public void HandleEvent(TestEvent input)
         {
             ActualEvent = input;
+        }
+    }
+
+    public class TestAsyncEventSubscriber : IAsyncEventHandler<TestEvent>
+    {
+        public TestEvent ActualEvent { get; private set; }
+
+        public async Task HandleEventAsync(TestEvent input)
+        {
+            ActualEvent = input;
+            await Task.Delay(1);
         }
     }
 
