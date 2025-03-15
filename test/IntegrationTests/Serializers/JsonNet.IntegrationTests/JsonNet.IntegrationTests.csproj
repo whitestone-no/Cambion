@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Cambion\Cambion.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Serializers\JsonNet\JsonNet.csproj" />
   </ItemGroup>
 
-  </Project>
+</Project>

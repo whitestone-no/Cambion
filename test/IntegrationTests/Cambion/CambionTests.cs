@@ -1,11 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using RandomTestValues;
 using Whitestone.Cambion.Interfaces;
-using Whitestone.Cambion.Serializer.JsonNet;
-using Whitestone.Cambion.Transport.Loopback;
 using Xunit;
 
 namespace Whitestone.Cambion.IntegrationTests.Cambion
@@ -18,7 +17,9 @@ namespace Whitestone.Cambion.IntegrationTests.Cambion
         {
             Mock<ILogger<Whitestone.Cambion.Cambion>> logger = new Mock<ILogger<Whitestone.Cambion.Cambion>>();
 
-            _cambion = new Whitestone.Cambion.Cambion(new LoopbackTransport(), new JsonNetSerializer(), logger.Object);
+            ServiceCollection services = new();
+
+            _cambion = new Whitestone.Cambion.Cambion(services.BuildServiceProvider(), logger.Object);
             
             _cambion.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
         }

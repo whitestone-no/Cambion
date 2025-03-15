@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using RandomTestValues;
@@ -34,35 +35,83 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         #region Constructor
 
         [Fact]
-        public void Construct_WithNullTransport_ThrowsException()
+        public void Construct_WithNullTransportAndSerializer_LogsInfo()
         {
             // Arrange
+            
+            ServiceCollection services = new();
 
             // Act
 
-            var actualException = Assert.Throws<TypeInitializationException>(() => new Whitestone.Cambion.Cambion(null, _serializer.Object, _logger.Object));
+            _ = new Whitestone.Cambion.Cambion(services.BuildServiceProvider(), _logger.Object);
 
             // Assert
 
-            Assert.Equal("Whitestone.Cambion.Cambion", actualException.TypeName);
-            Assert.IsType<ArgumentException>(actualException.InnerException);
-            Assert.Equal("Missing transport", actualException.InnerException.Message);
+            _logger.Verify(
+                x => x.Log(
+                    It.Is<LogLevel>(y => y == LogLevel.Information),
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString() == "No transport found. Falling back to loopback implementation."),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                Times.Once);
+
+            _logger.Verify(
+                x => x.Log(
+                    It.Is<LogLevel>(y => y == LogLevel.Information),
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString() == "No serializer found. Falling back to loopback implementation."),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                Times.Once);
         }
 
         [Fact]
-        public void Construct_WithNullSerializer_ThrowsException()
+        public void Construct_WithNullTransport_LogsInfo()
         {
             // Arrange
 
+            ServiceCollection services = new();
+            services.AddSingleton(_serializer.Object);
+
             // Act
 
-            var actualException = Assert.Throws<TypeInitializationException>(() => new Whitestone.Cambion.Cambion(_transport.Object, null, _logger.Object));
+            _ = new Whitestone.Cambion.Cambion(services.BuildServiceProvider(), _logger.Object);
 
             // Assert
 
-            Assert.Equal("Whitestone.Cambion.Cambion", actualException.TypeName);
-            Assert.IsType<ArgumentException>(actualException.InnerException);
-            Assert.Equal("Missing serializer", actualException.InnerException.Message);
+            _logger.Verify(
+                x => x.Log(
+                    It.Is<LogLevel>(y => y == LogLevel.Information),
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString() == "No transport found. Falling back to loopback implementation."),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                Times.Once);
+        }
+
+        [Fact]
+        public void Construct_WithNullSerializer_LogsInfo()
+        {
+            // Arrange
+            
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+
+            // Act
+
+            _ = new Whitestone.Cambion.Cambion(services.BuildServiceProvider(), _logger.Object);
+
+            // Assert
+
+            _logger.Verify(
+                x => x.Log(
+                    It.Is<LogLevel>(y => y == LogLevel.Information),
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString() == "No serializer found. Falling back to loopback implementation."),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                Times.Once);
         }
 
         [Fact]
@@ -70,9 +119,11 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
+
             // Act
 
-            var actualException = Assert.Throws<TypeInitializationException>(() => new Whitestone.Cambion.Cambion(_transport.Object, _serializer.Object, null));
+            var actualException = Assert.Throws<TypeInitializationException>(() => new Whitestone.Cambion.Cambion(services.BuildServiceProvider(), null));
 
             // Assert
 
@@ -90,7 +141,11 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+            services.AddSingleton(_serializer.Object);
+
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -113,6 +168,36 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             _transport.Verify(x => x.StartAsync(), Times.Once);
         }
 
+        [Fact]
+        public async Task ReinitializeAsync_Loopback()
+        {
+            // Arrange
+
+            ServiceCollection services = new();
+
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
+
+            // Act
+
+            await sut.ReinitializeAsync();
+
+            // Assert
+
+            _logger.Verify(
+                x => x.Log(
+                    It.Is<LogLevel>(y => y == LogLevel.Warning),
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString() == "No transport or serializer defined. Using fallback. Nothing to reinitialize."),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                Times.Once);
+
+            _transport.VerifyRemove(x => x.MessageReceived -= It.IsAny<EventHandler<MessageReceivedEventArgs>>(), Times.Never);
+            _transport.Verify(x => x.StopAsync(), Times.Never);
+            _transport.VerifyAdd(x => x.MessageReceived += It.IsAny<EventHandler<MessageReceivedEventArgs>>(), Times.Never);
+            _transport.Verify(x => x.StartAsync(), Times.Never);
+        }
+
         #endregion
 
         #region Register()
@@ -122,9 +207,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
             EventHandler handler = new();
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -147,9 +233,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
             AsyncEventHandler handler = new();
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -172,9 +259,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
             SynchronizedHandler handler = new(RandomValue.String());
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -197,9 +285,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
             AsyncSynchronizedHandler handler = new(RandomValue.String());
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -222,7 +311,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            ServiceCollection services = new();
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -238,9 +328,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
             TwoOfSameObjectTest obj = new();
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
             sut.Register(obj);
 
             // Act
@@ -256,10 +347,11 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
             TwoOfSameObjectTest obj1 = new();
             TwoOfSameObjectTest obj2 = new();
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -276,9 +368,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
             TwoOfSameAsyncObjectTest obj = new();
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
             sut.Register(obj);
 
             // Act
@@ -294,10 +387,11 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
             TwoOfSameAsyncObjectTest obj1 = new();
             TwoOfSameAsyncObjectTest obj2 = new();
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -318,8 +412,9 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
             Action<TestEvent> handler = _ => { };
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -342,7 +437,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            ServiceCollection services = new();
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -358,7 +454,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            ServiceCollection services = new();
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -379,8 +476,9 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
             Func<TestEvent, Task> handler = _ => Task.CompletedTask;
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -403,7 +501,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            ServiceCollection services = new();
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -419,7 +518,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            ServiceCollection services = new();
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -440,9 +540,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
             Func<TestRequest, TestResponse> handler = _ => new TestResponse(RandomValue.String());
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -465,7 +566,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            ServiceCollection services = new();
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -482,7 +584,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            ServiceCollection services = new();
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -506,7 +609,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             Func<TestRequest, TestResponse> handler = _ => new TestResponse(RandomValue.String());
 #pragma warning restore IDE0039 // Use local function
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            ServiceCollection services = new();
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             sut.AddSynchronizedHandler(handler);
 
@@ -529,9 +633,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
             Func<TestRequest, Task<TestResponse>> handler = _ => Task.FromResult(new TestResponse(RandomValue.String()));
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -554,7 +659,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            ServiceCollection services = new();
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -571,7 +677,8 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            ServiceCollection services = new();
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -594,8 +701,9 @@ namespace Whitestone.Cambion.UnitTests.Cambion
 #pragma warning disable IDE0039 // Use local function
             Func<TestRequest, Task<TestResponse>> handler = _ => Task.FromResult(new TestResponse(RandomValue.String()));
 #pragma warning restore IDE0039 // Use local function
-            
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+
+            ServiceCollection services = new();
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             sut.AddAsyncSynchronizedHandler(handler);
 
@@ -618,6 +726,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+            services.AddSingleton(_serializer.Object);
+
             TestEvent expectedEvent = new(RandomValue.String());
             byte[] expectedBytes = RandomValue.Array<byte>();
 
@@ -629,7 +741,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
                 })
                 .ReturnsAsync(expectedBytes);
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -657,6 +769,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+            services.AddSingleton(_serializer.Object); 
+            
             TestEvent expectedEvent = new(RandomValue.String());
             byte[] expectedBytes = RandomValue.Array<byte>();
 
@@ -666,7 +782,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             _logger.Setup(x => x.IsEnabled(It.Is<LogLevel>(y => y == LogLevel.Trace)))
                 .Returns(true);
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -692,11 +808,16 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         public async Task CallSynchronizedHandlerAsync_Success()
         {
             // Arrange
+
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+            services.AddSingleton(_serializer.Object);
+
             TestRequest expectedRequest = new();
             TestResponse expectedResponse = new(RandomValue.String());
             byte[] expectedRequestBytes = RandomValue.Array<byte>();
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             MessageWrapper actualWrapper = null;
             _serializer.Setup(x => x.SerializeAsync(It.IsAny<MessageWrapper>()))
@@ -743,11 +864,16 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         public async Task CallSynchronizedHandlerAsync_SuccessTraceLogging()
         {
             // Arrange
+
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+            services.AddSingleton(_serializer.Object);
+
             TestRequest expectedRequest = new();
             TestResponse expectedResponse = new(RandomValue.String());
             byte[] expectedRequestBytes = RandomValue.Array<byte>();
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             MessageWrapper actualWrapper = null;
             _serializer.Setup(x => x.SerializeAsync(It.IsAny<MessageWrapper>()))
@@ -798,13 +924,17 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+            services.AddSingleton(_serializer.Object);
+
             TestRequest expectedRequest = new();
             byte[] expectedBytes = RandomValue.Array<byte>();
 
             _serializer.Setup(x => x.SerializeAsync(It.IsAny<MessageWrapper>()))
                 .ReturnsAsync(expectedBytes);
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             // Act
 
@@ -824,6 +954,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+            services.AddSingleton(_serializer.Object);
+
             byte[] expectedWrapperBytes = RandomValue.Array<byte>();
             string expectedValue = RandomValue.String();
             MessageWrapper expectedWrapper = new()
@@ -836,7 +970,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             _serializer.Setup(x => x.DeserializeAsync(It.Is<byte[]>(y => y == expectedWrapperBytes)))
                 .ReturnsAsync(expectedWrapper);
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             string actualData = null;
             sut.AddEventHandler<TestEvent>(e => { actualData = e.Value; });
@@ -858,6 +992,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+            services.AddSingleton(_serializer.Object);
+
             byte[] expectedWrapperBytes = RandomValue.Array<byte>();
             string expectedValue = RandomValue.String();
             Exception expectedException = new(RandomValue.String());
@@ -871,7 +1009,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             _serializer.Setup(x => x.DeserializeAsync(It.Is<byte[]>(y => y == expectedWrapperBytes)))
                 .ReturnsAsync(expectedWrapper);
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             Exception actualException = null;
             sut.UnhandledException += (_, eventArgs) =>
@@ -898,6 +1036,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+            services.AddSingleton(_serializer.Object);
+
             byte[] expectedRequestWrapperBytes = RandomValue.Array<byte>();
             byte[] expectedResponseWrapperBytes = RandomValue.Array<byte>();
             string expectedValue = RandomValue.String();
@@ -922,7 +1064,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
                 })
                 .ReturnsAsync(expectedResponseWrapperBytes);
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             TestRequest actualRequest = null;
             sut.AddSynchronizedHandler<TestRequest, TestResponse>(request =>
@@ -969,6 +1111,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+            services.AddSingleton(_serializer.Object);
+
             byte[] expectedRequestWrapperBytes = RandomValue.Array<byte>();
             byte[] expectedResponseWrapperBytes = RandomValue.Array<byte>();
             string expectedValue = RandomValue.String();
@@ -996,7 +1142,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
                 })
                 .ReturnsAsync(expectedResponseWrapperBytes);
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             TestRequest actualRequest = null;
             sut.AddSynchronizedHandler<TestRequest, TestResponse>(request =>
@@ -1052,6 +1198,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+            services.AddSingleton(_serializer.Object);
+
             byte[] expectedRequestWrapperBytes = RandomValue.Array<byte>();
             TestRequest expectedRequest = new();
             Exception expectedException = new(RandomValue.String());
@@ -1067,7 +1217,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             _serializer.Setup(x => x.DeserializeAsync(It.Is<byte[]>(y => y == expectedRequestWrapperBytes)))
                 .ReturnsAsync(expectedRequestWrapper);
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             sut.AddSynchronizedHandler<TestRequest, TestResponse>(_ => throw expectedException);
 
@@ -1094,6 +1244,10 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+            services.AddSingleton(_serializer.Object);
+
             byte[] expectedResponseWrapperBytes = RandomValue.Array<byte>();
             string expectedData = RandomValue.String();
             var correlationId = Guid.NewGuid();
@@ -1112,7 +1266,7 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             _serializer.Setup(x => x.DeserializeAsync(It.Is<byte[]>(y => y == expectedResponseWrapperBytes)))
                 .ReturnsAsync(expectedResponseWrapper);
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             sut._synchronizationPackages.Add(correlationId, expectedSyncPackage);
 
@@ -1139,13 +1293,17 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         {
             // Arrange
 
+            ServiceCollection services = new();
+            services.AddSingleton(_transport.Object);
+            services.AddSingleton(_serializer.Object);
+
             Exception expectedException = new(RandomValue.String());
             byte[] expectedWrapperBytes = RandomValue.Array<byte>();
 
             _serializer.Setup(x => x.DeserializeAsync(It.IsAny<byte[]>()))
                 .ThrowsAsync(expectedException);
 
-            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            Whitestone.Cambion.Cambion sut = new(services.BuildServiceProvider(), _logger.Object);
 
             Exception actualException = null;
             sut.UnhandledException += (_, eventArgs) =>
