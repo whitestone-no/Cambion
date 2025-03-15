@@ -68,14 +68,14 @@ namespace Whitestone.Cambion
                 }
             }
 
-            if (_logger == null)
+        public async Task ReinitializeAsync()
             {
-                throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing logger"));
-            }
+            if (_useLoopback)
+            {
+                _logger.LogWarning("No transport or serializer defined. Using fallback. Nothing to reinitialize.");
+                return;
         }
 
-        public async Task ReinitializeAsync()
-        {
             _logger.LogInformation("Reinitializing Transport {transport}", _transport.GetType().FullName);
 
             _transport.MessageReceived -= Transport_MessageReceived;
