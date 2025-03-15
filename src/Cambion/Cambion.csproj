@@ -20,6 +20,7 @@
 
   <PropertyGroup>
     <NoWarn>NU5105</NoWarn>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -19,6 +19,7 @@ namespace Whitestone.Cambion
         private readonly ILogger<Cambion> _logger;
 
         private readonly Dictionary<Type, List<EventHandler>> _eventHandlers = new Dictionary<Type, List<EventHandler>>();
+        private readonly Dictionary<Type, List<AsyncEventHandler>> _asyncEventHandlers = new Dictionary<Type, List<AsyncEventHandler>>();
         private readonly Dictionary<SynchronizedHandlerKey, SynchronizedHandler> _synchronizedHandlers = new Dictionary<SynchronizedHandlerKey, SynchronizedHandler>();
         // ReSharper disable once InconsistentNaming
         // Variable is internal only so that it is available to the unit test project. Don't need to change the variable naming for this.
@@ -96,6 +97,43 @@ namespace Whitestone.Cambion
                 }
             }
 
+
+
+            // Look for, and save, any IAsyncEventHandler implementations
+            Type asyncHandlerType = handler.GetType();
+            IEnumerable<Type> asyncEventInterfaces = asyncHandlerType.GetInterfaces()
+                .Where(x => typeof(IAsyncEventHandler).IsAssignableFrom(x) && x.IsGenericType);
+
+            lock (_asyncEventHandlers)
+            {
+                foreach (Type @interface in asyncEventInterfaces)
+                {
+                    Type type = @interface.GetGenericArguments()[0];
+                    MethodInfo method = @interface.GetMethod("HandleEventAsync", new[] { type });
+
+                    if (method == null)
+                    {
+                        continue;
+                    }
+
+                    var @delegate = Delegate.CreateDelegate(typeof(Func<,>).MakeGenericType(type, typeof(Task)), handler, method);
+
+                    AsyncEventHandler asyncEventHandler = new(@delegate);
+
+                    if (!_asyncEventHandlers.ContainsKey(type))
+                    {
+                        _asyncEventHandlers[type] = new List<AsyncEventHandler>();
+                    }
+
+                    if (!_asyncEventHandlers[type].Contains(asyncEventHandler))
+                    {
+                        _asyncEventHandlers[type].Add(asyncEventHandler);
+                    }
+
+                    _logger.LogInformation("Registered <{handlerType}> as async event handler for <{handler}>", handlerType.FullName, type.FullName);
+                }
+            }
+
             // Look for, and save, any ISynchronizedHandler implementations
             IEnumerable<Type> synchronizedInterfaces = handlerType.GetInterfaces()
                 .Where(x => typeof(ISynchronizedHandler).IsAssignableFrom(x) && x.IsGenericType);
@@ -163,6 +201,38 @@ namespace Whitestone.Cambion
             }
 
             _logger.LogInformation("Added <{handlerType}> as event handler for <{handler}>", callback.Target.GetType().FullName, type.FullName);
+        }
+
+        public void AddAsyncEventHandler<TEvent>(Func<TEvent, Task> callback)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            if (callback.Target == null)
+            {
+                throw new ArgumentException("Can't use static methods in callbacks.", nameof(callback));
+            }
+
+            Type type = typeof(TEvent);
+
+            AsyncEventHandler asyncEventHandler = new(callback);
+
+            lock (_asyncEventHandlers)
+            {
+                if (!_asyncEventHandlers.ContainsKey(type))
+                {
+                    _asyncEventHandlers[type] = new List<AsyncEventHandler>();
+                }
+
+                if (!_asyncEventHandlers[type].Contains(asyncEventHandler))
+                {
+                    _asyncEventHandlers[type].Add(asyncEventHandler);
+                }
+            }
+
+            _logger.LogInformation("Added <{handlerType}> as async event handler for <{handler}>", callback.Target.GetType().FullName, type.FullName);
         }
 
         public void AddSynchronizedHandler<TRequest, TResponse>(Func<TRequest, TResponse> callback)
@@ -308,6 +378,38 @@ namespace Whitestone.Cambion
                                         if (!handler.Invoke(wrapper.Data))
                                         {
                                             _eventHandlers[wrapper.DataType].Remove(handler);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        PublishUnhandledException(ex);
+                                    }
+                                });
+                            }
+                            catch (Exception ex)
+                            {
+                                PublishUnhandledException(ex);
+                            }
+                        }
+                    }
+                    lock (_asyncEventHandlers)
+                    {
+                        AsyncEventHandler[] handlers = _asyncEventHandlers.Where(h => h.Key.IsAssignableFrom(wrapper.DataType)).SelectMany(h => h.Value).ToArray();
+                        foreach (AsyncEventHandler handler in handlers)
+                        {
+                            try
+                            {
+                                _ = Task.Run(async () =>
+                                {
+                                    try
+                                    {
+                                        if (await handler.InvokeAsync(wrapper.Data))
+                                        {
+                                            return;
+                                        }
+                                        lock (_asyncEventHandlers)
+                                        {
+                                            _asyncEventHandlers[wrapper.DataType].Remove(handler);
                                         }
                                     }
                                     catch (Exception ex)
