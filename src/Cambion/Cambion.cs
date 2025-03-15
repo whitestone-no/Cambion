@@ -47,8 +47,16 @@ namespace Whitestone.Cambion
 
         private void Validate()
         {
-            if (_transport == null || _serializer == null)
+            if (_logger == null)
             {
+                throw new TypeInitializationException(GetType().FullName, new ArgumentException("Missing logger"));
+            }
+
+            if (_transport != null && _serializer != null)
+            {
+                return;
+            }
+
                 if (_transport == null)
                 {
                     _logger.LogInformation("No transport found. Falling back to loopback implementation.");
