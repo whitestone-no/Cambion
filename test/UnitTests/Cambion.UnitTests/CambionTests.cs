@@ -194,6 +194,31 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         }
 
         [Fact]
+        public void Register_AsyncSynchronizedHandler_Success()
+        {
+            // Arrange
+
+            AsyncSynchronizedHandler handler = new(RandomValue.String());
+
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+
+            // Act
+
+            sut.Register(handler);
+
+            // Assert
+
+            _logger.Verify(
+                x => x.Log(
+                    It.Is<LogLevel>(y => y == LogLevel.Information),
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString() == $"Registered <{handler.GetType().FullName}> as async synchronized handler for <{typeof(TestRequest).FullName}, {typeof(TestResponse).FullName}>"),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                Times.Once);
+        }
+
+        [Fact]
         public void Register_NullValue_ThrowsArgumentNullException()
         {
             // Arrange
@@ -245,6 +270,44 @@ namespace Whitestone.Cambion.UnitTests.Cambion
 
             // Assert
             Assert.Equal($"A SynchronizedHandler already exists for request type {typeof(TestRequest).FullName} and response type {typeof(TestResponse).FullName} (Parameter 'delegate')", actualException.Message);
+        }
+
+        [Fact]
+        public void Register_TwoOfSameAsyncObject_ThrowsArgumentException()
+        {
+            // Arrange
+
+            TwoOfSameAsyncObjectTest obj = new();
+
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+            sut.Register(obj);
+
+            // Act
+
+            var actualException = Assert.Throws<ArgumentException>(() => sut.Register(obj));
+
+            // Assert
+            Assert.Equal($"An AsyncSynchronizedHandler already exists for request type {typeof(TestRequest).FullName} and response type {typeof(TestResponse).FullName} (Parameter 'delegate')", actualException.Message);
+        }
+
+        [Fact]
+        public void Register_TwoOfSameAsyncHandlers_ThrowsArgumentException()
+        {
+            // Arrange
+
+            TwoOfSameAsyncObjectTest obj1 = new();
+            TwoOfSameAsyncObjectTest obj2 = new();
+
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+
+            // Act
+
+            sut.Register(obj1);
+
+            var actualException = Assert.Throws<ArgumentException>(() => sut.Register(obj2));
+
+            // Assert
+            Assert.Equal($"An AsyncSynchronizedHandler already exists for request type {typeof(TestRequest).FullName} and response type {typeof(TestResponse).FullName} (Parameter 'delegate')", actualException.Message);
         }
 
         #endregion
@@ -455,6 +518,95 @@ namespace Whitestone.Cambion.UnitTests.Cambion
             // Assert
 
             Assert.Equal($"A SynchronizedHandler already exists for request type {typeof(TestRequest).FullName} and response type {typeof(TestResponse).FullName} (Parameter 'callback')", actualException.Message);
+            Assert.Equal("callback", actualException.ParamName);
+        }
+
+        #endregion
+
+        #region AddAsyncSynchronizedHandler()
+
+        [Fact]
+        public void AddAsyncSynchronizedHandler_Success()
+        {
+            // Arrange
+
+            Func<TestRequest, Task<TestResponse>> handler = _ => Task.FromResult(new TestResponse(RandomValue.String()));
+
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+
+            // Act
+
+            sut.AddAsyncSynchronizedHandler(handler);
+
+            // Assert
+
+            _logger.Verify(
+                x => x.Log(
+                    It.Is<LogLevel>(y => y == LogLevel.Information),
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString() == $"Added <{handler.Target.GetType().FullName}> as async synchronized handler for <{typeof(TestRequest).FullName}, {typeof(TestResponse).FullName}>"),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                Times.Once);
+        }
+
+        [Fact]
+        public void AddAsyncSynchronizedHandler_NullInput_ThrowsException()
+        {
+            // Arrange
+
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+
+            // Act
+
+            var actualException = Assert.Throws<ArgumentNullException>(() => sut.AddAsyncSynchronizedHandler<TestRequest, Task<TestResponse>>(null));
+
+            // Assert
+
+            Assert.Equal("callback", actualException.ParamName);
+
+        }
+
+        [Fact]
+        public void AddAsyncSynchronizedHandler_StaticInput_ThrowsException()
+        {
+            // Arrange
+
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+
+            // Act
+
+            var actualException = Assert.Throws<ArgumentException>(() => sut.AddAsyncSynchronizedHandler((Func<TestRequest, Task<TestResponse>>)AsyncSynchronizedHandler.HandleSynchronizedStaticAsync));
+
+            // Assert
+
+            Assert.Equal("Can't use static methods in callbacks. (Parameter 'callback')", actualException.Message);
+            Assert.Equal("callback", actualException.ParamName);
+
+        }
+
+        [Fact]
+        public void AddAsyncSynchronizedHandler_AlreadyExists_ThrowsException()
+        {
+            // Arrange
+
+            // ReSharper disable once ConvertToLocalFunction
+            // because these are static, and can't use static methods as synchronized handlers
+#pragma warning disable IDE0039 // Use local function
+            Func<TestRequest, Task<TestResponse>> handler = _ => Task.FromResult(new TestResponse(RandomValue.String()));
+#pragma warning restore IDE0039 // Use local function
+            
+            Whitestone.Cambion.Cambion sut = new(_transport.Object, _serializer.Object, _logger.Object);
+
+            sut.AddAsyncSynchronizedHandler(handler);
+
+            // Act
+
+            var actualException = Assert.Throws<ArgumentException>(() => sut.AddAsyncSynchronizedHandler(handler));
+
+            // Assert
+
+            Assert.Equal($"An AsyncSynchronizedHandler already exists for request type {typeof(TestRequest).FullName} and response type {typeof(TestResponse).FullName} (Parameter 'callback')", actualException.Message);
             Assert.Equal("callback", actualException.ParamName);
         }
 
@@ -1052,13 +1204,12 @@ namespace Whitestone.Cambion.UnitTests.Cambion
         }
     }
 
-    class SynchronizedHandler : ISynchronizedHandler<TestRequest, TestResponse>
+    internal class TwoOfSameAsyncObjectTest : IAsyncSynchronizedHandler<TestRequest, TestResponse>
     {
-        private readonly string _value;
-
-        public SynchronizedHandler(string value)
+        public Task<TestResponse> HandleSynchronizedAsync(TestRequest input)
         {
-            _value = value;
+            return Task.FromResult(new TestResponse(null));
+        }
         }
 
         public TestResponse HandleSynchronized(TestRequest input)
@@ -1069,6 +1220,23 @@ namespace Whitestone.Cambion.UnitTests.Cambion
 #pragma warning disable IDE0060 // Remove unused parameter
         public static TestResponse HandleSynchronizedStatic(TestRequest input)
         {
+            return null;
+        }
+#pragma warning restore IDE0060 // Remove unused parameter
+    }
+
+    internal class AsyncSynchronizedHandler(string value) : IAsyncSynchronizedHandler<TestRequest, TestResponse>
+    {
+        public async Task<TestResponse> HandleSynchronizedAsync(TestRequest input)
+        {
+            await Task.Delay(1);
+            return new TestResponse(value);
+        }
+
+#pragma warning disable IDE0060 // Remove unused parameter
+        public static async Task<TestResponse> HandleSynchronizedStaticAsync(TestRequest input)
+        {
+            await Task.Delay(1);
             return null;
         }
 #pragma warning restore IDE0060 // Remove unused parameter
@@ -1090,10 +1258,9 @@ namespace Whitestone.Cambion.UnitTests.Cambion
 #pragma warning restore IDE0060 // Remove unused parameter
     }
 
-    class AsyncEventHandler : IAsyncEventHandler<TestEvent>
+    internal class AsyncEventHandler : IAsyncEventHandler<TestEvent>
     {
-        private readonly ManualResetEvent _mre = new ManualResetEvent(false);
-        private TestEvent _eventValue;
+        private readonly ManualResetEvent _mre = new(false);
 
         public async Task HandleEventAsync(TestEvent input)
         {

@@ -163,10 +163,43 @@ namespace Whitestone.Cambion
                             }
 
                             _synchronizedHandlers[key] = synchronizedHandler;
+
+                    _logger.LogInformation("Registered <{handlerType}> as synchronized handler for <{request}, {response}>", handlerType.FullName, requestType.FullName, responseType.FullName);
+                }
+            }
+
+            // Look for, and save, any IAsyncSynchronizedHandler implementations
+            IEnumerable<Type> asyncSynchronizedInterfaces = handlerType.GetInterfaces()
+                .Where(x => typeof(IAsyncSynchronizedHandler).IsAssignableFrom(x) && x.IsGenericType);
+
+            lock (_asyncSynchronizedHandlers)
+            {
+                foreach (Type @interface in asyncSynchronizedInterfaces)
+                {
+                    Type requestType = @interface.GetGenericArguments()[0];
+                    Type responseType = @interface.GetGenericArguments()[1];
+
+                    MethodInfo method = @interface.GetMethod("HandleSynchronizedAsync", new[] { requestType });
+
+                    if (method == null || !method.ReturnType.IsAssignableFrom(typeof(Task<>).MakeGenericType(responseType)))
+                    {
+                        continue;
                         }
 
-                        _logger.LogInformation("Registered <{handlerType}> as synchronized handler for <{request}, {response}>", handlerType.FullName, requestType.FullName, responseType.FullName);
+                    var @delegate = Delegate.CreateDelegate(typeof(Func<,>).MakeGenericType(requestType, typeof(Task<>).MakeGenericType(responseType)), handler, method);
+
+                    AsyncSynchronizedHandlerKey key = new(requestType, responseType);
+
+                    AsyncSynchronizedHandler asyncSynchronizedHandler = new(@delegate);
+
+                    if (_asyncSynchronizedHandlers.ContainsKey(key))
+                    {
+                        throw new ArgumentException($"An AsyncSynchronizedHandler already exists for request type {requestType} and response type {responseType}", nameof(@delegate));
                     }
+
+                    _asyncSynchronizedHandlers[key] = asyncSynchronizedHandler;
+
+                    _logger.LogInformation("Registered <{handlerType}> as async synchronized handler for <{request}, {response}>", handlerType.FullName, requestType.FullName, responseType.FullName);
                 }
             }
         }
@@ -266,6 +299,39 @@ namespace Whitestone.Cambion
             }
 
             _logger.LogInformation("Added <{handlerType}> as synchronized handler for <{request}, {response}>", callback.Target.GetType().FullName, requestType.FullName, responseType.FullName);
+        }
+
+        public void AddAsyncSynchronizedHandler<TRequest, TResponse>(Func<TRequest, Task<TResponse>> callback)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            if (callback.Target == null)
+            {
+                throw new ArgumentException("Can't use static methods in callbacks.", nameof(callback));
+            }
+
+            Type requestType = typeof(TRequest);
+            Type responseType = typeof(TResponse);
+
+            AsyncSynchronizedHandlerKey key = new(requestType, responseType);
+
+            AsyncSynchronizedHandler asyncSynchronizedHandler = new(callback);
+
+
+            lock (_asyncSynchronizedHandlers)
+            {
+                if (_asyncSynchronizedHandlers.ContainsKey(key))
+                {
+                    throw new ArgumentException($"An AsyncSynchronizedHandler already exists for request type {requestType} and response type {responseType}", nameof(callback));
+                }
+
+                _asyncSynchronizedHandlers[key] = asyncSynchronizedHandler;
+            }
+
+            _logger.LogInformation("Added <{handlerType}> as async synchronized handler for <{request}, {response}>", callback.Target.GetType().FullName, requestType.FullName, responseType.FullName);
         }
 
         public async Task PublishEventAsync<TEvent>(TEvent data)
@@ -432,6 +498,61 @@ namespace Whitestone.Cambion
                 }
                 else if (wrapper.MessageType == MessageType.SynchronizedRequest)
                 {
+                    AsyncSynchronizedHandler asyncHandler = null;
+
+                    lock (_asyncSynchronizedHandlers)
+                    {
+                        AsyncSynchronizedHandlerKey key = new(wrapper.DataType, wrapper.ResponseType);
+                        if (_asyncSynchronizedHandlers.TryGetValue(key, out AsyncSynchronizedHandler synchronizedHandler))
+                        {
+                            asyncHandler = synchronizedHandler;
+
+                            if (!asyncHandler.IsAlive)
+                            {
+                                _asyncSynchronizedHandlers.Remove(key);
+                            }
+                        }
+                    }
+
+                    if (asyncHandler is { IsAlive: true })
+                    {
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                object result = await asyncHandler.InvokeAsync(wrapper.Data);
+
+                                MessageWrapper replyWrapper = new()
+                                {
+                                    MessageType = MessageType.SynchronizedResponse,
+                                    Data = result,
+                                    DataType = wrapper.DataType,
+                                    ResponseType = wrapper.ResponseType,
+                                    CorrelationId = wrapper.CorrelationId
+                                };
+
+                                byte[] replyWrapperBytes = await _serializer.SerializeAsync(replyWrapper).ConfigureAwait(false);
+
+                                if (_logger.IsEnabled(LogLevel.Trace))
+                                {
+                                    _logger.LogTrace("Publishing async synchronized reply <{eventType}> to Transport with data {data}", result.GetType().FullName, Convert.ToBase64String(replyWrapperBytes));
+                                }
+                                else
+                                {
+                                    _logger.LogDebug("Publishing async synchronized reply <{eventType}> to Transport", result.GetType().FullName);
+                                }
+
+                                await _transport.PublishAsync(replyWrapperBytes).ConfigureAwait(false);
+                            }
+                            catch (Exception ex)
+                            {
+                                PublishUnhandledException(ex);
+                            }
+                        });
+
+                        return;
+                    }
+
                     SynchronizedHandler handler = null;
 
                     lock (_synchronizedHandlers)
