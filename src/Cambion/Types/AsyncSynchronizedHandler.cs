@@ -18,7 +18,7 @@ namespace Whitestone.Cambion.Types
             _method = Delegate.CreateDelegate(delegateType, handler.Method);
         }
 
-        public bool IsAlive => _reference is { IsAlive: true };
+        public bool IsAlive => _reference?.IsAlive == true;
 
         public async Task<object> InvokeAsync(object data)
         {
@@ -35,12 +35,7 @@ namespace Whitestone.Cambion.Types
             var t = (Task)_method.DynamicInvoke(_reference.Target, data);
             await t.ConfigureAwait(false);
 
-            if (t is { IsCompleted: true })
-            {
-                return ((dynamic)t).Result;
-            }
-
-            return null;
+            return t.IsCompleted ? ((dynamic)t).Result : null;
         }
     }
 

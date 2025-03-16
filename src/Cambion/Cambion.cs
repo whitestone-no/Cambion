@@ -21,13 +21,13 @@ namespace Whitestone.Cambion
         private readonly ILogger<Cambion> _logger;
 
         private readonly bool _useLoopback;
-        private readonly Dictionary<Type, List<EventHandler>> _eventHandlers = new();
-        private readonly Dictionary<Type, List<AsyncEventHandler>> _asyncEventHandlers = new();
-        private readonly Dictionary<SynchronizedHandlerKey, SynchronizedHandler> _synchronizedHandlers = new();
-        private readonly Dictionary<AsyncSynchronizedHandlerKey, AsyncSynchronizedHandler> _asyncSynchronizedHandlers = new();
+        private readonly Dictionary<Type, List<EventHandler>> _eventHandlers = new Dictionary<Type, List<EventHandler>>();
+        private readonly Dictionary<Type, List<AsyncEventHandler>> _asyncEventHandlers = new Dictionary<Type, List<AsyncEventHandler>>();
+        private readonly Dictionary<SynchronizedHandlerKey, SynchronizedHandler> _synchronizedHandlers = new Dictionary<SynchronizedHandlerKey, SynchronizedHandler>();
+        private readonly Dictionary<AsyncSynchronizedHandlerKey, AsyncSynchronizedHandler> _asyncSynchronizedHandlers = new Dictionary<AsyncSynchronizedHandlerKey, AsyncSynchronizedHandler>();
         // ReSharper disable once InconsistentNaming
         // Variable is internal only so that it is available to the unit test project. Don't need to change the variable naming for this.
-        internal readonly Dictionary<Guid, SynchronizedDataPackage> _synchronizationPackages = new();
+        internal readonly Dictionary<Guid, SynchronizedDataPackage> _synchronizationPackages = new Dictionary<Guid, SynchronizedDataPackage>();
 
         public event EventHandler<ErrorEventArgs> UnhandledException;
 
@@ -57,24 +57,24 @@ namespace Whitestone.Cambion
                 return;
             }
 
-                if (_transport == null)
-                {
-                    _logger.LogInformation("No transport found. Falling back to loopback implementation.");
-                }
-
-                if (_serializer == null)
-                {
-                    _logger.LogInformation("No serializer found. Falling back to loopback implementation.");
-                }
+            if (_transport == null)
+            {
+                _logger.LogInformation("No transport found. Falling back to loopback implementation.");
             }
 
-        public async Task ReinitializeAsync()
+            if (_serializer == null)
             {
+                _logger.LogInformation("No serializer found. Falling back to loopback implementation.");
+            }
+        }
+
+        public async Task ReinitializeAsync()
+        {
             if (_useLoopback)
             {
                 _logger.LogWarning("No transport or serializer defined. Using fallback. Nothing to reinitialize.");
                 return;
-        }
+            }
 
             _logger.LogInformation("Reinitializing Transport {transport}", _transport.GetType().FullName);
 
@@ -111,7 +111,7 @@ namespace Whitestone.Cambion
 
                     var @delegate = Delegate.CreateDelegate(typeof(Action<>).MakeGenericType(type), handler, method);
 
-                    EventHandler eventHandler = new(@delegate);
+                    var eventHandler = new EventHandler(@delegate);
 
                     if (!_eventHandlers.ContainsKey(type))
                     {
@@ -146,7 +146,7 @@ namespace Whitestone.Cambion
 
                     var @delegate = Delegate.CreateDelegate(typeof(Func<,>).MakeGenericType(type, typeof(Task)), handler, method);
 
-                    AsyncEventHandler asyncEventHandler = new(@delegate);
+                    var asyncEventHandler = new AsyncEventHandler(@delegate);
 
                     if (!_asyncEventHandlers.ContainsKey(type))
                     {
@@ -180,11 +180,11 @@ namespace Whitestone.Cambion
                         continue;
                     }
 
-                    Delegate @delegate = Delegate.CreateDelegate(typeof(Func<,>).MakeGenericType(requestType, responseType), handler, method);
+                    var @delegate = Delegate.CreateDelegate(typeof(Func<,>).MakeGenericType(requestType, responseType), handler, method);
 
-                    SynchronizedHandlerKey key = new(requestType, responseType);
+                    var key = new SynchronizedHandlerKey(requestType, responseType);
 
-                    SynchronizedHandler synchronizedHandler = new(@delegate);
+                    var synchronizedHandler = new SynchronizedHandler(@delegate);
 
                     if (_synchronizedHandlers.ContainsKey(key))
                     {
@@ -217,9 +217,9 @@ namespace Whitestone.Cambion
 
                     var @delegate = Delegate.CreateDelegate(typeof(Func<,>).MakeGenericType(requestType, typeof(Task<>).MakeGenericType(responseType)), handler, method);
 
-                    AsyncSynchronizedHandlerKey key = new(requestType, responseType);
+                    var key = new AsyncSynchronizedHandlerKey(requestType, responseType);
 
-                    AsyncSynchronizedHandler asyncSynchronizedHandler = new(@delegate);
+                    var asyncSynchronizedHandler = new AsyncSynchronizedHandler(@delegate);
 
                     if (_asyncSynchronizedHandlers.ContainsKey(key))
                     {
@@ -247,7 +247,7 @@ namespace Whitestone.Cambion
 
             Type type = typeof(TEvent);
 
-            EventHandler eventHandler = new(callback);
+            var eventHandler = new EventHandler(callback);
 
             lock (_eventHandlers)
             {
@@ -279,7 +279,7 @@ namespace Whitestone.Cambion
 
             Type type = typeof(TEvent);
 
-            AsyncEventHandler asyncEventHandler = new(callback);
+            var asyncEventHandler = new AsyncEventHandler(callback);
 
             lock (_asyncEventHandlers)
             {
@@ -345,9 +345,9 @@ namespace Whitestone.Cambion
             Type requestType = typeof(TRequest);
             Type responseType = typeof(TResponse);
 
-            AsyncSynchronizedHandlerKey key = new(requestType, responseType);
+            var key = new AsyncSynchronizedHandlerKey(requestType, responseType);
 
-            AsyncSynchronizedHandler asyncSynchronizedHandler = new(callback);
+            var asyncSynchronizedHandler = new AsyncSynchronizedHandler(callback);
 
 
             lock (_asyncSynchronizedHandlers)
@@ -365,7 +365,7 @@ namespace Whitestone.Cambion
 
         public async Task PublishEventAsync<TEvent>(TEvent data)
         {
-            MessageWrapper wrapper = new()
+            var wrapper = new MessageWrapper()
             {
                 Data = data,
                 DataType = data.GetType(),
@@ -399,8 +399,8 @@ namespace Whitestone.Cambion
         {
             var correlationId = Guid.NewGuid();
 
-            ManualResetEvent mre = new(false);
-            SynchronizedDataPackage pkg = new(mre);
+            var mre = new ManualResetEvent(false);
+            var pkg = new SynchronizedDataPackage(mre);
 
             lock (_synchronizationPackages)
             {
@@ -412,7 +412,7 @@ namespace Whitestone.Cambion
                 _synchronizationPackages[correlationId] = pkg;
             }
 
-            MessageWrapper wrapper = new()
+            var wrapper = new MessageWrapper()
             {
                 MessageType = MessageType.SynchronizedRequest,
                 Data = request,
@@ -562,7 +562,7 @@ namespace Whitestone.Cambion
 
                     lock (_asyncSynchronizedHandlers)
                     {
-                        AsyncSynchronizedHandlerKey key = new(wrapper.DataType, wrapper.ResponseType);
+                        var key = new AsyncSynchronizedHandlerKey(wrapper.DataType, wrapper.ResponseType);
                         if (_asyncSynchronizedHandlers.TryGetValue(key, out AsyncSynchronizedHandler synchronizedHandler))
                         {
                             asyncHandler = synchronizedHandler;
@@ -574,7 +574,7 @@ namespace Whitestone.Cambion
                         }
                     }
 
-                    if (asyncHandler is { IsAlive: true })
+                    if (asyncHandler?.IsAlive == true)
                     {
                         _ = Task.Run(async () =>
                         {
@@ -582,7 +582,7 @@ namespace Whitestone.Cambion
                             {
                                 object result = await asyncHandler.InvokeAsync(wrapper.Data);
 
-                                MessageWrapper replyWrapper = new()
+                                var replyWrapper = new MessageWrapper()
                                 {
                                     MessageType = MessageType.SynchronizedResponse,
                                     Data = result,
@@ -626,7 +626,7 @@ namespace Whitestone.Cambion
 
                     lock (_synchronizedHandlers)
                     {
-                        SynchronizedHandlerKey key = new(wrapper.DataType, wrapper.ResponseType);
+                        var key = new SynchronizedHandlerKey(wrapper.DataType, wrapper.ResponseType);
 
                         if (_synchronizedHandlers.TryGetValue(key, out SynchronizedHandler synchronizedHandler))
                         {
@@ -639,7 +639,7 @@ namespace Whitestone.Cambion
                         }
                     }
 
-                    if (handler is { IsAlive: true })
+                    if (handler?.IsAlive == true)
                     {
                         _ = Task.Run(async () =>
                         {
@@ -647,7 +647,7 @@ namespace Whitestone.Cambion
                             {
                                 object result = handler.Invoke(wrapper.Data);
 
-                                MessageWrapper replyWrapper = new()
+                                var replyWrapper = new MessageWrapper()
                                 {
                                     MessageType = MessageType.SynchronizedResponse,
                                     Data = result,
