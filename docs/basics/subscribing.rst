@@ -37,7 +37,7 @@ Interface subscription
 
 Another way to subscribe is using an interfaces.
 To use this approach, the class where you want your subscriptions implement has to have either ``IEventHandler<>`` or ``ISynchronizedHandler<>``.
-You can now register all your subscriptions in a single call to ``Register()``.
+You can now register all your subscriptions in a single call to ``.Register()``.
 
 Example
 ^^^^^^^
@@ -55,6 +55,62 @@ Example
     
         public TResponse HandleSynchronized(TRequest data)
         {
+            return new TResponse();
+        }
+    }
+
+Async Handlers
+--------------
+
+In addition to the subscription methods described above you have ``Async`` versions of the same methods,
+and similarily with the interfaces you have ``IAsyncEventHandler<>`` or ``IAsyncSynchronizedHandler<>``, which can be used with ``.Register()``.
+
+The main difference with these subscriptions are that the callbacks need to return a ``Task`` instead of ``void``.
+These can also be marked as ``async`` but should only do si if you actually use ``await`` in your handler.
+
+Examples
+========
+
+::
+
+    public class MyAsyncSubscriptionClass : IAsyncEventHandler<TEvent>, IAsyncSynchronizedHandler<TRequest, TResponse>
+    {
+        public MyAsyncSubscriptionClass(ICambion cambion)
+        {
+            cambion.Register(this);
+
+            cambion.AddAsyncEventHandler<TEvent>(MyAsyncEventCallback);
+            cambion.AddAsyncSynchronizedHandler<TRequest, TResponse>(MyAsyncSynchronizedCallback);
+
+            cambion.AddAsyncEventHandler<TEvent>(data => { return Task.CompletedTask; });
+            cambion.AddAsyncSynchronizedHandler<TRequest, TResponse>(data => { return Task.FromResult((TResponse)null); });
+
+            cambion.AddAsyncEventHandler<TEvent>(async data => { await DoSomethingAsync(); });
+            cambion.AddAsyncSynchronizedHandler<TRequest, TResponse>(data =>
+            {
+                await DoSomethingAsync();
+                return null;
+            });
+        }
+
+        public Task MyAsyncEventCallback(TEvent data)
+        {
+            return Task.CompletedTask;
+        }
+
+        public async Task<TResponse> MyAsyncSynchronizedCallback(TRequest data)
+        {
+            await DoSomethingAsync();
             return null;
+        }
+
+        public async Task HandleEventAsync(TEvent data)
+        {
+            await DoSomethingElseAsync();
+        }
+
+        public Task<TResponse> HandleSyncronizedAsync(TRequest data)
+        {
+            return Task.FromResult((TResponse)null);
         }
     }

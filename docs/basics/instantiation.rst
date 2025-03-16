@@ -14,7 +14,7 @@ Inside this method you simply tell it to use Cambion:
         services.AddCambion();
     }
 
-The previous example will initialize Cambion as a hosted service with a default Transport and Serializer.
+The previous example will initialize Cambion as a hosted service with the loopback fallback.
 
 .. note:: The Cambion instance is a singleton so that the same instance is shared among all usages throughout the code.
 
