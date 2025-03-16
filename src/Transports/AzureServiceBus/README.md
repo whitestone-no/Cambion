@@ -10,4 +10,4 @@ Install-Package Whitestone.Cambion.Transport.AzureServiceBus
 ```
 
 ### Documentation
-Documentation for the RabbitMQ transport is available on the [Cambion documentation site](https://cambion.readthedocs.io/en/latest)
+Documentation for the AzureServiceBus transport is available on the [Cambion documentation site](https://cambion.readthedocs.io/en/latest)
