@@ -12,7 +12,7 @@ using Xunit;
 
 // ReSharper disable PossibleNullReferenceException
 
-namespace Whitestone.Cambion.UnitTests.Cambion
+namespace Whitestone.Cambion.UnitTests
 {
     public class CambionTests
     {

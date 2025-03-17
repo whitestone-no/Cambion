@@ -3,14 +3,15 @@ major-version-bump-message: '\[(breaking|major)\]'
 minor-version-bump-message: '\[(feature|minor)\]'
 patch-version-bump-message: '\[(fix|patch)\]'
 branches:
-  master:
+  main:
+    label: preview
     increment: Patch
   feature:
-    tag: alpha
+    label: alpha
     increment: Patch
     regex: ^feature|issue[s]?[\/-]
   release:
-    tag: preview
+    label: beta
     increment: Patch
     regex: ^release[s]?[\/-]
 ignore:

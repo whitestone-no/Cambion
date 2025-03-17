@@ -4,17 +4,18 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Whitestone.Cambion</AssemblyName>
     <RootNamespace>Whitestone.Cambion</RootNamespace>
-    <Version>1.1.0-preview</Version>
+    <Version>1.1.1-preview</Version>
     <Authors>Whitestone</Authors>
     <Product>Whitestone Cambion</Product>
     <Description>Cambion is a light-weight open-source service bus for .NET with a set of convenience functions for synchronous and asynchronous event handling.</Description>
-    <Copyright>Copyright © 2021</Copyright>
+    <Copyright>Copyright (c) Whitestone</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://cambion.whitestone.no/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/whitestone-no/Cambion</RepositoryUrl>
     <PackageIconUrl>https://cambion.whitestone.no/images/Cambion_Logo_128.png</PackageIconUrl>
     <PackageIcon>Cambion_Logo_128.png</PackageIcon>
     <PackageTags>messaging servicebus esb enterprice-service-bus cambion event-aggregator</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
@@ -23,7 +24,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\img\Cambion_Logo_128.png" Pack="true" Visible="false" PackagePath="" />
+    <None Include="..\img\Cambion_Logo_128.png" Pack="true" Visible="false" PackagePath="\" />
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -31,7 +33,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.3" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 </Project>

@@ -1,27 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <IsPackable>false</IsPackable>
-    <AssemblyName>Whitestone.Cambion.IntegrationTests.Cambion</AssemblyName>
-    <RootNamespace>Whitestone.Cambion.IntegrationTests.Cambion</RootNamespace>
+    <RootNamespace>Whitestone.Cambion.UnitTests</RootNamespace>
+    <AssemblyName>Whitestone.Cambion.UnitTests</AssemblyName>
+    <Version>1.1.0</Version>
+    <Authors>Whitestone</Authors>
+    <Product>Whitestone Cambion</Product>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
     <PackageReference Include="Moq" Version="4.18.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="RandomTestValues" Version="2.1.1" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Cambion\Cambion.csproj" />
+    <ProjectReference Include="..\..\src\Cambion.csproj" />
   </ItemGroup>
 
-  </Project>
+</Project>

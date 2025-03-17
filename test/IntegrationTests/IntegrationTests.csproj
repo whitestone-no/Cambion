@@ -1,14 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <IsPackable>false</IsPackable>
-    <AssemblyName>Whitestone.Cambion.IntegrationTests.Transports.NetMQ</AssemblyName>
-    <RootNamespace>Whitestone.Cambion.IntegrationTests.Transports.NetMQ</RootNamespace>
+    <AssemblyName>Whitestone.Cambion.IntegrationTests</AssemblyName>
+    <RootNamespace>Whitestone.Cambion.IntegrationTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
     <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="RandomTestValues" Version="2.1.1" />
     <PackageReference Include="xunit" Version="2.9.3" />
@@ -20,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Transports\NetMQ\NetMQ.csproj" />
+    <ProjectReference Include="..\..\src\Cambion.csproj" />
   </ItemGroup>
 
-</Project>
+  </Project>

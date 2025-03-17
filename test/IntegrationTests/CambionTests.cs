@@ -7,7 +7,7 @@ using RandomTestValues;
 using Whitestone.Cambion.Interfaces;
 using Xunit;
 
-namespace Whitestone.Cambion.IntegrationTests.Cambion
+namespace Whitestone.Cambion.IntegrationTests
 {
     public class CambionTests
     {
