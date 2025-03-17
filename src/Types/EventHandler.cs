@@ -31,7 +31,7 @@ namespace Whitestone.Cambion.Types
                 return false;
             }
 
-                _method.DynamicInvoke(_reference.Target, data);
+            _method.DynamicInvoke(_reference.Target, data);
 
             return true;
         }

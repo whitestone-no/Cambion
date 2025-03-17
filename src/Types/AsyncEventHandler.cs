@@ -36,7 +36,7 @@ namespace Whitestone.Cambion.Types
             
             await t.ConfigureAwait(false);
 
-            return t?.IsCompleted == true;
+            return t.IsCompleted;
         }
     }
 }

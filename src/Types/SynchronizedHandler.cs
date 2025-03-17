@@ -52,15 +52,10 @@ namespace Whitestone.Cambion.Types
                 return false;
             }
 
-            SynchronizedHandlerKey eb = (SynchronizedHandlerKey)obj;
+            var eb = (SynchronizedHandlerKey)obj;
 
-            if (eb.RequestType == RequestType &&
-                eb.ResponseType == ResponseType)
-            {
-                return true;
-            }
-
-            return false;
+            return eb.RequestType == RequestType &&
+                   eb.ResponseType == ResponseType;
         }
 
         public override int GetHashCode()

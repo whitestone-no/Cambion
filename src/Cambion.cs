@@ -312,9 +312,9 @@ namespace Whitestone.Cambion
             Type requestType = typeof(TRequest);
             Type responseType = typeof(TResponse);
 
-            SynchronizedHandlerKey key = new SynchronizedHandlerKey(requestType, responseType);
+            var key = new SynchronizedHandlerKey(requestType, responseType);
 
-            SynchronizedHandler synchronizedHandler = new SynchronizedHandler(callback);
+            var synchronizedHandler = new SynchronizedHandler(callback);
 
 
             lock (_synchronizedHandlers)

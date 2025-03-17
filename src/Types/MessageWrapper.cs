@@ -20,7 +20,7 @@ namespace Whitestone.Cambion.Types
                 return false;
             }
 
-            MessageWrapper objWrapper = (MessageWrapper)obj;
+            var objWrapper = (MessageWrapper)obj;
 
             // Wrap the Data property in "dynamic" to allow for value comparison (i.e. (int)1 == (long)1 will be true)
             return (dynamic)Data == (dynamic)objWrapper.Data &&
