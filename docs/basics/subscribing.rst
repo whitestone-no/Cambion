@@ -60,7 +60,7 @@ Example
     }
 
 Async Handlers
---------------
+==============
 
 In addition to the subscription methods described above you have ``Async`` versions of the same methods,
 and similarily with the interfaces you have ``IAsyncEventHandler<>`` or ``IAsyncSynchronizedHandler<>``, which can be used with ``.Register()``.
@@ -69,7 +69,7 @@ The main difference with these subscriptions are that the callbacks need to retu
 These can also be marked as ``async`` but should only do si if you actually use ``await`` in your handler.
 
 Examples
-========
+^^^^^^^^
 
 ::
 
