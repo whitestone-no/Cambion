@@ -21,8 +21,6 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - name: Debug
-      run: echo ${{ github.ref }}
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -43,12 +41,12 @@ jobs:
       run: |
         echo "packageSemVer=${{ env.GitVersion_MajorMinorPatch }}" >> "$GITHUB_ENV"
         echo "packageSemVerFull=${{ env.GitVersion_MajorMinorPatch }}" >> "$GITHUB_ENV"
-      if: startsWith(github.repository, 'refs/tags')
+      if: startsWith(github.ref, 'refs/tags')
     - name: Get GitVersion variables (Nightly)
       run: |
         echo "packageSemVer=${{ env.GitVersion_MajorMinorPatch }}" >> "$GITHUB_ENV"
         echo "packageSemVerFull=${{ env.GitVersion_MajorMinorPatch }}" >> "$GITHUB_ENV"
-      if: startsWith(github.repository, 'refs/heads/master')
+      if: startsWith(github.ref, 'refs/heads/master')
     - name: 'Output variables'
       id: outputVars
       run: |
