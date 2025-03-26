@@ -27,3 +27,19 @@ The serializer can be set up using an extension method to ``ICambionSerializerBu
             .UseExampleTransport()
             .WithJsonNetSerializer();
     }
+
+
+External configuration
+======================
+
+If you're using the :ref:`Configuration Reader<refConfigurationReader>` then adding this serializer doesn't require any
+additional configuration. You just have to specify the name of the serializer.
+
+Example JSON
+^^^^^^^^^^^^
+
+{
+    "Cambion": {
+        "Serializer": "Whitestone.Cambion.Serializer.JsonNet"
+    }
+}

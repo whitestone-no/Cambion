@@ -26,7 +26,7 @@ Host
 In order for Cambion to send and receive data using NetMQ, one of the Cambion instances needs to work as a MessageHost.
 The other Cambion instances will then connect to the MessageHost as clients.
 
-The Azure Service Bus transport is set up using an extension method for ``ICambionBuilder``. This extension method takes an
+The NetMQ transport is set up using an extension method for ``ICambionBuilder``. This extension method takes an
 ``Action<NetMqConfig>`` as the input parameter.
 
 .. note:: The MessageHost will work as a normal client in addition to being the host without any additional configuration
@@ -50,3 +50,62 @@ Clients
 ^^^^^^^
 
 Clients will use the same configuration as above, but will set ``UseMessageHost`` to ``false`` (or omit it, as it defaults to ``false``)
+
+
+External configuration
+======================
+
+In addition to configuring through ``Action<NetMqConfig>`` you can also pass in an ``Microsoft.Extensions.Configuration.IConfiguration`` object
+that has been populated with settings through ``appsettings.json``, environment variables, user secrets, or similar sources.
+
+::
+
+    public void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
+    {
+        services.AddCambion()
+            .UseNetMqTransport(ctx.Configuration);
+    }
+
+This expects the configuration to have been set up according to :ref:`Configuration Reader<refConfigurationReader>`.
+
+Any settings missing in the configuration will be set to the default values for the object type in ``NetMqConfig``.
+
+Any settings defined in the configuration can also be owerwritten through the ``Action<NetMqConfig>``:
+
+::
+
+    public void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
+    {
+        services.AddCambion()
+            .UseNetMqTransport(
+                ctx.Configuration,
+                conf => conf.PublishAddress = "tcp://localhost:9999");
+    }
+
+As with the Configuration Reader you can also override which settings object to read from, so instead of the default ``Cambion``
+override it by passing a new configuration key:
+
+::
+
+    public void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
+    {
+        services.AddCambion()
+            .UseNetMqTransport(ctx.Configuration, "Example");
+    }
+
+.. note:: As with the Configuration Reader you cannot change the "Transport" key.
+
+Example JSON
+^^^^^^^^^^^^
+
+{
+    "Cambion": {
+        "Transport": {
+            "Whitestone.Cambion.Transport.NetMQ": {
+                "PublishAddress": "tcp://localhost:9990",
+                "SubscribeAddress": "tcp://localhost:9991",
+                "UseMessageHost": true
+            }
+        }
+    }
+}

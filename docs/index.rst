@@ -44,3 +44,9 @@ The framework is easily extensible to add support for other transports and seria
    serializers/introduction
    serializers/jsonnet
    serializers/messagepack
+
+.. toctree::
+   :hidden:
+   :caption: Extensions
+
+   extensions/configurationreader

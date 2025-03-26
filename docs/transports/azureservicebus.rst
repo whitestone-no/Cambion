@@ -102,3 +102,74 @@ Please refer to Microsoft's documentation (`CreateTopicOptions <https://learn.mi
 the meaning of each property in these classes.
 
 .. note:: The ``Name`` property on the ``TopicDescription`` / ``SubscriptionDescription`` will *always* be overwritten by the transport with the value from the ``AzureServiceBusConfig.Topic.Name`` / `AzureServiceBusConfig.Topic.Name`` properties, so any values you set here will be ignored!
+
+External configuration
+======================
+
+In addition to configuring through ``Action<AzureServiceBusConfig>`` you can also pass in an ``Microsoft.Extensions.Configuration.IConfiguration`` object
+that has been populated with settings through ``appsettings.json``, environment variables, user secrets, or similar sources.
+
+::
+
+    public void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
+    {
+        services.AddCambion()
+            .UseAzureServiceBusTransport(ctx.Configuration);
+    }
+
+This expects the configuration to have been set up according to :ref:`Configuration Reader<refConfigurationReader>`.
+
+Any settings missing in the configuration will be set to the default values for the object type in ``AzureServiceBusConfig``.
+
+Any settings defined in the configuration can also be owerwritten through the ``Action<AzureServiceBusConfig>``:
+
+::
+
+    public void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
+    {
+        services.AddCambion()
+            .UseAzureServiceBusTransport(
+                ctx.Configuration,
+                conf => conf.Endpoint = "service-bus-namespace.servicebus.windows.net");
+    }
+
+As with the Configuration Reader you can also override which settings object to read from, so instead of the default ``Cambion``
+override it by passing a new configuration key:
+
+::
+
+    public void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
+    {
+        services.AddCambion()
+            .UseAzureServiceBusTransport(ctx.Configuration, "Example");
+    }
+
+.. note:: As with the Configuration Reader you cannot change the "Transport" key.
+
+Example JSON
+^^^^^^^^^^^^
+
+{
+    "Cambion": {
+        "Transport": {
+            "Whitestone.Cambion.Transport.AzureServiceBus": {
+                "Endpoint": "service-bus-namespace.servicebus.windows.net",
+                "Topic": {
+                    "Name": "cambion",
+                    "AutoCreate": true,
+                    "AutoDelete": true
+                },
+                "Subscription": {
+                    "Name": "cambion-sub-1",
+                    "AutoCreate": true,
+                    "AutoDelete": true
+                },
+                "Autentication": {
+                    "TenantId": "YourTenant",
+                    "ClientId": "YourClient",
+                    "ClientSecret": "YourSecret"
+                }
+            }
+        }
+    }
+}
