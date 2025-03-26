@@ -158,20 +158,22 @@ override it by passing a new configuration key:
 Example JSON
 ^^^^^^^^^^^^
 
-{
-    "Cambion": {
-        "Transport": {
-            "Whitestone.Cambion.Transport.RabbitMQ": {
-                "Connection": {
-                    "Hostname": "hostname",
-                    "Username": "username",
-                    "Password": "password"
-                },
-                "Exchange": {
-                    "Name": "Cambion",
-                    "Durable": false
+::
+
+    {
+        "Cambion": {
+            "Transport": {
+                "Whitestone.Cambion.Transport.RabbitMQ": {
+                    "Connection": {
+                        "Hostname": "hostname",
+                        "Username": "username",
+                        "Password": "password"
+                    },
+                    "Exchange": {
+                        "Name": "Cambion",
+                        "Durable": false
+                    },
                 }
             }
         }
     }
-}

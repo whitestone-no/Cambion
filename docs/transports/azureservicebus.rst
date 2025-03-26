@@ -149,27 +149,29 @@ override it by passing a new configuration key:
 Example JSON
 ^^^^^^^^^^^^
 
-{
-    "Cambion": {
-        "Transport": {
-            "Whitestone.Cambion.Transport.AzureServiceBus": {
-                "Endpoint": "service-bus-namespace.servicebus.windows.net",
-                "Topic": {
-                    "Name": "cambion",
-                    "AutoCreate": true,
-                    "AutoDelete": true
-                },
-                "Subscription": {
-                    "Name": "cambion-sub-1",
-                    "AutoCreate": true,
-                    "AutoDelete": true
-                },
-                "Autentication": {
-                    "TenantId": "YourTenant",
-                    "ClientId": "YourClient",
-                    "ClientSecret": "YourSecret"
+::
+
+    {
+        "Cambion": {
+            "Transport": {
+                "Whitestone.Cambion.Transport.AzureServiceBus": {
+                    "Endpoint": "service-bus-namespace.servicebus.windows.net",
+                    "Topic": {
+                        "Name": "cambion",
+                        "AutoCreate": true,
+                        "AutoDelete": true
+                    },
+                    "Subscription": {
+                        "Name": "cambion-sub-1",
+                        "AutoCreate": true,
+                        "AutoDelete": true
+                    },
+                    "Autentication": {
+                        "TenantId": "YourTenant",
+                        "ClientId": "YourClient",
+                        "ClientSecret": "YourSecret"
+                    }
                 }
             }
         }
     }
-}

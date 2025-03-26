@@ -1,7 +1,7 @@
 .. _refConfigurationReader:
 
 Configuration reader
----------------
+--------------------
 
 This extension reads ``ITransport`` and ``ISerializer`` settings from the .NET configuration – whether
 you’re using an ``appsettings.json`` file, environment variables, user secrets, or similar sources.

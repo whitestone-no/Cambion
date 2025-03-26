@@ -38,8 +38,10 @@ additional configuration. You just have to specify the name of the serializer.
 Example JSON
 ^^^^^^^^^^^^
 
-{
-    "Cambion": {
-        "Serializer": "Whitestone.Cambion.Serializer.JsonNet"
+::
+
+    {
+        "Cambion": {
+            "Serializer": "Whitestone.Cambion.Serializer.JsonNet"
+        }
     }
-}

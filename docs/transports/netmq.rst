@@ -98,14 +98,16 @@ override it by passing a new configuration key:
 Example JSON
 ^^^^^^^^^^^^
 
-{
-    "Cambion": {
-        "Transport": {
-            "Whitestone.Cambion.Transport.NetMQ": {
-                "PublishAddress": "tcp://localhost:9990",
-                "SubscribeAddress": "tcp://localhost:9991",
-                "UseMessageHost": true
+::
+
+    {
+        "Cambion": {
+            "Transport": {
+                "Whitestone.Cambion.Transport.NetMQ": {
+                    "PublishAddress": "tcp://localhost:9990",
+                    "SubscribeAddress": "tcp://localhost:9991",
+                    "UseMessageHost": true
+                }
             }
         }
     }
-}
